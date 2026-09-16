@@ -2,6 +2,9 @@
 
 Site da operação de Curitiba: funding imobiliário para incorporadores e loteadores, com o folder institucional para download.
 
+- Site: https://finamobcuritiba.vercel.app
+- Código: https://github.com/contatovinicaetano93-commits/finamobcuritiba
+
 ## Rodar localmente
 
 ```bash
