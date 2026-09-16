@@ -1,31 +1,26 @@
-# Finamob Curitiba — Folder institucional
+# Finamob Curitiba
 
-Versão do folder institucional da Finamob adaptada para **Finamob Curitiba**.
+Site da operação de Curitiba: funding imobiliário para incorporadores e loteadores, com o folder institucional para download.
 
-O que mudou em relação ao V7 original:
-
-- **Curitiba** entra na marca (capa, cabeçalhos e rodapés)
-- O texto passa a dizer “Finamob Curitiba”
-- O site `finamob.com.br` saiu do último slide, enquanto a operação local não tem site próprio
-
-## PDF pronto
-
-Baixe o arquivo:
-
-[`Folder-Institucional-Finamob-Curitiba.pdf`](./Folder-Institucional-Finamob-Curitiba.pdf)
-
-## Ver os slides no navegador
+## Rodar localmente
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abre em `http://127.0.0.1:43123`. Use as setas do teclado ou os thumbnails para folhear. O botão **Baixar PDF** entrega o arquivo atualizado.
+Abre em `http://127.0.0.1:43123`.
 
-## Regenerar o PDF
+- `/` — página inicial
+- `/solucoes` — catálogo de produtos
+- `/contato` — formulário
+- `/folder` — folder em slides + PDF
 
-Se você substituir o original em `source/`:
+## PDF
+
+[`Folder-Institucional-Finamob-Curitiba.pdf`](./Folder-Institucional-Finamob-Curitiba.pdf)
+
+Para regenerar o PDF a partir do original em `source/`:
 
 ```bash
 python3 -m pip install -r requirements.txt

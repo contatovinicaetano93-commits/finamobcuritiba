@@ -64,7 +64,6 @@ export const SLIDES: Slide[] = [
   },
 ]
 
-export const PDF_HREF = '/Folder-Institucional-Finamob-Curitiba.pdf'
 export const TOTAL_SLIDES = SLIDES.length
 
 export function slideById(id: SlideId): Slide {
