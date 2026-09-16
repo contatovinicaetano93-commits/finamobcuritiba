@@ -91,14 +91,31 @@ def write_line(
     writer.write_text(page, color=color)
 
 
-def place_lockup(
+def draw_curitiba(
     page: pymupdf.Page,
-    rect: pymupdf.Rect,
-    path: Path,
-    extend_down: float,
+    logo_rect: pymupdf.Rect,
+    color: tuple[float, float, float],
+    fontsize: float,
+    baseline_y: float,
 ) -> None:
-    target = pymupdf.Rect(rect.x0, rect.y0, rect.x1, rect.y1 + extend_down)
-    page.insert_image(target, filename=str(path), overlay=True, keep_proportion=True)
+    """Draw sharp vector CURITIBA under the original logo, without resampling it."""
+    font = pymupdf.Font(fontfile=str(FONT_AUDIO))
+    text = "CURITIBA"
+    tracking = fontsize * 0.12
+    widths = [font.text_length(ch, fontsize=fontsize) for ch in text]
+    text_w = sum(widths) + tracking * (len(text) - 1)
+    word_left = logo_rect.x0 + logo_rect.width * 0.28
+    x = (word_left + logo_rect.x1) / 2 - text_w / 2
+    for ch, width in zip(text, widths, strict=True):
+        page.insert_text(
+            (x, baseline_y),
+            ch,
+            fontfile=str(FONT_AUDIO),
+            fontsize=fontsize,
+            color=color,
+            overlay=True,
+        )
+        x += width + tracking
 
 
 def main() -> None:
@@ -137,7 +154,7 @@ def main() -> None:
 
     header = pymupdf.Rect(81.0, 81.0, 360.0, 169.5)
     for index in (1, 2, 3):
-        place_lockup(doc[index], header, ASSETS / "lockup-white.png", 22)
+        draw_curitiba(doc[index], header, (1, 1, 1), 16.5, 168.0)
 
     page2 = doc[1]
     page2.add_redact_annot(pymupdf.Rect(168, 605, 1365, 752), fill=False, cross_out=False)
@@ -161,7 +178,7 @@ def main() -> None:
 
     footer = pymupdf.Rect(1222.4, 686.0, 1358.9, 728.7)
     for index in (6, 7):
-        place_lockup(doc[index], footer, ASSETS / "lockup-black.png", 18)
+        draw_curitiba(doc[index], footer, (0, 0, 0), 12.0, 744.0)
 
     page8 = doc[7]
     page8.add_redact_annot(pymupdf.Rect(115.3, 67.8, 560, 135.5), fill=(1, 1, 1), cross_out=False)
