@@ -1,3 +1,5 @@
+import { slidePhotos } from '@/media/slides'
+
 export type SlideId = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
 
 export interface Slide {
@@ -12,55 +14,55 @@ export const SLIDES: Slide[] = [
     id: 1,
     title: 'Capa',
     note: 'Marca Finamob Curitiba',
-    src: '/slides/01.jpg',
+    src: slidePhotos[0],
   },
   {
     id: 2,
     title: 'Transformação',
     note: 'Nome atualizado no texto e no logo',
-    src: '/slides/02.jpg',
+    src: slidePhotos[1],
   },
   {
     id: 3,
     title: 'Mercado de capitais',
     note: 'Logo Finamob Curitiba',
-    src: '/slides/03.jpg',
+    src: slidePhotos[2],
   },
   {
     id: 4,
     title: 'Financiamento',
     note: 'Incorporadores e loteadores',
-    src: '/slides/04.jpg',
+    src: slidePhotos[3],
   },
   {
     id: 5,
     title: 'Tecnologia',
     note: 'Encontro entre demanda e capital',
-    src: '/slides/05.jpg',
+    src: slidePhotos[4],
   },
   {
     id: 6,
     title: 'Produtos',
     note: 'Linhas de crédito e liquidez',
-    src: '/slides/06.jpg',
+    src: slidePhotos[5],
   },
   {
     id: 7,
     title: 'Números',
     note: 'Logo Finamob Curitiba no rodapé',
-    src: '/slides/07.jpg',
+    src: slidePhotos[6],
   },
   {
     id: 8,
     title: 'Na mídia',
     note: 'Título e marca atualizados',
-    src: '/slides/08.jpg',
+    src: slidePhotos[7],
   },
   {
     id: 9,
     title: 'Encerramento',
     note: 'Site removido enquanto não houver domínio próprio',
-    src: '/slides/09.jpg',
+    src: slidePhotos[8],
   },
 ]
 

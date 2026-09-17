@@ -1,12 +1,13 @@
 import { ContactForm } from '@/components/ContactForm'
 import { SITE } from '@/data/site'
+import { photos } from '@/media/photos'
 
 export function ContactPage() {
   return (
     <div className="bg-[#f3efe6] text-black">
       <section className="relative overflow-hidden bg-[#050505] px-4 py-20 text-white sm:px-6">
         <img
-          src="/media/skyline-cta.jpg"
+          src={photos.skylineCta}
           alt=""
           className="absolute inset-0 size-full object-cover opacity-45"
         />

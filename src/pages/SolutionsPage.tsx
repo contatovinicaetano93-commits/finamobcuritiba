@@ -1,13 +1,14 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { PRODUCT_GROUPS, productsByGroup } from '@/data/products'
+import { photos } from '@/media/photos'
 
 export function SolutionsPage() {
   return (
     <div className="bg-[#f3efe6] text-black">
       <section className="relative overflow-hidden bg-[#050505] px-4 py-20 text-white sm:px-6">
         <img
-          src="/media/skyline-funding.jpg"
+          src={photos.skylineFunding}
           alt=""
           className="absolute inset-0 size-full object-cover opacity-40"
         />

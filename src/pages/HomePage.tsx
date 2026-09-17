@@ -3,13 +3,14 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { PRODUCTS } from '@/data/products'
 import { FLOW, MARKET_STAGES, NUMBERS, PDF_HREF, PRESS, SITE } from '@/data/site'
+import { photos } from '@/media/photos'
 
 export function HomePage() {
   return (
     <div className="bg-[#050505] text-white">
       <section className="relative min-h-[100svh] overflow-hidden">
         <img
-          src="/media/skyline-manifesto.jpg"
+          src={photos.skylineManifesto}
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
@@ -79,7 +80,7 @@ export function HomePage() {
 
       <section className="relative overflow-hidden">
         <img
-          src="/media/skyline-funding.jpg"
+          src={photos.skylineFunding}
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
@@ -101,7 +102,7 @@ export function HomePage() {
 
       <section className="relative overflow-hidden bg-[#f3efe6] px-4 py-20 text-black sm:px-6">
         <img
-          src="/media/fluxo.jpg"
+          src={photos.fluxo}
           alt=""
           className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[42%] object-cover opacity-30 lg:block"
         />
@@ -203,7 +204,7 @@ export function HomePage() {
 
       <section className="relative overflow-hidden">
         <img
-          src="/media/skyline-cta.jpg"
+          src={photos.skylineCta}
           alt=""
           className="absolute inset-0 size-full object-cover"
         />
