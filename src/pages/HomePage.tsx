@@ -99,8 +99,13 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="bg-[#f3efe6] px-4 py-20 text-black sm:px-6">
-        <div className="mx-auto max-w-6xl">
+      <section className="relative overflow-hidden bg-[#f3efe6] px-4 py-20 text-black sm:px-6">
+        <img
+          src="/media/fluxo.jpg"
+          alt=""
+          className="pointer-events-none absolute inset-y-0 right-0 hidden h-full w-[42%] object-cover opacity-30 lg:block"
+        />
+        <div className="relative mx-auto max-w-6xl">
           <p className="font-mark text-[11px] tracking-[0.32em] text-black/45">
             COMO FUNCIONA
           </p>
