@@ -5,7 +5,7 @@ import { PDF_HREF, SITE } from '@/data/site'
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 bg-[#050505] text-white">
-      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 sm:px-6 md:flex-row md:items-end md:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-14 sm:px-6 md:flex-row md:items-end md:justify-between">
         <div className="space-y-3">
           <BrandMark />
           <p className="max-w-sm text-sm text-white/65">{SITE.tagline}</p>

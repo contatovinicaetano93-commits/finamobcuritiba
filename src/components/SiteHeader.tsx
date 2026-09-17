@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import { Menu } from 'lucide-react'
 import { BrandMark } from '@/components/BrandMark'
 import { Button } from '@/components/ui/button'
@@ -15,9 +15,18 @@ import { cn } from '@/lib/utils'
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
+  const { pathname } = useLocation()
+  const overHero = pathname === '/'
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#050505]/90 backdrop-blur-md">
+    <header
+      className={cn(
+        'z-40 border-b border-white/10',
+        overHero
+          ? 'absolute inset-x-0 top-0 bg-gradient-to-b from-black/70 to-transparent'
+          : 'sticky top-0 bg-[#050505]/90 backdrop-blur-md',
+      )}
+    >
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" aria-label="Finamob Curitiba — início">
           <BrandMark />
