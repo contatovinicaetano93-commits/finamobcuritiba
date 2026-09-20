@@ -14,13 +14,14 @@ export function ContactPage() {
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/55" />
         <div className="relative mx-auto max-w-6xl py-6">
           <p className="font-mark text-[11px] tracking-[0.32em] text-white/55">
-            CONTATO
+            CONTATO · {SITE.city.toUpperCase()}
           </p>
           <h1 className="font-heading mt-4 max-w-3xl text-4xl leading-tight sm:text-6xl">
-            Conte o projeto. A gente estrutura o funding.
+            Conte o projeto. Ou entre na originação.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/70">
-            Atendemos incorporadores e loteadores a partir de {SITE.city}.
+            A Finamob Curitiba atende incorporadores, loteadores e parceiros
+            originadores a partir de {SITE.city}.
           </p>
         </div>
       </section>
@@ -46,7 +47,9 @@ export function ContactPage() {
             formulário e guarde o resumo da conversa.
           </p>
         </aside>
-        <ContactForm />
+        <div className="rounded-3xl border border-black/10 bg-white p-6 sm:p-8">
+          <ContactForm />
+        </div>
       </div>
     </div>
   )

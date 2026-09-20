@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import { BrandMark } from '@/components/BrandMark'
 import { PDF_HREF, SITE } from '@/data/site'
 
@@ -12,12 +11,18 @@ export function SiteFooter() {
           <p className="text-sm text-white/50">{SITE.city}</p>
         </div>
         <div className="flex flex-col gap-2 text-sm text-white/70">
-          <Link to="/solucoes" className="hover:text-white">
-            Soluções de funding
-          </Link>
-          <Link to="/contato" className="hover:text-white">
+          <a href="/#produtos" className="hover:text-white">
+            Produtos de funding
+          </a>
+          <a href="/#formulario" className="hover:text-white">
+            Formulário
+          </a>
+          <a href="/#farejador" className="hover:text-white">
+            Farejador
+          </a>
+          <a href="/#contato" className="hover:text-white">
             Contato
-          </Link>
+          </a>
           <a href={PDF_HREF} download className="hover:text-white">
             Baixar folder institucional
           </a>

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
-import { PRODUCT_GROUPS, productsByGroup } from '@/data/products'
+import { EXTRA_PRODUCTS, FUNDING_PRODUCTS, PRODUCT_GROUPS, productsByGroup } from '@/data/products'
+import { VEHICLES } from '@/data/site'
 import { photos } from '@/media/photos'
 
 export function SolutionsPage() {
@@ -21,13 +22,53 @@ export function SolutionsPage() {
             Financiamento para incorporadores e loteadores
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/70">
-            Da ponte ao true sale, as linhas cobrem lançamento, obra, estoque,
-            recebível e estrutura de capital. A Finamob Curitiba encaixa o produto
-            no estágio real do projeto.
+            Ponte, obra, estoque, recebíveis e corporativo — e, quando o projeto
+            pede, FIDCs artesanais e acompanhamento estratégico. A Finamob
+            Curitiba encaixa o produto no estágio real da operação.
           </p>
         </div>
       </section>
       <div className="mx-auto max-w-6xl space-y-16 px-4 py-16 sm:px-6">
+        <section>
+          <h2 className="font-heading text-3xl sm:text-4xl">Produtos de funding</h2>
+          <div className="mt-7 grid gap-px overflow-hidden rounded-2xl bg-black/10 sm:grid-cols-2 lg:grid-cols-3">
+            {FUNDING_PRODUCTS.map((product) => (
+              <article key={product.name} className="bg-white p-6">
+                <h3 className="font-heading text-2xl">{product.name}</h3>
+                <p className="mt-3 text-black/65">{product.summary}</p>
+              </article>
+            ))}
+            {EXTRA_PRODUCTS.map((product) => (
+              <article key={product.name} className="bg-white p-6">
+                <p className="text-xs tracking-wide text-black/40 uppercase">
+                  Outros produtos
+                </p>
+                <h3 className="font-heading mt-2 text-2xl">{product.name}</h3>
+                <p className="mt-3 text-black/65">{product.summary}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="font-heading text-3xl sm:text-4xl">Veículos</h2>
+          <p className="mt-2 max-w-2xl text-black/65">
+            Estruturas proprietárias para produção, crédito-ponte, capital de giro
+            e captação via equity.
+          </p>
+          <div className="mt-7 grid gap-px overflow-hidden rounded-2xl bg-black/10 md:grid-cols-2">
+            {VEHICLES.map((vehicle) => (
+              <article key={vehicle.name} className="bg-white p-6">
+                <p className="text-xs tracking-wide text-black/40 uppercase">
+                  {vehicle.kicker}
+                </p>
+                <h3 className="font-heading mt-2 text-2xl">{vehicle.name}</h3>
+                <p className="mt-3 text-black/65">{vehicle.summary}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
         {PRODUCT_GROUPS.map((group) => (
           <section key={group.id}>
             <h2 className="font-heading text-3xl sm:text-4xl">{group.title}</h2>
@@ -42,12 +83,13 @@ export function SolutionsPage() {
             </div>
           </section>
         ))}
+
         <div className="overflow-hidden rounded-3xl bg-[#050505] px-6 py-12 text-white sm:px-10">
           <h2 className="font-heading text-3xl sm:text-4xl">
             Quer encaixar o funding no seu projeto?
           </h2>
           <p className="mt-3 max-w-xl text-white/70">
-            Conte o estágio da obra, a praça e o valor aproximado. A equipe de
+            Conte o estágio da obra, a praça e o valor aproximado. A Finamob
             Curitiba avalia o caminho mais eficiente.
           </p>
           <Button asChild className="mt-7 h-12 rounded-full px-6" size="lg">

@@ -10,8 +10,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { NAV } from '@/data/site'
+import { isHashNav, NAV } from '@/data/site'
 import { cn } from '@/lib/utils'
+
+function navHref(pathname: string, href: string): string {
+  return pathname === '/' ? href : `/${href}`
+}
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
@@ -32,25 +36,34 @@ export function SiteHeader() {
           <BrandMark />
         </Link>
         <nav className="hidden items-center gap-7 md:flex" aria-label="Principal">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'text-sm tracking-wide text-white/70 transition-colors hover:text-white',
-                  isActive && 'text-white',
-                )
-              }
-              end={item.to === '/'}
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {NAV.map((item) =>
+            isHashNav(item) ? (
+              <a
+                key={item.href}
+                href={navHref(pathname, item.href)}
+                className="text-sm tracking-wide text-white/70 transition-colors hover:text-white"
+              >
+                {item.label}
+              </a>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  cn(
+                    'text-sm tracking-wide text-white/70 transition-colors hover:text-white',
+                    isActive && 'text-white',
+                  )
+                }
+              >
+                {item.label}
+              </NavLink>
+            ),
+          )}
         </nav>
         <div className="hidden md:block">
           <Button asChild size="lg" className="rounded-full px-4">
-            <Link to="/contato">Falar com a equipe</Link>
+            <a href={navHref(pathname, '#formulario')}>Falar com a equipe</a>
           </Button>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
@@ -70,21 +83,34 @@ export function SiteHeader() {
               <SheetTitle className="text-white">Menu</SheetTitle>
             </SheetHeader>
             <nav className="mt-6 flex flex-col gap-4 px-4" aria-label="Mobile">
-              {NAV.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setOpen(false)}
-                  className="text-lg text-white/80"
-                  end={item.to === '/'}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+              {NAV.map((item) =>
+                isHashNav(item) ? (
+                  <a
+                    key={item.href}
+                    href={navHref(pathname, item.href)}
+                    onClick={() => setOpen(false)}
+                    className="text-lg text-white/80"
+                  >
+                    {item.label}
+                  </a>
+                ) : (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setOpen(false)}
+                    className="text-lg text-white/80"
+                  >
+                    {item.label}
+                  </NavLink>
+                ),
+              )}
               <Button asChild className="mt-4 rounded-full">
-                <Link to="/contato" onClick={() => setOpen(false)}>
+                <a
+                  href={navHref(pathname, '#formulario')}
+                  onClick={() => setOpen(false)}
+                >
                   Falar com a equipe
-                </Link>
+                </a>
               </Button>
             </nav>
           </SheetContent>

@@ -6,28 +6,64 @@ export interface Product {
   group: ProductGroupId
 }
 
-export const PRODUCT_GROUPS: { id: ProductGroupId; title: string; lead: string }[] = [
+export const FUNDING_PRODUCTS = [
   {
-    id: 'obra',
-    title: 'Obra e lançamento',
-    lead: 'Capital para sair do papel e executar o empreendimento.',
+    name: 'Ponte',
+    summary: 'Obtenção de recursos para exposição de caixa inicial do projeto.',
   },
   {
-    id: 'liquidez',
-    title: 'Liquidez do projeto',
-    lead: 'Soluções com lastro no que o incorporador já construiu ou vai receber.',
+    name: 'Obra',
+    summary: 'Financiamento para execução da obra.',
   },
   {
-    id: 'estrutura',
-    title: 'Estrutura de capital',
-    lead: 'Dívida, equity ou compra com recompra, conforme o momento da empresa.',
+    name: 'Estoque',
+    summary:
+      'Crédito para quitação do financiamento de obra e venda do remanescente com maior prazo.',
   },
   {
-    id: 'carteira',
-    title: 'Carteira e estoque',
-    lead: 'Operações lastreadas em unidades, pró-soluto ou venda definitiva.',
+    name: 'Recebíveis',
+    summary: 'Antecipação de direitos creditórios.',
   },
-]
+  {
+    name: 'Corporativo',
+    summary: 'Liquidez discricionária com lastro em ativos da companhia.',
+  },
+] as const
+
+export const EXTRA_PRODUCTS = [
+  {
+    name: 'FIDCs Artesanais',
+    summary: 'Estruturação de veículos de investimento sob demanda.',
+  },
+  {
+    name: 'FINAdvisor',
+    summary: 'Acompanhamento estratégico da operação, da tese à execução.',
+  },
+] as const
+
+export const PRODUCT_GROUPS: { id: ProductGroupId; title: string; lead: string }[] =
+  [
+    {
+      id: 'obra',
+      title: 'Obra e lançamento',
+      lead: 'Capital para sair do papel e executar o empreendimento.',
+    },
+    {
+      id: 'liquidez',
+      title: 'Liquidez do projeto',
+      lead: 'Soluções com lastro no que o incorporador já construiu ou vai receber.',
+    },
+    {
+      id: 'estrutura',
+      title: 'Estrutura de capital',
+      lead: 'Dívida, equity ou compra com recompra, conforme o momento da empresa.',
+    },
+    {
+      id: 'carteira',
+      title: 'Carteira e estoque',
+      lead: 'Operações lastreadas em unidades, pró-soluto ou venda definitiva.',
+    },
+  ]
 
 export const PRODUCTS: Product[] = [
   {
@@ -82,7 +118,8 @@ export const PRODUCTS: Product[] = [
   },
   {
     name: 'Garantia real',
-    summary: 'Dívida lastreada em carteira de projetos entregues, com previsão de alienação.',
+    summary:
+      'Dívida lastreada em carteira de projetos entregues, com previsão de alienação.',
     group: 'carteira',
   },
   {
@@ -92,7 +129,8 @@ export const PRODUCTS: Product[] = [
   },
   {
     name: 'True Sale',
-    summary: 'Venda definitiva da carteira de projetos entregues, sem configurar dívida.',
+    summary:
+      'Venda definitiva da carteira de projetos entregues, sem configurar dívida.',
     group: 'carteira',
   },
 ]
