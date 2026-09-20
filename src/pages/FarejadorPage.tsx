@@ -15,7 +15,7 @@ export function FarejadorPage() {
       ),
     ].join('\n')
     window.localStorage.setItem('finamob-curitiba-farejador', summary)
-    navigate('/contato')
+    navigate('/incorporador#formulario')
   }
 
   return (
@@ -39,14 +39,14 @@ export function FarejadorPage() {
         <p className="mt-10 max-w-2xl text-sm text-black/50">
           Esta é a leitura pública do motor. A mesa completa — Meteoro, BI e
           cadastro de SPE — continua no sistema interno.{' '}
-          <Link to="/contato" className="underline underline-offset-4">
+          <Link to="/incorporador" className="underline underline-offset-4">
             Fale com a Finamob Curitiba
           </Link>{' '}
           se o projeto pedir o Farejador completo.
         </p>
         <div className="mt-8">
           <Button asChild variant="outline" className="rounded-full">
-            <Link to="/#formulario">Voltar ao formulário</Link>
+            <Link to="/incorporador#formulario">Voltar ao formulário</Link>
           </Button>
         </div>
       </div>

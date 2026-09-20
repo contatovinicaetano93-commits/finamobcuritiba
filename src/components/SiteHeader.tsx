@@ -10,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { formCtaHref, isAreaRoute, isHeroPath } from '@/data/areas'
 import { isHashNav, NAV } from '@/data/site'
 import { cn } from '@/lib/utils'
 
@@ -20,7 +21,8 @@ function navHref(pathname: string, href: string): string {
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
-  const overHero = pathname === '/'
+  const overHero = isHeroPath(pathname)
+  const formHref = formCtaHref(pathname)
 
   return (
     <header
@@ -52,7 +54,8 @@ export function SiteHeader() {
                 className={({ isActive }) =>
                   cn(
                     'text-sm tracking-wide text-white/70 transition-colors hover:text-white',
-                    isActive && 'text-white',
+                    (isActive || (item.to === '/area' && isAreaRoute(pathname))) &&
+                      'text-white',
                   )
                 }
               >
@@ -63,7 +66,7 @@ export function SiteHeader() {
         </nav>
         <div className="hidden md:block">
           <Button asChild size="lg" className="rounded-full px-4">
-            <a href={navHref(pathname, '#formulario')}>Falar com a equipe</a>
+            <a href={formHref}>Falar com a equipe</a>
           </Button>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
@@ -105,10 +108,7 @@ export function SiteHeader() {
                 ),
               )}
               <Button asChild className="mt-4 rounded-full">
-                <a
-                  href={navHref(pathname, '#formulario')}
-                  onClick={() => setOpen(false)}
-                >
+                <a href={formHref} onClick={() => setOpen(false)}>
                   Falar com a equipe
                 </a>
               </Button>

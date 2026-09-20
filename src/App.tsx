@@ -2,10 +2,13 @@ import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { AreaPage } from '@/pages/AreaPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { FarejadorPage } from '@/pages/FarejadorPage'
 import { FolderPage } from '@/pages/FolderPage'
 import { HomePage } from '@/pages/HomePage'
+import { IncorporadorPage } from '@/pages/IncorporadorPage'
+import { ParceiroPage } from '@/pages/ParceiroPage'
 import { SolutionsPage } from '@/pages/SolutionsPage'
 
 function HashScroll() {
@@ -34,6 +37,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/solucoes" element={<SolutionsPage />} />
+          <Route path="/area" element={<AreaPage />} />
+          <Route path="/areas" element={<Navigate to="/area" replace />} />
+          <Route path="/incorporador" element={<IncorporadorPage />} />
+          <Route path="/parceiro" element={<ParceiroPage />} />
           <Route path="/farejador" element={<FarejadorPage />} />
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/folder" element={<FolderPage />} />

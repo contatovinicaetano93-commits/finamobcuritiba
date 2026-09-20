@@ -43,10 +43,10 @@ export function HomePage() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 rounded-full px-6">
-              <a href="#formulario">
+              <Link to="/incorporador">
                 Quero financiar um projeto
                 <ArrowRight />
-              </a>
+              </Link>
             </Button>
             <Button
               asChild
@@ -54,7 +54,7 @@ export function HomePage() {
               variant="outline"
               className="h-12 rounded-full border-white/25 bg-white/5 px-6 text-white hover:bg-white/10 hover:text-white"
             >
-              <a href="/?lead=parceiro#formulario">Quero originar negócios</a>
+              <Link to="/parceiro">Quero originar negócios</Link>
             </Button>
           </div>
         </div>
@@ -260,7 +260,11 @@ export function HomePage() {
             <p className="mt-5 text-black/65">
               Incorporadores e loteadores enviam o estágio da operação. Parceiros
               originadores trazem projetos e são remunerados por cada funding
-              fechado.
+              fechado. Há também uma{' '}
+              <Link to="/area" className="underline underline-offset-4">
+                área exclusiva
+              </Link>{' '}
+              para cada perfil.
             </p>
             <div className="mt-10 grid gap-6 sm:grid-cols-3">
               {PARTNER_STATS.map((stat) => (
@@ -399,7 +403,7 @@ export function HomePage() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 rounded-full px-6">
-              <a href="#formulario">Abrir formulário</a>
+              <Link to="/area">Escolher área</Link>
             </Button>
             <Button
               asChild

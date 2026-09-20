@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { ContactForm } from '@/components/ContactForm'
+import { Button } from '@/components/ui/button'
 import { SITE } from '@/data/site'
 import { photos } from '@/media/photos'
 
@@ -20,9 +22,23 @@ export function ContactPage() {
             Conte o projeto. Ou entre na originação.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/70">
-            A Finamob Curitiba atende incorporadores, loteadores e parceiros
-            originadores a partir de {SITE.city}.
+            A Finamob Curitiba atende incorporadores, loteadores e originadores
+            parceiros a partir de {SITE.city}. Prefere um canal só seu? Entre na
+            área de incorporador ou de originador.
           </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button asChild size="lg" className="h-12 rounded-full px-6">
+              <Link to="/incorporador">Área do incorporador</Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-12 rounded-full border-white/25 bg-white/5 px-6 text-white hover:bg-white/10 hover:text-white"
+            >
+              <Link to="/parceiro">Área do originador</Link>
+            </Button>
+          </div>
         </div>
       </section>
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[0.85fr_1.15fr]">

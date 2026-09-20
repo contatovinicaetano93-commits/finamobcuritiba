@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { AreaSwitch } from '@/components/AreaSwitch'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -11,11 +12,12 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { rememberArea, type Audience } from '@/data/areas'
 import { FUNDING_PRODUCTS } from '@/data/products'
 import { SITE } from '@/data/site'
 import { cn } from '@/lib/utils'
 
-export type Audience = 'incorporador' | 'parceiro'
+export type { Audience }
 type FormStatus = 'editing' | 'invalid' | 'success'
 
 interface LeadForm {
@@ -91,9 +93,30 @@ function parseAudience(value: string | null): Audience {
   return value === 'parceiro' ? 'parceiro' : 'incorporador'
 }
 
-export function ContactForm({ defaultAudience }: { defaultAudience?: Audience }) {
+function audienceKicker(audience: Audience): string {
+  switch (audience) {
+    case 'incorporador':
+      return 'INCORPORADOR'
+    case 'parceiro':
+      return 'ORIGINADOR PARCEIRO'
+    default: {
+      const exhaustive: never = audience
+      return exhaustive
+    }
+  }
+}
+
+export function ContactForm({
+  defaultAudience,
+  lockAudience = false,
+}: {
+  defaultAudience?: Audience
+  lockAudience?: boolean
+}) {
   const [params, setParams] = useSearchParams()
-  const audience = parseAudience(params.get('lead') ?? defaultAudience ?? null)
+  const audience = lockAudience
+    ? (defaultAudience ?? 'incorporador')
+    : parseAudience(params.get('lead') ?? defaultAudience ?? null)
   const [form, setForm] = useState<LeadForm>(() => ({
     ...EMPTY,
     audience,
@@ -116,6 +139,7 @@ export function ContactForm({ defaultAudience }: { defaultAudience?: Audience })
     }
     setParams(nextParams, { replace: true })
     setForm((current) => ({ ...current, audience: next }))
+    rememberArea(next)
     if (status === 'invalid') {
       setStatus('editing')
     }
@@ -139,6 +163,7 @@ export function ContactForm({ defaultAudience }: { defaultAudience?: Audience })
       'finamob-curitiba-last-lead',
       formatLead(payload),
     )
+    rememberArea(payload.audience)
     setStatus('success')
   }
 
@@ -194,24 +219,33 @@ export function ContactForm({ defaultAudience }: { defaultAudience?: Audience })
 
   return (
     <div className="space-y-6">
-      <div
-        className="grid gap-2 rounded-full bg-black/5 p-1 sm:grid-cols-2"
-        role="tablist"
-        aria-label="Perfil do contato"
-      >
-        <AudienceTab
-          selected={audience === 'incorporador'}
-          onSelect={() => setAudience('incorporador')}
+      {lockAudience ? (
+        <div className="space-y-2">
+          <p className="font-mark text-[11px] tracking-[0.32em] text-black/45">
+            {audienceKicker(audience)}
+          </p>
+          <AreaSwitch current={audience} />
+        </div>
+      ) : (
+        <div
+          className="grid gap-2 rounded-full bg-black/5 p-1 sm:grid-cols-2"
+          role="tablist"
+          aria-label="Perfil do contato"
         >
-          Sou incorporador
-        </AudienceTab>
-        <AudienceTab
-          selected={audience === 'parceiro'}
-          onSelect={() => setAudience('parceiro')}
-        >
-          Quero originar
-        </AudienceTab>
-      </div>
+          <AudienceTab
+            selected={audience === 'incorporador'}
+            onSelect={() => setAudience('incorporador')}
+          >
+            Sou incorporador
+          </AudienceTab>
+          <AudienceTab
+            selected={audience === 'parceiro'}
+            onSelect={() => setAudience('parceiro')}
+          >
+            Quero originar
+          </AudienceTab>
+        </div>
+      )}
       <form className="space-y-4" onSubmit={onSubmit} noValidate>
         {status === 'invalid' ? (
           <p

@@ -14,8 +14,14 @@ export function SiteFooter() {
           <a href="/#produtos" className="hover:text-white">
             Produtos de funding
           </a>
-          <a href="/#formulario" className="hover:text-white">
-            Formulário
+          <a href="/area" className="hover:text-white">
+            Áreas
+          </a>
+          <a href="/incorporador" className="hover:text-white">
+            Incorporador
+          </a>
+          <a href="/parceiro" className="hover:text-white">
+            Originador parceiro
           </a>
           <a href="/farejador" className="hover:text-white">
             Farejador
