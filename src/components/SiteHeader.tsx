@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
-import { formCtaHref, isAreaRoute, isHeroPath } from '@/data/areas'
+import { formCtaTo, isAreaRoute, isHeroPath } from '@/data/areas'
 import { isHashNav, NAV } from '@/data/site'
 import { cn } from '@/lib/utils'
 
@@ -22,7 +22,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const { pathname } = useLocation()
   const overHero = isHeroPath(pathname)
-  const formHref = formCtaHref(pathname)
+  const formTo = formCtaTo(pathname)
 
   return (
     <header
@@ -66,7 +66,7 @@ export function SiteHeader() {
         </nav>
         <div className="hidden md:block">
           <Button asChild size="lg" className="rounded-full px-4">
-            <a href={formHref}>Falar com a equipe</a>
+            <Link to={formTo}>Falar com a equipe</Link>
           </Button>
         </div>
         <Sheet open={open} onOpenChange={setOpen}>
@@ -108,9 +108,9 @@ export function SiteHeader() {
                 ),
               )}
               <Button asChild className="mt-4 rounded-full">
-                <a href={formHref} onClick={() => setOpen(false)}>
+                <Link to={formTo} onClick={() => setOpen(false)}>
                   Falar com a equipe
-                </a>
+                </Link>
               </Button>
             </nav>
           </SheetContent>

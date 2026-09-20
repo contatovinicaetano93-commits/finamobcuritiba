@@ -104,17 +104,29 @@ export function otherArea(id: AreaId): AreaId {
   }
 }
 
+export function normalizePath(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1)
+  }
+  return pathname
+}
+
 export function isAreaRoute(pathname: string): boolean {
-  return pathname === '/area' || pathname === '/incorporador' || pathname === '/parceiro'
+  const path = normalizePath(pathname)
+  return path === '/area' || path === '/incorporador' || path === '/parceiro'
 }
 
 export function isHeroPath(pathname: string): boolean {
-  return pathname === '/' || isAreaRoute(pathname)
+  return normalizePath(pathname) === '/' || isAreaRoute(pathname)
 }
 
-export function formCtaHref(pathname: string): string {
-  if (pathname === '/' || pathname === '/incorporador' || pathname === '/parceiro') {
-    return '#formulario'
+export function formCtaTo(pathname: string): string {
+  const path = normalizePath(pathname)
+  if (path === '/' || path === '/incorporador' || path === '/parceiro') {
+    return `${path}#formulario`
+  }
+  if (path === '/farejador' || path === '/solucoes') {
+    return '/incorporador#formulario'
   }
   return '/contato'
 }
