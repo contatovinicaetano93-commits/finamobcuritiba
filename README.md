@@ -4,6 +4,8 @@ Site da Finamob Curitiba: funding imobiliário para incorporadores e loteadores.
 
 A landing segue a estrutura do site nacional — produtos, elo, mercado de capitais, veículos, formulário, Farejador e imprensa — sempre como **Finamob Curitiba**.
 
+O `/farejador` reproduz o motor de leitura da mesa (praça, produto, economics e player) para o incorporador avaliar o projeto neste site.
+
 - Site: https://finamobcuritiba.vercel.app
 - Código: https://github.com/contatovinicaetano93-commits/finamobcuritiba
 
@@ -17,6 +19,7 @@ npm run dev
 Abre em `http://127.0.0.1:43123`.
 
 - `/` — landing (Produtos, Formulário, Farejador, Contato)
+- `/farejador` — motor de leitura (praça, produto, economics, player)
 - `/solucoes` — catálogo completo
 - `/contato` — formulário incorporador / parceiro originador
 - `/folder` — folder em slides + PDF

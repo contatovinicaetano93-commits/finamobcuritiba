@@ -291,14 +291,28 @@ export function HomePage() {
             </h2>
             <p className="mt-5 max-w-xl text-white/65">
               O Farejador analisa praça, produto, economics e player — o mesmo
-              recorte que a mesa usa para ler a saúde da operação.
+              recorte que a mesa usa para ler a saúde da operação. A leitura agora
+              roda aqui, no site da Finamob Curitiba.
             </p>
-            <Button asChild size="lg" className="mt-8 h-12 rounded-full px-6">
-              <a href={FAREJADOR_HREF} target="_blank" rel="noreferrer">
-                Abrir o Farejador
-                <ArrowUpRight />
-              </a>
-            </Button>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="h-12 rounded-full px-6">
+                <Link to="/farejador">
+                  Avaliar o projeto neste site
+                  <ArrowRight />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                size="lg"
+                variant="outline"
+                className="h-12 rounded-full border-white/25 bg-white/5 px-6 text-white hover:bg-white/10 hover:text-white"
+              >
+                <a href={FAREJADOR_HREF} target="_blank" rel="noreferrer">
+                  Abrir a mesa original
+                  <ArrowUpRight />
+                </a>
+              </Button>
+            </div>
           </div>
           <aside className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-6 sm:p-8">
             <p className="text-xs tracking-wide text-white/40 uppercase">

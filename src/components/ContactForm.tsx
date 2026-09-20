@@ -94,7 +94,11 @@ function parseAudience(value: string | null): Audience {
 export function ContactForm({ defaultAudience }: { defaultAudience?: Audience }) {
   const [params, setParams] = useSearchParams()
   const audience = parseAudience(params.get('lead') ?? defaultAudience ?? null)
-  const [form, setForm] = useState<LeadForm>({ ...EMPTY, audience })
+  const [form, setForm] = useState<LeadForm>(() => ({
+    ...EMPTY,
+    audience,
+    message: window.localStorage.getItem('finamob-curitiba-farejador') ?? '',
+  }))
   const [status, setStatus] = useState<FormStatus>('editing')
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
 

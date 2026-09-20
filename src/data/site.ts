@@ -15,7 +15,7 @@ export const SITE = {
 export const NAV = [
   { href: '#produtos', label: 'Produtos' },
   { href: '#formulario', label: 'Formulário' },
-  { href: '#farejador', label: 'Farejador' },
+  { to: '/farejador', label: 'Farejador' },
   { href: '#contato', label: 'Contato' },
   { to: '/folder', label: 'Folder' },
 ] as const

@@ -17,7 +17,7 @@ export function SiteFooter() {
           <a href="/#formulario" className="hover:text-white">
             Formulário
           </a>
-          <a href="/#farejador" className="hover:text-white">
+          <a href="/farejador" className="hover:text-white">
             Farejador
           </a>
           <a href="/#contato" className="hover:text-white">

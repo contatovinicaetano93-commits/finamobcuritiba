@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { ContactPage } from '@/pages/ContactPage'
+import { FarejadorPage } from '@/pages/FarejadorPage'
 import { FolderPage } from '@/pages/FolderPage'
 import { HomePage } from '@/pages/HomePage'
 import { SolutionsPage } from '@/pages/SolutionsPage'
@@ -33,6 +34,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/solucoes" element={<SolutionsPage />} />
+          <Route path="/farejador" element={<FarejadorPage />} />
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/folder" element={<FolderPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
