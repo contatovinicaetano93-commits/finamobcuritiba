@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
@@ -20,8 +19,6 @@ import {
   SITE,
   VEHICLES,
 } from '@/data/site'
-import { prefersReducedMotion } from '@/lib/motion'
-import { useInViewPlay } from '@/lib/use-in-view-once'
 import { photos } from '@/media/photos'
 
 export function HomePage() {
@@ -390,13 +387,9 @@ function formatPct(value: number): string {
 function MarketStages() {
   return (
     <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-      {MARKET_STAGES.map((stage, index) => (
+      {MARKET_STAGES.map((stage) => (
         <article key={stage.period} className="flex flex-col">
-          <SplitBar
-            banks={stage.banks}
-            capital={stage.capital}
-            delay={index * 160}
-          />
+          <SplitBar banks={stage.banks} capital={stage.capital} />
           <p className="mt-4 text-sm tracking-wide text-black/50">
             {stage.period}
           </p>
@@ -413,53 +406,13 @@ function MarketStages() {
   )
 }
 
-function easeOutCubic(progress: number): number {
-  return 1 - (1 - progress) ** 3
-}
-
-function SplitBar({
-  banks,
-  capital,
-  delay,
-}: {
-  banks: number
-  capital: number
-  delay: number
-}) {
-  const [ref, playing] = useInViewPlay(560 + delay)
-  const [progress, setProgress] = useState(() =>
-    typeof window !== 'undefined' && prefersReducedMotion() ? 1 : 0,
-  )
-
-  useEffect(() => {
-    if (!playing) return
-    if (prefersReducedMotion()) {
-      setProgress(1)
-      return
-    }
-
-    let frame = 0
-    const duration = 2400
-    const startedAt = performance.now()
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - startedAt) / duration)
-      setProgress(easeOutCubic(t))
-      if (t < 1) frame = requestAnimationFrame(tick)
-    }
-    frame = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(frame)
-  }, [playing])
-
+function SplitBar({ banks, capital }: { banks: number; capital: number }) {
   return (
     <div
-      ref={ref}
       className="h-36 w-full overflow-hidden rounded-sm bg-[#efeae1]"
       aria-hidden="true"
     >
-      <div
-        className="flex h-full w-full"
-        style={{ clipPath: `inset(0 ${((1 - progress) * 100).toFixed(3)}% 0 0)` }}
-      >
+      <div className="market-wipe flex h-full w-full">
         <span
           className="h-full shrink-0 bg-[#111]"
           style={{ width: `${banks}%` }}
