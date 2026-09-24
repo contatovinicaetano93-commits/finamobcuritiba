@@ -10,7 +10,7 @@ export function SiteFooter() {
           <p className="max-w-sm text-sm text-white/65">{SITE.tagline}</p>
           <p className="text-sm text-white/50">{SITE.city}</p>
         </div>
-        <div className="flex flex-col gap-2 text-sm text-white/70">
+        <div className="flex flex-col gap-2 text-[13px] tracking-[0.06em] text-white/70">
           <a href="/#produtos" className="hover:text-white">
             Produtos de funding
           </a>

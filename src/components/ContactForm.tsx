@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AreaSwitch } from '@/components/AreaSwitch'
+import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -178,7 +179,7 @@ export function ContactForm({
 
   if (status === 'success') {
     return (
-      <div className="rounded-2xl border border-black/10 bg-white p-6 text-black">
+      <div className="rounded-sm border border-black/10 bg-white p-6 text-black">
         <p className="font-heading text-2xl">Recebemos o seu recado.</p>
         <p className="mt-2 text-sm text-black/70">
           A equipe da Finamob Curitiba ainda está no ar sem e-mail público. Guarde
@@ -221,14 +222,14 @@ export function ContactForm({
     <div className="space-y-6">
       {lockAudience ? (
         <div className="space-y-2">
-          <p className="font-mark text-[11px] tracking-[0.32em] text-black/45">
+          <Kicker className="text-bronze" rule={false}>
             {audienceKicker(audience)}
-          </p>
+          </Kicker>
           <AreaSwitch current={audience} />
         </div>
       ) : (
         <div
-          className="grid gap-2 rounded-full bg-black/5 p-1 sm:grid-cols-2"
+          className="grid gap-1 rounded-sm bg-black/5 p-1 sm:grid-cols-2"
           role="tablist"
           aria-label="Perfil do contato"
         >
@@ -355,7 +356,7 @@ export function ContactForm({
             }
           />
         </Field>
-        <Button type="submit" size="lg" className="rounded-full px-5">
+        <Button type="submit" size="lg" className="px-5">
           {audience === 'parceiro' ? 'Quero originar com vocês' : 'Enviar projeto'}
         </Button>
       </form>
@@ -379,7 +380,7 @@ function AudienceTab({
       aria-selected={selected}
       onClick={onSelect}
       className={cn(
-        'rounded-full px-4 py-2.5 text-sm tracking-wide transition-colors',
+        'rounded-[3px] px-4 py-2.5 text-sm tracking-[0.08em] transition-colors',
         selected
           ? 'bg-[#050505] text-white'
           : 'text-black/60 hover:text-black',

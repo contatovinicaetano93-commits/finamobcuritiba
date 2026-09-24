@@ -2,30 +2,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
-@import url("https://fonts.googleapis.com/css2?family=Audiowide&family=Cairo:wght@400;600;700&display=swap");
-
-@font-face {
-  font-family: "Audiowide";
-  src: url("/fonts/Audiowide-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Cairo";
-  src: url("/fonts/Cairo-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: Inter, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans: "Geist Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif;
   --color-ink: #050505;
-  --color-paper: #f4f1ea;
+  --color-paper: #f3efe6;
+  --color-bronze: #9c8563;
 }
 
 html,
@@ -39,6 +25,8 @@ body {
   background: #050505;
   color: #f4f4f4;
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -49,8 +37,8 @@ img {
 }
 
 @theme inline {
-  --font-heading: "Cairo", "Geist Variable", sans-serif;
-  --font-mark: "Audiowide", "Geist Variable", sans-serif;
+  --font-heading: "Newsreader Variable", "Palatino Linotype", Palatino, serif;
+  --font-mark: "Geist Variable", sans-serif;
   --font-sans: "Geist Variable", sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -116,7 +104,7 @@ img {
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.2rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -170,5 +158,36 @@ img {
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-heading {
+    font-family: var(--font-heading);
+    font-optical-sizing: auto;
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  .display-number {
+    font-family: var(--font-heading);
+    font-optical-sizing: auto;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  .btn-on-dark {
+    border-color: rgb(255 255 255 / 0.32);
+    background: transparent;
+    color: #fff;
+  }
+
+  .btn-on-dark:hover {
+    border-color: rgb(255 255 255 / 0.62);
+    background: transparent;
+    color: #fff;
   }
 }

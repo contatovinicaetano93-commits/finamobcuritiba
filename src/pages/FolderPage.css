@@ -19,14 +19,19 @@
 
 .folder-kicker {
   margin: 0;
-  font-size: 11px;
-  letter-spacing: 0.16em;
+  font-family: var(--font-mark);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #9a9a9a;
+  color: #9c8563;
 }
 
 .folder-top h1 {
   margin: 2px 0 0;
+  font-family: var(--font-heading);
+  font-optical-sizing: auto;
+  font-weight: 400;
   font-size: 22px;
   font-weight: 650;
   letter-spacing: 0.08em;

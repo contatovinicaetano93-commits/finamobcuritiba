@@ -22,7 +22,7 @@ export function BrandMark({ variant = 'light', className }: BrandMarkProps) {
       <span className="flex flex-col leading-none">
         <span
           className={cn(
-            'font-mark text-[15px] tracking-[0.22em]',
+            'font-mark text-[13px] font-medium tracking-[0.26em]',
             isLight ? 'text-white' : 'text-black',
           )}
         >
@@ -30,8 +30,8 @@ export function BrandMark({ variant = 'light', className }: BrandMarkProps) {
         </span>
         <span
           className={cn(
-            'mt-1 font-mark text-[9px] tracking-[0.38em]',
-            isLight ? 'text-white/80' : 'text-black/70',
+            'mt-1 font-mark text-[9px] font-medium tracking-[0.32em]',
+            isLight ? 'text-white/70' : 'text-black/60',
           )}
         >
           CURITIBA

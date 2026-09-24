@@ -9,13 +9,13 @@ export function FarejadorScoreCard({
   empty?: boolean
 }) {
   return (
-    <aside className="rounded-3xl border border-white/10 bg-[#0b0b0b] p-6 text-white sm:p-8">
-      <p className="text-xs tracking-wide text-white/40 uppercase">
+    <aside className="rounded-sm border border-white/10 bg-[#0b0b0b] p-6 text-white sm:p-8">
+      <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">
         {empty ? 'Preencha o projeto para ver a leitura' : 'Leitura do Farejador'}
       </p>
       <div className="mt-4 flex items-end justify-between gap-4">
         <div>
-          <p className="font-heading text-5xl">
+          <p className="display-number text-5xl">
             {empty ? '—' : formatScore(result.score, 2)}
           </p>
           <p className="mt-1 text-sm text-white/55">
@@ -37,7 +37,7 @@ export function FarejadorScoreCard({
         {result.pillars.map((pillar) => (
           <li
             key={pillar.name}
-            className="rounded-2xl border border-white/8 bg-white/5 px-4 py-3"
+            className="rounded-sm border border-white/8 bg-white/5 px-4 py-3"
           >
             <p className="text-xs tracking-wide text-white/45 uppercase">
               {pillar.name}

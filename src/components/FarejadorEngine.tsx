@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react'
 import { FarejadorScoreCard } from '@/components/FarejadorScoreCard'
+import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -73,7 +74,7 @@ export function FarejadorEngine({
   return (
     <div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
       <div className="space-y-6">
-        <section className="rounded-3xl border border-black/10 bg-white p-5 text-black sm:p-7">
+        <section className="rounded-sm border border-black/10 bg-white p-5 text-black sm:p-7">
           <SectionKicker index="00" title="Informações do projeto" />
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <Field label="Cidade principal" htmlFor="city">
@@ -144,7 +145,7 @@ export function FarejadorEngine({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-black/10 bg-white p-5 text-black sm:p-7">
+        <section className="rounded-sm border border-black/10 bg-white p-5 text-black sm:p-7">
           <SectionKicker
             index="01"
             title="Praça"
@@ -174,7 +175,7 @@ export function FarejadorEngine({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-black/10 bg-white p-5 text-black sm:p-7">
+        <section className="rounded-sm border border-black/10 bg-white p-5 text-black sm:p-7">
           <SectionKicker
             index="02"
             title="Produto"
@@ -201,7 +202,7 @@ export function FarejadorEngine({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-black/10 bg-white p-5 text-black sm:p-7">
+        <section className="rounded-sm border border-black/10 bg-white p-5 text-black sm:p-7">
           <SectionKicker
             index="03"
             title="Economics"
@@ -239,7 +240,7 @@ export function FarejadorEngine({
           </div>
         </section>
 
-        <section className="rounded-3xl border border-black/10 bg-white p-5 text-black sm:p-7">
+        <section className="rounded-sm border border-black/10 bg-white p-5 text-black sm:p-7">
           <SectionKicker
             index="04"
             title="Player / Sponsor"
@@ -279,7 +280,7 @@ export function FarejadorEngine({
                   })
                 }
                 className={cn(
-                  'rounded-full border px-3 py-2 text-sm transition-colors',
+                  'rounded-[3px] border px-3 py-2 text-sm tracking-[0.04em] transition-colors',
                   input.governance[field.key]
                     ? 'border-black bg-[#050505] text-white'
                     : 'border-black/15 text-black/70 hover:border-black/40',
@@ -293,13 +294,13 @@ export function FarejadorEngine({
         </section>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button type="button" className="h-11 rounded-full px-5" onClick={loadSample}>
+          <Button type="button" className="h-11 px-5" onClick={loadSample}>
             Carregar exemplo da mesa
           </Button>
           <Button
             type="button"
             variant="outline"
-            className="h-11 rounded-full px-5"
+            className="h-11 px-5"
             onClick={reset}
           >
             Limpar
@@ -308,7 +309,7 @@ export function FarejadorEngine({
             <Button
               type="button"
               variant="outline"
-              className="h-11 rounded-full px-5"
+              className="h-11 px-5"
               onClick={() => onLead(result)}
             >
               Enviar leitura para a equipe
@@ -349,10 +350,10 @@ function SectionKicker({
 }) {
   return (
     <div>
-      <p className="font-mark text-[11px] tracking-[0.28em] text-black/40">
-        PILAR {index}
-      </p>
-      <h2 className="font-heading mt-2 text-2xl">{title}</h2>
+      <Kicker className="text-bronze" rule={false}>
+        Pilar {index}
+      </Kicker>
+      <h2 className="font-heading mt-3 text-2xl">{title}</h2>
       {hint ? <p className="mt-2 text-sm text-black/55">{hint}</p> : null}
     </div>
   )
@@ -414,14 +415,14 @@ function Segmented<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="grid grid-cols-3 rounded-full bg-black/5 p-1">
+    <div className="grid grid-cols-3 rounded-sm bg-black/5 p-1">
       {options.map((option) => (
         <button
           key={option.value}
           type="button"
           onClick={() => onChange(option.value)}
           className={cn(
-            'rounded-full px-3 py-1.5 text-xs tracking-wide',
+            'rounded-[3px] px-3 py-1.5 text-xs tracking-[0.08em]',
             option.value === value
               ? 'bg-[#050505] text-white'
               : 'text-black/60 hover:text-black',

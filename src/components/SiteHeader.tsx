@@ -43,7 +43,7 @@ export function SiteHeader() {
               <a
                 key={item.href}
                 href={navHref(pathname, item.href)}
-                className="text-sm tracking-wide text-white/70 transition-colors hover:text-white"
+                className="text-[13px] tracking-[0.12em] text-white/70 transition-colors hover:text-white"
               >
                 {item.label}
               </a>
@@ -53,7 +53,7 @@ export function SiteHeader() {
                 to={item.to}
                 className={({ isActive }) =>
                   cn(
-                    'text-sm tracking-wide text-white/70 transition-colors hover:text-white',
+                    'text-[13px] tracking-[0.12em] text-white/70 transition-colors hover:text-white',
                     (isActive || (item.to === '/area' && isAreaRoute(pathname))) &&
                       'text-white',
                   )
@@ -65,7 +65,7 @@ export function SiteHeader() {
           )}
         </nav>
         <div className="hidden md:block">
-          <Button asChild size="lg" className="rounded-full px-4">
+          <Button asChild size="lg" className="px-4">
             <Link to={formTo}>Falar com a equipe</Link>
           </Button>
         </div>
@@ -107,7 +107,7 @@ export function SiteHeader() {
                   </NavLink>
                 ),
               )}
-              <Button asChild className="mt-4 rounded-full">
+              <Button asChild className="mt-4">
                 <Link to={formTo} onClick={() => setOpen(false)}>
                   Falar com a equipe
                 </Link>
