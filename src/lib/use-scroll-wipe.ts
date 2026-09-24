@@ -25,8 +25,11 @@ export function useScrollWipe(): [RefObject<HTMLDivElement | null>, number] {
     const measure = () => {
       const rect = el.getBoundingClientRect()
       const vh = window.innerHeight
-      const start = vh
-      const end = vh * 0.32
+      // Stay cream while the grid is still in the lower half (e.g. with
+      // "Como funciona" on screen). Finish the wipe only when the bars
+      // themselves have been scrolled toward the top of the viewport.
+      const start = vh * 0.62
+      const end = vh * 0.12
       const next = (start - rect.top) / (start - end)
       setProgress(Math.min(1, Math.max(0, next)))
     }
