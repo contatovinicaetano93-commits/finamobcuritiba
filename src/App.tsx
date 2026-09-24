@@ -4,6 +4,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { AreaPage } from '@/pages/AreaPage'
 import { ContactPage } from '@/pages/ContactPage'
+import { DirectConDownloadPage } from '@/pages/DirectConDownloadPage'
 import { FarejadorPage } from '@/pages/FarejadorPage'
 import { FolderPage } from '@/pages/FolderPage'
 import { HomePage } from '@/pages/HomePage'
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/farejador" element={<FarejadorPage />} />
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/folder" element={<FolderPage />} />
+          <Route path="/baixar-directcon" element={<DirectConDownloadPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

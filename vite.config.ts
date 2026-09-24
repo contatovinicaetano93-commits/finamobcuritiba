@@ -1,10 +1,40 @@
 import path from 'node:path'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
+
+const DIRECTCON_PDF = '/DirectCon-RE-Portfolio-de-Investimentos.pdf'
+const DIRECTCON_FILENAME =
+  'DirectCon_RE_Apresentacao_do_portfolio_de_investimentos.pdf'
+
+function pdfAttachment(): Plugin {
+  const attach = (
+    req: { url?: string },
+    res: { setHeader: (name: string, value: string) => void },
+    next: () => void,
+  ) => {
+    if (req.url?.split('?')[0] === DIRECTCON_PDF) {
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${DIRECTCON_FILENAME}"`,
+      )
+    }
+    next()
+  }
+
+  return {
+    name: 'pdf-attachment',
+    configureServer(server) {
+      server.middlewares.use(attach)
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(attach)
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), pdfAttachment()],
   resolve: {
     alias: {
       '@': path.resolve(import.meta.dirname, './src'),
