@@ -355,19 +355,21 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="contato" className="relative scroll-mt-20 overflow-hidden">
+      <section id="contato" className="relative scroll-mt-20 overflow-hidden bg-[#050505]">
         <img
           src={photos.skylineCta}
           alt=""
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-35"
         />
-        <div className="absolute inset-0 bg-black/62" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/40" />
         <div className="relative mx-auto flex min-h-[70svh] max-w-6xl flex-col justify-end px-4 py-16 sm:px-6">
           <Kicker className="text-white/55">
             Contato · {SITE.city}
           </Kicker>
           <h2 className="font-heading mt-6 max-w-3xl text-4xl leading-[1.08] tracking-tight sm:text-6xl lg:text-7xl">
-            Fale com a Finamob Curitiba
+            Fale com a
+            <span className="mt-2 block">Finamob Curitiba</span>
           </h2>
           <p className="mt-6 max-w-xl text-white/70">
             E-mail e WhatsApp institucionais ainda não foram publicados. Use o

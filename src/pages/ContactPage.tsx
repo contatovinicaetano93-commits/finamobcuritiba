@@ -12,9 +12,9 @@ export function ContactPage() {
         <img
           src={photos.skylineCta}
           alt=""
-          className="absolute inset-0 size-full object-cover opacity-45"
+          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-35"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/55" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/55" />
         <div className="relative mx-auto max-w-6xl py-6">
           <Kicker className="text-white/55">Contato · {SITE.city}</Kicker>
           <h1 className="font-heading mt-6 max-w-3xl text-4xl leading-[1.08] tracking-tight sm:text-6xl">

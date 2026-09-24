@@ -23,9 +23,9 @@ export function ParceiroPage() {
         <img
           src={photos.skylineCta}
           alt=""
-          className="absolute inset-0 size-full object-cover"
+          className="absolute inset-0 size-full object-cover object-[78%_center]"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/35" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/45" />
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-12 pt-28 sm:px-6 sm:pb-16">
           <Kicker className="text-white/55">
