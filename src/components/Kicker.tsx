@@ -19,7 +19,7 @@ export function Kicker({
     >
       {rule ? (
         <span
-          className="mb-3 block h-px w-9 bg-current opacity-40"
+          className="mb-3.5 block h-px w-11 bg-bronze"
           aria-hidden="true"
         />
       ) : null}
