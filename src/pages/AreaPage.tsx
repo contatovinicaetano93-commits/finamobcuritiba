@@ -25,7 +25,7 @@ export function AreaPage() {
           className="absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/45" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/45" />
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-12 pt-28 sm:px-6 sm:pb-16">
           <Kicker className="text-white/55">Áreas · {SITE.name}</Kicker>
           <h1 className="font-heading mt-6 max-w-4xl text-[2.4rem] leading-[1.02] tracking-tight sm:text-6xl">

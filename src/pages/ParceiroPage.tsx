@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { Kicker } from '@/components/Kicker'
+import { SplitSkyline } from '@/components/SplitSkyline'
 import { Button } from '@/components/ui/button'
 import {
   PARCEIRO_PROFILES,
@@ -19,42 +20,36 @@ export function ParceiroPage() {
 
   return (
     <div className="bg-[#050505] text-white">
-      <section className="relative min-h-[100svh] overflow-hidden">
-        <img
-          src={photos.skylineCta}
-          alt=""
-          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-35"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/55" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/50" />
-        <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-12 pt-28 sm:px-6 sm:pb-16">
-          <Kicker className="text-white/55">
-            Originador parceiro · {SITE.name}
-          </Kicker>
-          <h1 className="font-heading mt-6 max-w-5xl text-[2.4rem] leading-[1.02] tracking-tight sm:text-6xl lg:text-[4.6rem]">
-            Traga a operação.
-            <span className="mt-3 block text-[1.15rem] leading-snug tracking-normal text-white/72 italic sm:text-3xl lg:text-[2rem]">
-              Receba quando o funding fechar.
-            </span>
-          </h1>
-          <p className="mt-7 max-w-xl text-[15px] leading-relaxed text-white/70 sm:text-base">
-            Corretores, consultores, contadores e quem já origina obra ou
-            loteamento na praça. A Finamob Curitiba estrutura, lê o Farejador e
-            busca o capital. A remuneração entra na operação fechada.
-          </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
-              <a href="#formulario">
-                Quero originar
-                <ArrowRight />
-              </a>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="btn-on-dark">
-              <Link to="/incorporador">Sou incorporador</Link>
-            </Button>
-          </div>
+      <SplitSkyline
+        photo={photos.skylineFunding}
+        minHeightClass="min-h-[100svh]"
+      >
+        <Kicker className="text-white/55">
+          Originador parceiro · {SITE.name}
+        </Kicker>
+        <h1 className="font-heading mt-6 max-w-xl text-[2.4rem] leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">
+          Traga a operação.
+          <span className="mt-3 block text-[1.15rem] leading-snug tracking-normal text-white/72 italic sm:text-3xl">
+            Receba quando o funding fechar.
+          </span>
+        </h1>
+        <p className="mt-7 max-w-md text-[15px] leading-relaxed text-white/70 sm:text-base">
+          Corretores, consultores, contadores e quem já origina obra ou
+          loteamento na praça. A Finamob Curitiba estrutura, lê o Farejador e
+          busca o capital. A remuneração entra na operação fechada.
+        </p>
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <Button asChild size="lg">
+            <a href="#formulario">
+              Quero originar
+              <ArrowRight />
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="btn-on-dark">
+            <Link to="/incorporador">Sou incorporador</Link>
+          </Button>
         </div>
-      </section>
+      </SplitSkyline>
 
       <section className="bg-paper px-4 py-24 text-black sm:px-6 sm:py-28">
         <div className="mx-auto max-w-6xl">
