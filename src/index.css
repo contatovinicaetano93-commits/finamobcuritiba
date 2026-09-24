@@ -200,6 +200,11 @@ img {
     width: var(--fill);
     animation: score-fill 1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+
+  .market-wipe {
+    transform-origin: left center;
+    animation: market-wipe 1.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 }
 
 @keyframes hero-drift {
@@ -220,6 +225,15 @@ img {
   }
 }
 
+@keyframes market-wipe {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-drift {
     animation: none;
@@ -227,5 +241,10 @@ img {
 
   .score-fill {
     animation: none;
+  }
+
+  .market-wipe {
+    animation: none;
+    transform: scaleX(1);
   }
 }

@@ -386,20 +386,14 @@ function formatPct(value: number): string {
 }
 
 function MarketStages() {
-  const [ref, playing] = useInViewOnce<HTMLDivElement>()
-
   return (
-    <div
-      ref={ref}
-      className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
-    >
+    <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
       {MARKET_STAGES.map((stage, index) => (
         <article key={stage.period} className="flex flex-col">
           <SplitBar
             banks={stage.banks}
             capital={stage.capital}
-            playing={playing}
-            delay={index * 140}
+            delay={index * 160}
           />
           <p className="mt-4 text-sm tracking-wide text-black/50">
             {stage.period}
@@ -420,25 +414,27 @@ function MarketStages() {
 function SplitBar({
   banks,
   capital,
-  playing,
   delay,
 }: {
   banks: number
   capital: number
-  playing: boolean
   delay: number
 }) {
+  const [ref, playing] = useInViewOnce<HTMLDivElement>(0.6)
+
   return (
     <div
+      ref={ref}
       className="h-36 w-full overflow-hidden rounded-sm bg-[#efeae1]"
       aria-hidden="true"
     >
       <div
-        className="flex h-full origin-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
-        style={{
-          transform: playing ? 'scaleX(1)' : 'scaleX(0)',
-          transitionDelay: playing ? `${delay}ms` : '0ms',
-        }}
+        className={
+          playing
+            ? 'market-wipe flex h-full'
+            : 'flex h-full origin-left scale-x-0'
+        }
+        style={{ animationDelay: `${delay}ms` }}
       >
         <span className="h-full bg-[#111]" style={{ width: `${banks}%` }} />
         <span className="h-full bg-[#c8bba6]" style={{ width: `${capital}%` }} />

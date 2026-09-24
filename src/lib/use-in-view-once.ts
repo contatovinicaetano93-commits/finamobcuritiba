@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { prefersReducedMotion } from '@/lib/motion'
 
-export function useInViewOnce<T extends HTMLElement = HTMLDivElement>() {
+export function useInViewOnce<T extends HTMLElement = HTMLDivElement>(
+  threshold = 0.45,
+) {
   const ref = useRef<T>(null)
   const [visible, setVisible] = useState(() =>
     typeof window !== 'undefined' && prefersReducedMotion(),
@@ -26,7 +28,7 @@ export function useInViewOnce<T extends HTMLElement = HTMLDivElement>() {
           frameB = requestAnimationFrame(() => setVisible(true))
         })
       },
-      { threshold: 0.45, rootMargin: '0px 0px -12% 0px' },
+      { threshold, rootMargin: '0px 0px -10% 0px' },
     )
 
     observer.observe(node)
@@ -35,7 +37,7 @@ export function useInViewOnce<T extends HTMLElement = HTMLDivElement>() {
       cancelAnimationFrame(frameA)
       cancelAnimationFrame(frameB)
     }
-  }, [visible])
+  }, [threshold, visible])
 
   return [ref, visible] as const
 }
