@@ -10,16 +10,14 @@ import {
   formatMetricValue,
   parseMetricValue,
 } from '@/lib/metric-value'
+import { prefersReducedMotion } from '@/lib/motion'
+import { useInViewOnce } from '@/lib/use-in-view-once'
 import { cn } from '@/lib/utils'
 
 const CountUpPlayContext = createContext<boolean | null>(null)
 
 function easeOutCubic(progress: number): number {
   return 1 - (1 - progress) ** 3
-}
-
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function CountUpGroup({
@@ -29,30 +27,7 @@ export function CountUpGroup({
   children: ReactNode
   className?: string
 }) {
-  const nodeRef = useRef<HTMLDivElement>(null)
-  const [playing, setPlaying] = useState(false)
-
-  useEffect(() => {
-    const node = nodeRef.current
-    if (!node || playing) return
-
-    if (prefersReducedMotion()) {
-      setPlaying(true)
-      return
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return
-        setPlaying(true)
-        observer.disconnect()
-      },
-      { threshold: 0.35, rootMargin: '0px 0px -8% 0px' },
-    )
-
-    observer.observe(node)
-    return () => observer.disconnect()
-  }, [playing])
+  const [nodeRef, playing] = useInViewOnce<HTMLDivElement>()
 
   return (
     <CountUpPlayContext.Provider value={playing}>

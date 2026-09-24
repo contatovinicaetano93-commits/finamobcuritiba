@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { CountUp, CountUpGroup } from '@/components/CountUp'
 import { Kicker } from '@/components/Kicker'
+import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import { EXTRA_PRODUCTS, FUNDING_PRODUCTS } from '@/data/products'
 import {
@@ -17,6 +18,8 @@ import {
   SITE,
   VEHICLES,
 } from '@/data/site'
+import { CARD_HOVER_DARK } from '@/lib/motion'
+import { useInViewOnce } from '@/lib/use-in-view-once'
 import { photos } from '@/media/photos'
 
 export function HomePage() {
@@ -26,7 +29,7 @@ export function HomePage() {
         <img
           src={photos.skylineManifesto}
           alt=""
-          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
+          className="hero-drift absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/45" />
@@ -88,14 +91,19 @@ export function HomePage() {
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNDING_PRODUCTS.map((product) => (
-              <article key={product.name} className="bg-[#0b0b0b] p-6 sm:p-8">
+              <article
+                key={product.name}
+                className={`bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+              >
                 <h3 className="font-heading text-2xl">{product.name}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-white/65">
                   {product.summary}
                 </p>
               </article>
             ))}
-            <article className="flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8">
+            <article
+              className={`flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+            >
               <div>
                 <Kicker className="text-white/40" rule={false}>
                   Outros produtos
@@ -135,16 +143,18 @@ export function HomePage() {
             estrutura e financiador.
           </p>
           <div className="mt-14 grid gap-px overflow-hidden bg-black/10 lg:grid-cols-3">
-            {FLOW.map((step) => (
-              <article key={step.kicker} className="bg-paper p-7 sm:p-9">
-                <Kicker className="text-bronze" rule={false}>
-                  {step.kicker}
-                </Kicker>
-                <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-black/65">{step.text}</p>
-              </article>
+            {FLOW.map((step, index) => (
+              <Reveal key={step.kicker} delay={index * 120} className="h-full">
+                <article className="h-full bg-paper p-7 sm:p-9">
+                  <Kicker className="text-bronze" rule={false}>
+                    {step.kicker}
+                  </Kicker>
+                  <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-black/65">{step.text}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -162,23 +172,7 @@ export function HomePage() {
             de capitais criou corpo e vem se tornando a fonte predominante de
             recursos do setor.
           </p>
-          <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {MARKET_STAGES.map((stage) => (
-              <article key={stage.period} className="flex flex-col">
-                <SplitBar banks={stage.banks} capital={stage.capital} />
-                <p className="mt-4 text-sm tracking-wide text-black/50">
-                  {stage.period}
-                </p>
-                <p className="font-heading mt-1 text-2xl">{stage.note}</p>
-                <p className="mt-3 text-sm text-black/65">
-                  Bancos {formatPct(stage.banks)}
-                </p>
-                <p className="text-sm text-black/65">
-                  Mercado de capitais {formatPct(stage.capital)}
-                </p>
-              </article>
-            ))}
-          </div>
+          <MarketStages />
           <p className="font-heading mt-14 max-w-3xl text-2xl sm:text-3xl">
             No futuro próximo, 82% do funding imobiliário virá do mercado de
             capitais — e é onde a Finamob Curitiba atua.
@@ -202,7 +196,7 @@ export function HomePage() {
             {VEHICLES.map((vehicle) => (
               <article
                 key={vehicle.name}
-                className="border-0 bg-black/55 p-6 sm:p-8"
+                className={`border-0 bg-black/55 p-6 sm:p-8 ${CARD_HOVER_DARK}`}
               >
                 <Kicker className="text-white/45" rule={false}>
                   {vehicle.kicker}
@@ -299,9 +293,11 @@ export function HomePage() {
             <p className="text-[10px] tracking-[0.2em] text-white/40 uppercase">
               Exemplo de leitura
             </p>
-            <div className="mt-4 flex items-end justify-between gap-4">
+            <CountUpGroup className="mt-4 flex items-end justify-between gap-4">
               <div>
-                <p className="display-number text-5xl">{FAREJADOR_SAMPLE.score}</p>
+                <p className="display-number text-5xl">
+                  <CountUp value={FAREJADOR_SAMPLE.score} />
+                </p>
                 <p className="mt-1 text-sm text-white/55">
                   Score final · /10 {FAREJADOR_SAMPLE.rating}
                 </p>
@@ -316,7 +312,7 @@ export function HomePage() {
                   {FAREJADOR_SAMPLE.worst.value}
                 </p>
               </div>
-            </div>
+            </CountUpGroup>
             <ul className="mt-8 grid gap-3 sm:grid-cols-2">
               {FAREJADOR_SAMPLE.pillars.map((pillar) => (
                 <li
@@ -394,14 +390,68 @@ function formatPct(value: number): string {
   return Number.isInteger(value) ? `${value}%` : `${value.toFixed(1)}%`
 }
 
-function SplitBar({ banks, capital }: { banks: number; capital: number }) {
+function MarketStages() {
+  const [ref, playing] = useInViewOnce<HTMLDivElement>()
+
+  return (
+    <div
+      ref={ref}
+      className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+    >
+      {MARKET_STAGES.map((stage, index) => (
+        <article key={stage.period} className="flex flex-col">
+          <SplitBar
+            banks={stage.banks}
+            capital={stage.capital}
+            playing={playing}
+            delay={index * 140}
+          />
+          <p className="mt-4 text-sm tracking-wide text-black/50">
+            {stage.period}
+          </p>
+          <p className="font-heading mt-1 text-2xl">{stage.note}</p>
+          <p className="mt-3 text-sm text-black/65">
+            Bancos {formatPct(stage.banks)}
+          </p>
+          <p className="text-sm text-black/65">
+            Mercado de capitais {formatPct(stage.capital)}
+          </p>
+        </article>
+      ))}
+    </div>
+  )
+}
+
+function SplitBar({
+  banks,
+  capital,
+  playing,
+  delay,
+}: {
+  banks: number
+  capital: number
+  playing: boolean
+  delay: number
+}) {
   return (
     <div
       className="flex h-36 w-full overflow-hidden rounded-sm bg-[#e4ddd0]"
       aria-hidden="true"
     >
-      <span className="bg-[#111]" style={{ width: `${banks}%` }} />
-      <span className="bg-[#d8cfc0]" style={{ width: `${capital}%` }} />
+      <span
+        className="bg-[#111] transition-[width] duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+        style={{
+          width: playing ? `${banks}%` : '0%',
+          transitionDelay: playing ? `${delay}ms` : '0ms',
+        }}
+      />
+      <span
+        className="bg-[#d8cfc0] transition-[width] duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+        style={{
+          width: playing ? `${capital}%` : '0%',
+          transitionDelay: playing ? `${delay + 90}ms` : '0ms',
+        }}
+      />
     </div>
   )
 }

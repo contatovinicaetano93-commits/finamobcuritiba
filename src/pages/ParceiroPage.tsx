@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { CountUp, CountUpGroup } from '@/components/CountUp'
 import { Kicker } from '@/components/Kicker'
+import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import {
   PARCEIRO_PROFILES,
@@ -75,16 +76,18 @@ export function ParceiroPage() {
             Você origina. A mesa estrutura.
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-black/10 lg:grid-cols-3">
-            {PARCEIRO_STEPS.map((step) => (
-              <article key={step.kicker} className="bg-paper p-7 sm:p-9">
-                <Kicker className="text-bronze" rule={false}>
-                  {step.kicker}
-                </Kicker>
-                <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-black/65">{step.text}</p>
-              </article>
+            {PARCEIRO_STEPS.map((step, index) => (
+              <Reveal key={step.kicker} delay={index * 120} className="h-full">
+                <article className="h-full bg-paper p-7 sm:p-9">
+                  <Kicker className="text-bronze" rule={false}>
+                    {step.kicker}
+                  </Kicker>
+                  <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-black/65">{step.text}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
           <ul className="mt-14 grid gap-3 sm:grid-cols-2">

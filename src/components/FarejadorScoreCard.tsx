@@ -1,3 +1,5 @@
+import type { CSSProperties } from 'react'
+import { CountUp } from '@/components/CountUp'
 import { formatScore, ratingOf, type FarejadorResult } from '@/lib/farejador'
 import { cn } from '@/lib/utils'
 
@@ -16,7 +18,7 @@ export function FarejadorScoreCard({
       <div className="mt-4 flex items-end justify-between gap-4">
         <div>
           <p className="display-number text-5xl">
-            {empty ? '—' : formatScore(result.score, 2)}
+            {empty ? '—' : <CountUp key={result.score} value={formatScore(result.score, 2)} />}
           </p>
           <p className="mt-1 text-sm text-white/55">
             Score final · /10 {empty ? '' : result.rating}
@@ -45,6 +47,16 @@ export function FarejadorScoreCard({
             <p className="mt-1 text-lg">
               {empty ? '—' : `${formatScore(pillar.score)} · ${pillar.rating}`}
             </p>
+            <div className="mt-3 h-px overflow-hidden bg-white/10">
+              <span
+                className={empty ? 'block h-px' : 'score-fill block h-px bg-bronze'}
+                style={
+                  empty
+                    ? undefined
+                    : ({ '--fill': `${pillar.score * 10}%` } as CSSProperties)
+                }
+              />
+            </div>
           </li>
         ))}
       </ul>

@@ -3,6 +3,7 @@ import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
 import { EXTRA_PRODUCTS, FUNDING_PRODUCTS, PRODUCT_GROUPS, productsByGroup } from '@/data/products'
 import { VEHICLES } from '@/data/site'
+import { CARD_HOVER_LIGHT } from '@/lib/motion'
 import { photos } from '@/media/photos'
 
 export function SolutionsPage() {
@@ -37,13 +38,19 @@ export function SolutionsPage() {
           </h2>
           <div className="mt-8 grid gap-px overflow-hidden bg-black/10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNDING_PRODUCTS.map((product) => (
-              <article key={product.name} className="bg-white p-6">
+              <article
+                key={product.name}
+                className={`bg-white p-6 ${CARD_HOVER_LIGHT}`}
+              >
                 <h3 className="font-heading text-2xl">{product.name}</h3>
                 <p className="mt-3 text-black/65">{product.summary}</p>
               </article>
             ))}
             {EXTRA_PRODUCTS.map((product) => (
-              <article key={product.name} className="bg-white p-6">
+              <article
+                key={product.name}
+                className={`bg-white p-6 ${CARD_HOVER_LIGHT}`}
+              >
                 <Kicker className="text-bronze" rule={false}>
                   Outros produtos
                 </Kicker>
@@ -64,7 +71,10 @@ export function SolutionsPage() {
           </p>
           <div className="mt-8 grid gap-px overflow-hidden bg-black/10 md:grid-cols-2">
             {VEHICLES.map((vehicle) => (
-              <article key={vehicle.name} className="bg-white p-6">
+              <article
+                key={vehicle.name}
+                className={`bg-white p-6 ${CARD_HOVER_LIGHT}`}
+              >
                 <Kicker className="text-bronze" rule={false}>
                   {vehicle.kicker}
                 </Kicker>
@@ -83,7 +93,10 @@ export function SolutionsPage() {
             <p className="mt-3 max-w-2xl text-black/65">{group.lead}</p>
             <div className="mt-8 grid gap-px overflow-hidden bg-black/10 sm:grid-cols-2 lg:grid-cols-3">
               {productsByGroup(group.id).map((product) => (
-                <article key={product.name} className="bg-white p-6">
+                <article
+                  key={product.name}
+                  className={`bg-white p-6 ${CARD_HOVER_LIGHT}`}
+                >
                   <h3 className="font-heading text-2xl">{product.name}</h3>
                   <p className="mt-3 text-black/65">{product.summary}</p>
                 </article>

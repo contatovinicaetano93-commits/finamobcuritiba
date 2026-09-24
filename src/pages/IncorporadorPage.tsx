@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { Kicker } from '@/components/Kicker'
+import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import {
   INCORPORADOR_BRIEF,
@@ -11,6 +12,7 @@ import {
 } from '@/data/areas'
 import { FUNDING_PRODUCTS } from '@/data/products'
 import { SITE } from '@/data/site'
+import { CARD_HOVER_DARK } from '@/lib/motion'
 import { photos } from '@/media/photos'
 
 export function IncorporadorPage() {
@@ -24,7 +26,7 @@ export function IncorporadorPage() {
         <img
           src={photos.skylineManifesto}
           alt=""
-          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
+          className="hero-drift absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/45" />
@@ -62,16 +64,18 @@ export function IncorporadorPage() {
             Do recorte técnico ao agente financiador
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-black/10 lg:grid-cols-3">
-            {INCORPORADOR_STEPS.map((step) => (
-              <article key={step.kicker} className="bg-paper p-7 sm:p-9">
-                <Kicker className="text-bronze" rule={false}>
-                  {step.kicker}
-                </Kicker>
-                <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-black/65">{step.text}</p>
-              </article>
+            {INCORPORADOR_STEPS.map((step, index) => (
+              <Reveal key={step.kicker} delay={index * 120} className="h-full">
+                <article className="h-full bg-paper p-7 sm:p-9">
+                  <Kicker className="text-bronze" rule={false}>
+                    {step.kicker}
+                  </Kicker>
+                  <h3 className="font-heading mt-4 text-2xl sm:text-3xl">
+                    {step.title}
+                  </h3>
+                  <p className="mt-3 text-black/65">{step.text}</p>
+                </article>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -91,14 +95,19 @@ export function IncorporadorPage() {
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNDING_PRODUCTS.map((product) => (
-              <article key={product.name} className="bg-[#0b0b0b] p-6 sm:p-8">
+              <article
+                key={product.name}
+                className={`bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+              >
                 <h3 className="font-heading text-2xl">{product.name}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-white/65">
                   {product.summary}
                 </p>
               </article>
             ))}
-            <article className="flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8">
+            <article
+              className={`flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+            >
               <div>
                 <Kicker className="text-white/40" rule={false}>
                   Catálogo

@@ -11,6 +11,7 @@ import {
   type AreaId,
 } from '@/data/areas'
 import { SITE } from '@/data/site'
+import { CARD_HOVER_DARK } from '@/lib/motion'
 import { photos } from '@/media/photos'
 
 export function AreaPage() {
@@ -22,7 +23,7 @@ export function AreaPage() {
         <img
           src={photos.skylineManifesto}
           alt=""
-          className="absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
+          className="hero-drift absolute inset-0 size-full object-cover object-[78%_center] opacity-40"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/88 to-black/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-black/45" />
@@ -52,7 +53,10 @@ export function AreaPage() {
           ) : null}
           <div className="mt-12 grid gap-px overflow-hidden bg-white/10 lg:grid-cols-2">
             {AREA_CHOICES.map((choice) => (
-              <article key={choice.id} className="bg-black/55 p-6 sm:p-8">
+              <article
+                key={choice.id}
+                className={`bg-black/55 p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+              >
                 <Kicker className="text-white/45" rule={false}>
                   {choice.kicker}
                 </Kicker>

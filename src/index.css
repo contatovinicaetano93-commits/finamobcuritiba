@@ -190,4 +190,42 @@ img {
     background: transparent;
     color: #fff;
   }
+
+  .hero-drift {
+    transform-origin: 78% 50%;
+    animation: hero-drift 26s ease-out forwards;
+  }
+
+  .score-fill {
+    width: var(--fill);
+    animation: score-fill 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes hero-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes score-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--fill);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-drift {
+    animation: none;
+  }
+
+  .score-fill {
+    animation: none;
+  }
 }
