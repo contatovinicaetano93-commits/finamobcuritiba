@@ -6,6 +6,7 @@ import { Kicker } from '@/components/Kicker'
 import { MotionCard } from '@/components/MotionCard'
 import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
+import { useScrollWipe } from '@/lib/use-scroll-wipe'
 import { EXTRA_PRODUCTS, FUNDING_PRODUCTS } from '@/data/products'
 import {
   FAREJADOR_HREF,
@@ -385,11 +386,21 @@ function formatPct(value: number): string {
 }
 
 function MarketStages() {
+  const [ref, progress] = useScrollWipe()
+  const hidden = (1 - progress) * 100
+
   return (
-    <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    <div
+      ref={ref}
+      className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+    >
       {MARKET_STAGES.map((stage) => (
         <article key={stage.period} className="flex flex-col">
-          <SplitBar banks={stage.banks} capital={stage.capital} />
+          <SplitBar
+            banks={stage.banks}
+            capital={stage.capital}
+            hidden={hidden}
+          />
           <p className="mt-4 text-sm tracking-wide text-black/50">
             {stage.period}
           </p>
@@ -406,13 +417,24 @@ function MarketStages() {
   )
 }
 
-function SplitBar({ banks, capital }: { banks: number; capital: number }) {
+function SplitBar({
+  banks,
+  capital,
+  hidden,
+}: {
+  banks: number
+  capital: number
+  hidden: number
+}) {
   return (
     <div
       className="h-36 w-full overflow-hidden rounded-sm bg-[#efeae1]"
       aria-hidden="true"
     >
-      <div className="market-wipe flex h-full w-full">
+      <div
+        className="flex h-full w-full"
+        style={{ clipPath: `inset(0 ${hidden}% 0 0)` }}
+      >
         <span
           className="h-full shrink-0 bg-[#111]"
           style={{ width: `${banks}%` }}

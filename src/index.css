@@ -200,13 +200,6 @@ img {
     width: var(--fill);
     animation: score-fill 1s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
-
-  .market-wipe {
-    clip-path: inset(0 100% 0 0);
-    animation: market-wipe 1s cubic-bezier(0.16, 1, 0.3, 1) both;
-    animation-timeline: view();
-    animation-range: cover 8% cover 32%;
-  }
 }
 
 @keyframes hero-drift {
@@ -227,15 +220,6 @@ img {
   }
 }
 
-@keyframes market-wipe {
-  from {
-    clip-path: inset(0 100% 0 0);
-  }
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .hero-drift {
     animation: none;
@@ -243,10 +227,5 @@ img {
 
   .score-fill {
     animation: none;
-  }
-
-  .market-wipe {
-    animation: none;
-    clip-path: inset(0 0 0 0);
   }
 }
