@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { Kicker } from '@/components/Kicker'
+import { MotionCard } from '@/components/MotionCard'
 import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,7 +13,6 @@ import {
 } from '@/data/areas'
 import { FUNDING_PRODUCTS } from '@/data/products'
 import { SITE } from '@/data/site'
-import { CARD_HOVER_DARK } from '@/lib/motion'
 import { photos } from '@/media/photos'
 
 export function IncorporadorPage() {
@@ -95,19 +95,14 @@ export function IncorporadorPage() {
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNDING_PRODUCTS.map((product) => (
-              <article
-                key={product.name}
-                className={`bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
-              >
+              <MotionCard key={product.name} className="p-6 sm:p-8">
                 <h3 className="font-heading text-2xl">{product.name}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-white/65">
                   {product.summary}
                 </p>
-              </article>
+              </MotionCard>
             ))}
-            <article
-              className={`flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
-            >
+            <MotionCard className="flex flex-col justify-between p-6 sm:p-8">
               <div>
                 <Kicker className="text-white/40" rule={false}>
                   Catálogo
@@ -123,7 +118,7 @@ export function IncorporadorPage() {
               <Button asChild variant="outline" className="btn-on-dark mt-6 w-fit">
                 <Link to="/solucoes">Ver catálogo completo</Link>
               </Button>
-            </article>
+            </MotionCard>
           </div>
         </div>
       </section>

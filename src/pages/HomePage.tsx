@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
 import { CountUp, CountUpGroup } from '@/components/CountUp'
 import { Kicker } from '@/components/Kicker'
+import { MotionCard } from '@/components/MotionCard'
 import { Reveal } from '@/components/Reveal'
 import { Button } from '@/components/ui/button'
 import { EXTRA_PRODUCTS, FUNDING_PRODUCTS } from '@/data/products'
@@ -18,7 +19,6 @@ import {
   SITE,
   VEHICLES,
 } from '@/data/site'
-import { CARD_HOVER_DARK } from '@/lib/motion'
 import { useInViewOnce } from '@/lib/use-in-view-once'
 import { photos } from '@/media/photos'
 
@@ -91,19 +91,14 @@ export function HomePage() {
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
             {FUNDING_PRODUCTS.map((product) => (
-              <article
-                key={product.name}
-                className={`bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
-              >
+              <MotionCard key={product.name} className="p-6 sm:p-8">
                 <h3 className="font-heading text-2xl">{product.name}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-white/65">
                   {product.summary}
                 </p>
-              </article>
+              </MotionCard>
             ))}
-            <article
-              className={`flex flex-col justify-between bg-[#0b0b0b] p-6 sm:p-8 ${CARD_HOVER_DARK}`}
-            >
+            <MotionCard className="flex flex-col justify-between p-6 sm:p-8">
               <div>
                 <Kicker className="text-white/40" rule={false}>
                   Outros produtos
@@ -120,7 +115,7 @@ export function HomePage() {
               <Button asChild variant="outline" className="btn-on-dark mt-6 w-fit">
                 <Link to="/solucoes">Ver catálogo completo</Link>
               </Button>
-            </article>
+            </MotionCard>
           </div>
         </div>
       </section>
@@ -194,9 +189,9 @@ export function HomePage() {
           </h2>
           <div className="mt-14 grid gap-px overflow-hidden bg-white/10 md:grid-cols-2">
             {VEHICLES.map((vehicle) => (
-              <article
+              <MotionCard
                 key={vehicle.name}
-                className={`border-0 bg-black/55 p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+                className="border-0 bg-black/55 p-6 sm:p-8 hover:bg-black/80"
               >
                 <Kicker className="text-white/45" rule={false}>
                   {vehicle.kicker}
@@ -217,7 +212,7 @@ export function HomePage() {
                     </div>
                   ))}
                 </dl>
-              </article>
+              </MotionCard>
             ))}
           </div>
         </div>
@@ -435,23 +430,19 @@ function SplitBar({
 }) {
   return (
     <div
-      className="flex h-36 w-full overflow-hidden rounded-sm bg-[#e4ddd0]"
+      className="h-36 w-full overflow-hidden rounded-sm bg-[#efeae1]"
       aria-hidden="true"
     >
-      <span
-        className="bg-[#111] transition-[width] duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
+      <div
+        className="flex h-full origin-left transition-transform duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
         style={{
-          width: playing ? `${banks}%` : '0%',
+          transform: playing ? 'scaleX(1)' : 'scaleX(0)',
           transitionDelay: playing ? `${delay}ms` : '0ms',
         }}
-      />
-      <span
-        className="bg-[#d8cfc0] transition-[width] duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none"
-        style={{
-          width: playing ? `${capital}%` : '0%',
-          transitionDelay: playing ? `${delay + 90}ms` : '0ms',
-        }}
-      />
+      >
+        <span className="h-full bg-[#111]" style={{ width: `${banks}%` }} />
+        <span className="h-full bg-[#c8bba6]" style={{ width: `${capital}%` }} />
+      </div>
     </div>
   )
 }

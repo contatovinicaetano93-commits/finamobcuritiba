@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { Kicker } from '@/components/Kicker'
+import { MotionCard } from '@/components/MotionCard'
 import { Button } from '@/components/ui/button'
 import {
   AREA_CHOICES,
@@ -11,7 +12,6 @@ import {
   type AreaId,
 } from '@/data/areas'
 import { SITE } from '@/data/site'
-import { CARD_HOVER_DARK } from '@/lib/motion'
 import { photos } from '@/media/photos'
 
 export function AreaPage() {
@@ -53,9 +53,9 @@ export function AreaPage() {
           ) : null}
           <div className="mt-12 grid gap-px overflow-hidden bg-white/10 lg:grid-cols-2">
             {AREA_CHOICES.map((choice) => (
-              <article
+              <MotionCard
                 key={choice.id}
-                className={`bg-black/55 p-6 sm:p-8 ${CARD_HOVER_DARK}`}
+                className="bg-black/55 p-6 sm:p-8 hover:bg-black/80"
               >
                 <Kicker className="text-white/45" rule={false}>
                   {choice.kicker}
@@ -70,7 +70,7 @@ export function AreaPage() {
                     <ArrowRight />
                   </Link>
                 </Button>
-              </article>
+              </MotionCard>
             ))}
           </div>
         </div>

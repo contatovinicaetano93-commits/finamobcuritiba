@@ -16,17 +16,25 @@ export function useInViewOnce<T extends HTMLElement = HTMLDivElement>() {
       return
     }
 
+    let frameA = 0
+    let frameB = 0
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return
-        setVisible(true)
         observer.disconnect()
+        frameA = requestAnimationFrame(() => {
+          frameB = requestAnimationFrame(() => setVisible(true))
+        })
       },
-      { threshold: 0.28, rootMargin: '0px 0px -6% 0px' },
+      { threshold: 0.45, rootMargin: '0px 0px -12% 0px' },
     )
 
     observer.observe(node)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      cancelAnimationFrame(frameA)
+      cancelAnimationFrame(frameB)
+    }
   }, [visible])
 
   return [ref, visible] as const
