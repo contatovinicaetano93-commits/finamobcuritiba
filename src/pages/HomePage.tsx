@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
@@ -19,7 +20,8 @@ import {
   SITE,
   VEHICLES,
 } from '@/data/site'
-import { useInViewOnce } from '@/lib/use-in-view-once'
+import { prefersReducedMotion } from '@/lib/motion'
+import { useInViewPlay } from '@/lib/use-in-view-once'
 import { photos } from '@/media/photos'
 
 export function HomePage() {
@@ -411,6 +413,10 @@ function MarketStages() {
   )
 }
 
+function easeOutCubic(progress: number): number {
+  return 1 - (1 - progress) ** 3
+}
+
 function SplitBar({
   banks,
   capital,
@@ -420,7 +426,29 @@ function SplitBar({
   capital: number
   delay: number
 }) {
-  const [ref, playing] = useInViewOnce<HTMLDivElement>(0.6)
+  const [ref, playing] = useInViewPlay(560 + delay)
+  const [progress, setProgress] = useState(() =>
+    typeof window !== 'undefined' && prefersReducedMotion() ? 1 : 0,
+  )
+
+  useEffect(() => {
+    if (!playing) return
+    if (prefersReducedMotion()) {
+      setProgress(1)
+      return
+    }
+
+    let frame = 0
+    const duration = 2400
+    const startedAt = performance.now()
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - startedAt) / duration)
+      setProgress(easeOutCubic(t))
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [playing])
 
   return (
     <div
@@ -429,15 +457,17 @@ function SplitBar({
       aria-hidden="true"
     >
       <div
-        className={
-          playing
-            ? 'market-wipe flex h-full'
-            : 'flex h-full origin-left scale-x-0'
-        }
-        style={{ animationDelay: `${delay}ms` }}
+        className="flex h-full w-full"
+        style={{ clipPath: `inset(0 ${((1 - progress) * 100).toFixed(3)}% 0 0)` }}
       >
-        <span className="h-full bg-[#111]" style={{ width: `${banks}%` }} />
-        <span className="h-full bg-[#c8bba6]" style={{ width: `${capital}%` }} />
+        <span
+          className="h-full shrink-0 bg-[#111]"
+          style={{ width: `${banks}%` }}
+        />
+        <span
+          className="h-full shrink-0 bg-[#c8bba6]"
+          style={{ width: `${capital}%` }}
+        />
       </div>
     </div>
   )

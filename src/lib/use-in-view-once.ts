@@ -41,3 +41,49 @@ export function useInViewOnce<T extends HTMLElement = HTMLDivElement>(
 
   return [ref, visible] as const
 }
+
+export function useInViewPlay(holdMs = 560) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [playing, setPlaying] = useState(() =>
+    typeof window !== 'undefined' && prefersReducedMotion(),
+  )
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node || playing) return
+
+    if (prefersReducedMotion()) {
+      setPlaying(true)
+      return
+    }
+
+    let timeout = 0
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.intersectionRatio >= 0.55) {
+          if (timeout) return
+          timeout = window.setTimeout(() => {
+            observer.disconnect()
+            setPlaying(true)
+          }, holdMs)
+          return
+        }
+
+        window.clearTimeout(timeout)
+        timeout = 0
+      },
+      {
+        threshold: [0.2, 0.4, 0.55, 0.7, 0.9],
+        rootMargin: '0px 0px -8% 0px',
+      },
+    )
+
+    observer.observe(node)
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(timeout)
+    }
+  }, [holdMs, playing])
+
+  return [ref, playing] as const
+}
