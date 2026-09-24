@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
+import { CountUp, CountUpGroup } from '@/components/CountUp'
 import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
 import { EXTRA_PRODUCTS, FUNDING_PRODUCTS } from '@/data/products'
@@ -63,11 +64,11 @@ export function HomePage() {
           <h2 className="font-heading mt-6 text-3xl tracking-tight sm:text-5xl">
             Volume, operações e capilaridade
           </h2>
-          <div className="mt-14 grid gap-10 border-t border-black/10 pt-12 sm:grid-cols-2 lg:grid-cols-4">
-            {NUMBERS.map((item) => (
+          <CountUpGroup className="mt-14 grid gap-10 border-t border-black/10 pt-12 sm:grid-cols-2 lg:grid-cols-4">
+            {NUMBERS.map((item, index) => (
               <div key={item.label}>
                 <p className="display-number text-6xl sm:text-7xl">
-                  {item.value}
+                  <CountUp value={item.value} delay={index * 140} />
                 </p>
                 <p className="mt-2 text-sm tracking-wide text-black/50 uppercase">
                   {item.unit}
@@ -75,7 +76,7 @@ export function HomePage() {
                 <p className="mt-1 text-lg text-black/80">{item.label}</p>
               </div>
             ))}
-          </div>
+          </CountUpGroup>
         </div>
       </section>
 
@@ -247,14 +248,16 @@ export function HomePage() {
               </Link>{' '}
               para cada perfil.
             </p>
-            <div className="mt-12 grid gap-6 sm:grid-cols-3">
-              {PARTNER_STATS.map((stat) => (
+            <CountUpGroup className="mt-12 grid gap-6 sm:grid-cols-3">
+              {PARTNER_STATS.map((stat, index) => (
                 <div key={stat.label}>
-                  <p className="display-number text-4xl">{stat.value}</p>
+                  <p className="display-number text-4xl">
+                    <CountUp value={stat.value} delay={index * 140} />
+                  </p>
                   <p className="mt-1 text-sm text-black/55">{stat.label}</p>
                 </div>
               ))}
-            </div>
+            </CountUpGroup>
           </div>
           <div className="rounded-sm border border-black/10 bg-white p-6 sm:p-8">
             <ContactForm />

@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { ContactForm } from '@/components/ContactForm'
+import { CountUp, CountUpGroup } from '@/components/CountUp'
 import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
 import {
@@ -54,14 +55,16 @@ export function ParceiroPage() {
           <h2 className="font-heading mt-6 max-w-3xl text-3xl leading-[1.12] tracking-tight sm:text-5xl">
             Quem origina, recebe por funding fechado
           </h2>
-          <div className="mt-14 grid gap-10 border-t border-black/10 pt-12 sm:grid-cols-3">
-            {PARTNER_STATS.map((stat) => (
+          <CountUpGroup className="mt-14 grid gap-10 border-t border-black/10 pt-12 sm:grid-cols-3">
+            {PARTNER_STATS.map((stat, index) => (
               <div key={stat.label}>
-                <p className="display-number text-6xl sm:text-7xl">{stat.value}</p>
+                <p className="display-number text-6xl sm:text-7xl">
+                  <CountUp value={stat.value} delay={index * 140} />
+                </p>
                 <p className="mt-2 text-lg text-black/80">{stat.label}</p>
               </div>
             ))}
-          </div>
+          </CountUpGroup>
         </div>
       </section>
 
