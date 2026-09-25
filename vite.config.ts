@@ -6,6 +6,8 @@ import { defineConfig, type Plugin } from 'vite'
 const DIRECTCON_PDF = '/DirectCon-RE-Portfolio-de-Investimentos.pdf'
 const DIRECTCON_FILENAME =
   'DirectCon_RE_Apresentacao_do_portfolio_de_investimentos.pdf'
+const SHOWCASE_PDF = '/Finamob-Curitiba-Mostruario.pdf'
+const SHOWCASE_FILENAME = 'Finamob_Curitiba_Mostruario.pdf'
 
 function pdfAttachment(): Plugin {
   const attach = (
@@ -13,10 +15,17 @@ function pdfAttachment(): Plugin {
     res: { setHeader: (name: string, value: string) => void },
     next: () => void,
   ) => {
-    if (req.url?.split('?')[0] === DIRECTCON_PDF) {
+    const pathName = req.url?.split('?')[0]
+    if (pathName === DIRECTCON_PDF) {
       res.setHeader(
         'Content-Disposition',
         `attachment; filename="${DIRECTCON_FILENAME}"`,
+      )
+    }
+    if (pathName === SHOWCASE_PDF) {
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename="${SHOWCASE_FILENAME}"`,
       )
     }
     next()

@@ -12,6 +12,19 @@
           "value": "attachment; filename=\"DirectCon_RE_Apresentacao_do_portfolio_de_investimentos.pdf\""
         }
       ]
+    },
+    {
+      "source": "/Finamob-Curitiba-Mostruario.pdf",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/pdf"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Finamob_Curitiba_Mostruario.pdf\""
+        }
+      ]
     }
   ],
   "rewrites": [

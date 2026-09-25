@@ -28,14 +28,24 @@ Abre em `http://127.0.0.1:43123`.
 - `/solucoes` — catálogo completo
 - `/contato` — formulário incorporador / parceiro originador
 - `/folder` — folder em slides + PDF
+- `/mostruario` — mostruário de cliente (20 páginas) + download do PDF
 
 ## PDF
 
-[`Folder-Institucional-Finamob-Curitiba.pdf`](./Folder-Institucional-Finamob-Curitiba.pdf)
+[`Folder-Institucional-Finamob-Curitiba.pdf`](./Folder-Institucional-Finamob-Curitiba.pdf) — folder institucional.
 
-Para regenerar o PDF a partir do original em `source/`:
+[`Finamob-Curitiba-Mostruario.pdf`](./Finamob-Curitiba-Mostruario.pdf) — mostruário para o cliente: quem somos, como operamos, tese de funding, prateleira e veículos. Não é material de treinamento interno.
+
+Para regenerar o folder institucional a partir do original em `source/`:
 
 ```bash
 python3 -m pip install -r requirements.txt
 python3 scripts/apply_curitiba.py
+```
+
+Para regenerar o mostruário:
+
+```bash
+python3 -m pip install -r requirements.txt
+python3 scripts/build_curitiba_showcase.py
 ```

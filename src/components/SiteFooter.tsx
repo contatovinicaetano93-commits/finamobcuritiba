@@ -1,5 +1,5 @@
 import { BrandMark } from '@/components/BrandMark'
-import { PDF_HREF, SITE } from '@/data/site'
+import { PDF_HREF, SHOWCASE_PDF_FILENAME, SHOWCASE_PDF_HREF, SITE } from '@/data/site'
 
 export function SiteFooter() {
   return (
@@ -31,6 +31,13 @@ export function SiteFooter() {
           </a>
           <a href={PDF_HREF} download className="hover:text-white">
             Baixar folder institucional
+          </a>
+          <a
+            href={SHOWCASE_PDF_HREF}
+            download={SHOWCASE_PDF_FILENAME}
+            className="hover:text-white"
+          >
+            Baixar mostruário
           </a>
         </div>
       </div>

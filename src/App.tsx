@@ -10,6 +10,7 @@ import { FolderPage } from '@/pages/FolderPage'
 import { HomePage } from '@/pages/HomePage'
 import { IncorporadorPage } from '@/pages/IncorporadorPage'
 import { ParceiroPage } from '@/pages/ParceiroPage'
+import { ShowcaseDownloadPage } from '@/pages/ShowcaseDownloadPage'
 import { SolutionsPage } from '@/pages/SolutionsPage'
 
 function HashScroll() {
@@ -45,6 +46,7 @@ export default function App() {
           <Route path="/farejador" element={<FarejadorPage />} />
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/folder" element={<FolderPage />} />
+          <Route path="/mostruario" element={<ShowcaseDownloadPage />} />
           <Route path="/baixar-directcon" element={<DirectConDownloadPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

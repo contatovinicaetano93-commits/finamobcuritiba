@@ -2,6 +2,8 @@ export const PDF_HREF = '/Folder-Institucional-Finamob-Curitiba.pdf'
 export const DIRECTCON_PDF_HREF = '/DirectCon-RE-Portfolio-de-Investimentos.pdf'
 export const DIRECTCON_PDF_FILENAME =
   'DirectCon_RE_Apresentacao_do_portfolio_de_investimentos.pdf'
+export const SHOWCASE_PDF_HREF = '/Finamob-Curitiba-Mostruario.pdf'
+export const SHOWCASE_PDF_FILENAME = 'Finamob_Curitiba_Mostruario.pdf'
 
 export const FAREJADOR_HREF =
   'https://meteoro-farejador---finamob.web.app/#signup=3tTYyHZavZPv3fW5nvMtGjee'

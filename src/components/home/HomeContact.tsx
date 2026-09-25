@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Kicker } from '@/components/Kicker'
 import { Button } from '@/components/ui/button'
-import { PDF_HREF, SITE } from '@/data/site'
+import { PDF_HREF, SHOWCASE_PDF_FILENAME, SHOWCASE_PDF_HREF, SITE } from '@/data/site'
 
 export function HomeContact() {
   return (
@@ -23,6 +23,11 @@ export function HomeContact() {
           <Button asChild size="lg" variant="outline" className="btn-on-dark">
             <a href={PDF_HREF} download>
               Baixar folder
+            </a>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="btn-on-dark">
+            <a href={SHOWCASE_PDF_HREF} download={SHOWCASE_PDF_FILENAME}>
+              Baixar mostruário
             </a>
           </Button>
         </div>
