@@ -63,21 +63,27 @@ export function ProgressTrack({
   value,
   goal,
   className,
+  tone = 'paper',
 }: {
   value: number
   goal: number
   className?: string
+  tone?: 'paper' | 'ink'
 }) {
   const pct = goal > 0 ? Math.min(100, Math.round((value / goal) * 100)) : 0
   return (
     <div
       className={cn(
-        'mt-4 h-1.5 overflow-hidden rounded-full bg-black/8',
+        'mt-4 h-1.5 overflow-hidden rounded-full',
+        tone === 'ink' ? 'bg-white/15' : 'bg-black/8',
         className,
       )}
     >
       <div
-        className="h-full rounded-full bg-[#9c8563] transition-[width] duration-500"
+        className={cn(
+          'h-full rounded-full transition-[width] duration-500',
+          tone === 'ink' ? 'bg-[#c4b49a]' : 'bg-[#9c8563]',
+        )}
         style={{ width: `${pct}%` }}
       />
     </div>

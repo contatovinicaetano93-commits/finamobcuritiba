@@ -33,7 +33,6 @@ import {
   EmptyState,
   FilterChip,
   OwnerMark,
-  PageIntro,
   StatusPill,
 } from '@/pages/admin/admin-ui'
 
@@ -51,6 +50,10 @@ type AdminCrmProps = {
   board: AdminBoard
   me: PartnerId
   selectedId: string | null
+  query: string
+  onQuery: (value: string) => void
+  creating: boolean
+  onCreatingChange: (open: boolean) => void
   onSelect: (id: string | null) => void
   onSave: (account: Account, note: string) => void
   onCreate: (draft: Omit<Account, 'id' | 'createdAt' | 'updatedAt' | 'updatedBy'>) => void
@@ -61,15 +64,17 @@ export function AdminCrm({
   board,
   me,
   selectedId,
+  query,
+  onQuery,
+  creating,
+  onCreatingChange,
   onSelect,
   onSave,
   onCreate,
   onDelete,
 }: AdminCrmProps) {
   const [list, setList] = useState<AccountList | 'todas'>('todas')
-  const [query, setQuery] = useState('')
   const [owner, setOwner] = useState<PartnerId | 'todos' | 'livre'>('todos')
-  const [creating, setCreating] = useState(false)
 
   const selected = board.accounts.find((item) => item.id === selectedId) ?? null
 
@@ -103,18 +108,15 @@ export function AdminCrm({
 
   return (
     <div className="space-y-6">
-      <PageIntro
-        kicker="CRM · Curitiba"
-        title="Contas da praça"
-        action={
-          <Button type="button" size="lg" onClick={() => setCreating(true)}>
-            Nova conta
-          </Button>
-        }
-      >
-        {incorporadoras} incorporadoras · {prospeccao} prospecção. Cadastro de
-        vocês — o que entra aqui é da praça.
-      </PageIntro>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm text-black/55">
+          {incorporadoras} incorporadoras · {prospeccao} prospecção. Cadastro de
+          vocês — o que entra aqui é da praça.
+        </p>
+        <Button type="button" size="lg" onClick={() => onCreatingChange(true)}>
+          Nova conta
+        </Button>
+      </div>
 
       <div className="admin-surface flex flex-col gap-4 rounded-2xl p-4">
         <div className="flex flex-wrap gap-2">
@@ -137,7 +139,7 @@ export function AdminCrm({
         <div className="flex flex-col gap-3 sm:flex-row">
           <Input
             value={query}
-            onChange={(event) => setQuery(event.target.value)}
+            onChange={(event) => onQuery(event.target.value)}
             placeholder="Buscar nome, cidade ou nota"
             className="bg-white sm:max-w-sm"
           />
@@ -168,7 +170,7 @@ export function AdminCrm({
           title="Nenhuma conta neste recorte"
           body="Comecem pelas conversas da semana em Curitiba e na RMC. Uma conta, um dono, um próximo passo com data."
           action={
-            <Button type="button" onClick={() => setCreating(true)}>
+            <Button type="button" onClick={() => onCreatingChange(true)}>
               Cadastrar a primeira
             </Button>
           }
@@ -222,7 +224,7 @@ export function AdminCrm({
         onOpenChange={(open) => {
           if (!open) {
             onSelect(null)
-            setCreating(false)
+            onCreatingChange(false)
           }
         }}
       >
@@ -233,10 +235,10 @@ export function AdminCrm({
           {creating ? (
             <CreateForm
               me={me}
-              onCancel={() => setCreating(false)}
+              onCancel={() => onCreatingChange(false)}
               onCreate={(draft) => {
                 onCreate(draft)
-                setCreating(false)
+                onCreatingChange(false)
               }}
             />
           ) : selected ? (

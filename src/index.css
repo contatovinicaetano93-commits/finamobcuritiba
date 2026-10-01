@@ -232,10 +232,30 @@ img {
   .admin-topbar {
     position: sticky;
     top: 0;
-    z-index: 40;
-    border-bottom: 1px solid rgb(5 5 5 / 0.08);
-    background: rgb(243 239 230 / 0.86);
-    backdrop-filter: blur(18px);
+    z-index: 30;
+    border-bottom: 1px solid rgb(5 5 5 / 0.06);
+    background: #fff;
+  }
+
+  .admin-sidebar {
+    background:
+      radial-gradient(420px 280px at 0% 0%, rgb(156 133 99 / 0.22), transparent 55%),
+      #050505;
+    color: #f3efe6;
+  }
+
+  .admin-welcome {
+    border-radius: 1.35rem;
+    background:
+      radial-gradient(720px 280px at 92% -30%, rgb(156 133 99 / 0.38), transparent 52%),
+      linear-gradient(160deg, #050505 0%, #16130f 100%);
+    color: #f3efe6;
+  }
+
+  .admin-welcome-stat {
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: rgb(255 255 255 / 0.08);
   }
 
   .admin-login-ink {

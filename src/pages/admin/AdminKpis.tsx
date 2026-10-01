@@ -1,6 +1,5 @@
 import {
   currentMonth,
-  formatMonthLabel,
   monthGoals,
   PARTNERS,
   partnerLabel,
@@ -17,7 +16,6 @@ import {
 } from '@/lib/admin-kpis'
 import {
   OwnerMark,
-  PageIntro,
   ProgressTrack,
   StatusPill,
 } from '@/pages/admin/admin-ui'
@@ -48,10 +46,10 @@ export function AdminKpis({ board, me }: AdminKpisProps) {
 
   return (
     <div className="space-y-10">
-      <PageIntro kicker={`KPIs · ${formatMonthLabel(month)}`} title="O que a casa está produzindo">
-        Números saem do CRM: abordagem com data, conversa e mandato. Meta mora
-        na aba Metas — aqui é o realizado.
-      </PageIntro>
+      <p className="max-w-2xl text-sm text-black/60">
+        Números saem do CRM: abordagem com data, conversa e mandato. Meta mora na
+        aba Metas — aqui é o realizado.
+      </p>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Stat

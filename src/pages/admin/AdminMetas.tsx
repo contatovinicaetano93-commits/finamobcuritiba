@@ -2,7 +2,6 @@ import type { ReactNode } from 'react'
 import {
   currentMonth,
   EMPTY_GOALS,
-  formatMonthLabel,
   monthGoals,
   PARTNERS,
   type AdminBoard,
@@ -13,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { OwnerMark, PageIntro } from '@/pages/admin/admin-ui'
+import { OwnerMark } from '@/pages/admin/admin-ui'
 
 type AdminMetasProps = {
   board: AdminBoard
@@ -35,11 +34,11 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
 
   return (
     <div className="space-y-8">
-      <PageIntro kicker={`Metas · ${formatMonthLabel(month)}`} title="O combinado do mês">
+      <p className="max-w-2xl text-sm text-black/60">
         Casa primeiro, depois o recorte de cada sócio. Número redondo e
         revisável na sexta. Você está logado como{' '}
         {PARTNERS.find((item) => item.id === me)?.name}.
-      </PageIntro>
+      </p>
 
       <GoalBlock
         title="Meta da casa"

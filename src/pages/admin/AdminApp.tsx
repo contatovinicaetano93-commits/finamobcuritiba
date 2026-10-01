@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
-import { NavLink, Route, Routes, useNavigate } from 'react-router-dom'
-import { BrandMark } from '@/components/BrandMark'
-import { Button } from '@/components/ui/button'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
   ADMIN_PASSWORD,
   currentMonth,
@@ -23,27 +21,26 @@ import {
   saveSession,
   upsertGoals,
 } from '@/lib/admin-store'
+import { dueQueue } from '@/lib/admin-kpis'
 import { AdminCrm } from '@/pages/admin/AdminCrm'
 import { AdminHoje } from '@/pages/admin/AdminHoje'
 import { AdminKpis } from '@/pages/admin/AdminKpis'
 import { AdminLogin } from '@/pages/admin/AdminLogin'
 import { AdminMetas } from '@/pages/admin/AdminMetas'
-import { OwnerMark } from '@/pages/admin/admin-ui'
-import { cn } from '@/lib/utils'
-
-const NAV = [
-  { to: '/admin', label: 'Hoje', end: true },
-  { to: '/admin/crm', label: 'CRM', end: false },
-  { to: '/admin/kpis', label: 'KPIs', end: false },
-  { to: '/admin/metas', label: 'Metas', end: false },
-] as const
+import { AdminSidebar } from '@/pages/admin/AdminSidebar'
+import { AdminTopbar } from '@/pages/admin/AdminTopbar'
+import { deskPage, pageMeta } from '@/pages/admin/admin-nav'
 
 export function AdminApp() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [me, setMe] = useState<PartnerId | null>(null)
   const [board, setBoard] = useState<AdminBoard>(() => ensureMonth(loadBoard()))
   const [loginError, setLoginError] = useState('')
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [navOpen, setNavOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const [creating, setCreating] = useState(false)
 
   const persist = useCallback((next: AdminBoard) => {
     const withMonth = ensureMonth(next)
@@ -240,95 +237,79 @@ export function AdminApp() {
     )
   }
 
-  const partner = partnerById(me)
+  const meta = pageMeta(deskPage(location.pathname))
+  const dueCount = dueQueue(board.accounts).length
+
+  function openCreate() {
+    setCreating(true)
+    navigate('/admin/crm')
+  }
 
   return (
     <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
-      <header className="admin-topbar">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <BrandMark variant="dark" />
-          <nav
-            className="flex flex-wrap rounded-full border border-black/8 bg-white/70 p-1"
-            aria-label="Mesa"
-          >
-            {NAV.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={({ isActive }) =>
-                  cn(
-                    'rounded-full px-3.5 py-1.5 text-[13px] tracking-[0.08em] transition-colors',
-                    isActive
-                      ? 'bg-[#050505] text-white'
-                      : 'text-black/55 hover:text-black',
-                  )
+      <div className="flex min-h-svh">
+        <AdminSidebar
+          me={me}
+          open={navOpen}
+          onClose={() => setNavOpen(false)}
+          onLogout={logout}
+        />
+        <div className="flex min-w-0 flex-1 flex-col">
+          <AdminTopbar
+            me={me}
+            title={meta.title}
+            subtitle={meta.subtitle}
+            query={query}
+            dueCount={dueCount}
+            onQuery={setQuery}
+            onSearch={() => navigate('/admin/crm')}
+            onMenu={() => setNavOpen(true)}
+            onExport={exportBoard}
+            onImport={importBoard}
+          />
+          <div className="flex-1 px-4 py-5 sm:px-6 lg:px-8">
+            <Routes>
+              <Route
+                index
+                element={
+                  <AdminHoje
+                    board={board}
+                    me={me}
+                    onOpen={(id) => {
+                      setSelectedId(id)
+                      navigate('/admin/crm')
+                    }}
+                    onCreate={openCreate}
+                    onExport={exportBoard}
+                  />
                 }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="mr-1 inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-2 py-1 pr-3">
-              <OwnerMark id={me} />
-              <span className="text-sm">{partner.name}</span>
-            </span>
-            <Button type="button" variant="outline" size="sm" onClick={exportBoard}>
-              Exportar
-            </Button>
-            <Button type="button" variant="outline" size="sm" asChild>
-              <label className="cursor-pointer">
-                Importar
-                <input
-                  type="file"
-                  accept="application/json"
-                  className="sr-only"
-                  onChange={importBoard}
-                />
-              </label>
-            </Button>
-            <Button type="button" variant="ghost" size="sm" onClick={logout}>
-              Sair
-            </Button>
+              />
+              <Route
+                path="crm"
+                element={
+                  <AdminCrm
+                    board={board}
+                    me={me}
+                    selectedId={selectedId}
+                    query={query}
+                    onQuery={setQuery}
+                    creating={creating}
+                    onCreatingChange={setCreating}
+                    onSelect={setSelectedId}
+                    onCreate={createAccount}
+                    onSave={saveAccount}
+                    onDelete={deleteAccount}
+                  />
+                }
+              />
+              <Route path="kpis" element={<AdminKpis board={board} me={me} />} />
+              <Route
+                path="metas"
+                element={<AdminMetas board={board} me={me} onSave={saveGoals} />}
+              />
+            </Routes>
           </div>
         </div>
-      </header>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-        <Routes>
-          <Route
-            index
-            element={
-              <AdminHoje
-                board={board}
-                me={me}
-                onOpen={(id) => {
-                  setSelectedId(id)
-                  navigate('/admin/crm')
-                }}
-              />
-            }
-          />
-          <Route
-            path="crm"
-            element={
-              <AdminCrm
-                board={board}
-                me={me}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-                onCreate={createAccount}
-                onSave={saveAccount}
-                onDelete={deleteAccount}
-              />
-            }
-          />
-          <Route path="kpis" element={<AdminKpis board={board} me={me} />} />
-          <Route
-            path="metas"
-            element={<AdminMetas board={board} me={me} onSave={saveGoals} />}
-          />
-        </Routes>
       </div>
     </div>
   )
