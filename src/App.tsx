@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { AdminApp } from '@/pages/admin/AdminApp'
 import { AreaPage } from '@/pages/AreaPage'
 import { ContactPage } from '@/pages/ContactPage'
 import { DirectConDownloadPage } from '@/pages/DirectConDownloadPage'
@@ -30,10 +31,9 @@ function HashScroll() {
   return null
 }
 
-export default function App() {
+function PublicShell() {
   return (
     <div className="flex min-h-svh flex-col bg-[#050505]">
-      <HashScroll />
       <SiteHeader />
       <main className="flex-1">
         <Routes>
@@ -53,5 +53,17 @@ export default function App() {
       </main>
       <SiteFooter />
     </div>
+  )
+}
+
+export default function App() {
+  return (
+    <>
+      <HashScroll />
+      <Routes>
+        <Route path="/admin/*" element={<AdminApp />} />
+        <Route path="*" element={<PublicShell />} />
+      </Routes>
+    </>
   )
 }

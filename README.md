@@ -29,6 +29,19 @@ Abre em `http://127.0.0.1:43123`.
 - `/contato` — formulário incorporador / parceiro originador
 - `/folder` — folder em slides + PDF
 - `/mostruario` — mostruário de cliente (20 páginas) + download do PDF
+- `/admin` — mesa dos sócios (Vini, Rafa, Tadeu): CRM, fila do dia, KPIs e metas
+
+## Mesa dos sócios (`/admin`)
+
+Área fechada para os três. Não aparece no menu público.
+
+- CRM de incorporadoras e prospecção, com dono, status, próximo passo e registro de abordagem
+- Fila do dia (sua e da casa)
+- KPIs do mês e pipeline
+- Metas da casa e de cada sócio
+- Exportar / importar JSON para os três trabalharem no mesmo quadro até existir servidor
+
+Senha local padrão: `cwb-socios` (troquem com `VITE_ADMIN_PASSWORD`). Os dados ficam neste navegador; usem exportar para passar o quadro ao outro sócio.
 
 ## PDF
 
