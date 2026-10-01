@@ -149,6 +149,108 @@ export function statusLabel(status: AccountStatus): string {
   }
 }
 
+export function statusTone(status: AccountStatus): string {
+  switch (status) {
+    case 'novo':
+      return 'bg-black/[0.06] text-black/70'
+    case 'abordar':
+      return 'bg-[#9c8563]/18 text-[#6a5438]'
+    case 'em_conversa':
+      return 'bg-[#d7e6ef] text-[#1f4a63]'
+    case 'follow_up':
+      return 'bg-[#f3e2c4] text-[#6b4e16]'
+    case 'mandato':
+      return 'bg-[#d7eadc] text-[#21553a]'
+    case 'pausado':
+      return 'bg-black/[0.05] text-black/45'
+    case 'sem_fit':
+      return 'bg-[#f3d6d2] text-[#7a2e24]'
+    default: {
+      const exhaustive: never = status
+      return exhaustive
+    }
+  }
+}
+
+export function partnerTone(id: PartnerId | null): string {
+  if (!id) {
+    return 'bg-black/10 text-black/50'
+  }
+  switch (id) {
+    case 'vini':
+      return 'bg-[#9c8563] text-white'
+    case 'rafa':
+      return 'bg-[#050505] text-white'
+    case 'tadeu':
+      return 'bg-[#c4b49a] text-[#050505]'
+    default: {
+      const exhaustive: never = id
+      return exhaustive
+    }
+  }
+}
+
+export function formatDay(iso: string): string {
+  if (!iso) {
+    return 'sem data'
+  }
+  const parts = iso.slice(0, 10).split('-')
+  if (parts.length !== 3) {
+    return iso
+  }
+  return `${parts[2]}/${parts[1]}`
+}
+
+export function formatMonthLabel(month: string): string {
+  const [year, mm] = month.split('-')
+  const names = [
+    'jan',
+    'fev',
+    'mar',
+    'abr',
+    'mai',
+    'jun',
+    'jul',
+    'ago',
+    'set',
+    'out',
+    'nov',
+    'dez',
+  ]
+  const index = Number(mm) - 1
+  if (index < 0 || index > 11) {
+    return month
+  }
+  return `${names[index]}/${year}`
+}
+
+export function formatTodayHeading(iso: string): string {
+  const [year, month, day] = iso.split('-').map(Number)
+  if (!year || !month || !day) {
+    return iso
+  }
+  const date = new Date(year, month - 1, day)
+  const weekdays = [
+    'Domingo',
+    'Segunda',
+    'Terça',
+    'Quarta',
+    'Quinta',
+    'Sexta',
+    'Sábado',
+  ]
+  return `${weekdays[date.getDay()]} · ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}`
+}
+
+export function formatStamp(iso: string): string {
+  if (!iso) {
+    return ''
+  }
+  const day = formatDay(iso)
+  const time = iso.length >= 16 ? iso.slice(11, 16) : ''
+  return time ? `${day} · ${time}` : day
+}
+
 export function emptyBoard(): AdminBoard {
   return { version: 1, accounts: [], goals: [], activity: [] }
 }

@@ -193,7 +193,10 @@ img {
 
   .admin-desk {
     color: #050505;
-    background: #f3efe6;
+    background:
+      radial-gradient(1100px 480px at 8% -10%, rgb(156 133 99 / 0.16), transparent 58%),
+      radial-gradient(900px 420px at 110% 0%, rgb(5 5 5 / 0.06), transparent 50%),
+      #f3efe6;
     --background: #f3efe6;
     --foreground: #050505;
     --card: #ffffff;
@@ -214,9 +217,54 @@ img {
   }
 
   .admin-desk input,
-  .admin-desk textarea {
+  .admin-desk textarea,
+  .admin-desk [data-slot="select-trigger"] {
     color: #050505;
     background: #fff;
+    height: 2.5rem;
+  }
+
+  .admin-desk textarea {
+    height: auto;
+    min-height: 5.5rem;
+  }
+
+  .admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid rgb(5 5 5 / 0.08);
+    background: rgb(243 239 230 / 0.86);
+    backdrop-filter: blur(18px);
+  }
+
+  .admin-login-ink {
+    background:
+      radial-gradient(720px 460px at 18% -8%, rgb(156 133 99 / 0.32), transparent 58%),
+      radial-gradient(520px 320px at 90% 110%, rgb(156 133 99 / 0.14), transparent 50%),
+      #050505;
+  }
+
+  .admin-surface {
+    border: 1px solid rgb(5 5 5 / 0.08);
+    background: rgb(255 255 255 / 0.78);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset;
+    backdrop-filter: blur(10px);
+  }
+
+  .admin-card {
+    border: 1px solid rgb(5 5 5 / 0.08);
+    background: #fff;
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
+  }
+
+  .admin-card:hover {
+    border-color: rgb(156 133 99 / 0.55);
+    box-shadow: 0 14px 40px rgb(5 5 5 / 0.06);
+    transform: translateY(-1px);
   }
 
   .hero-drift {

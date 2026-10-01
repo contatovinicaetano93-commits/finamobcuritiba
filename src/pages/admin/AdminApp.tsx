@@ -28,6 +28,7 @@ import { AdminHoje } from '@/pages/admin/AdminHoje'
 import { AdminKpis } from '@/pages/admin/AdminKpis'
 import { AdminLogin } from '@/pages/admin/AdminLogin'
 import { AdminMetas } from '@/pages/admin/AdminMetas'
+import { OwnerMark } from '@/pages/admin/admin-ui'
 import { cn } from '@/lib/utils'
 
 const NAV = [
@@ -243,10 +244,13 @@ export function AdminApp() {
 
   return (
     <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
-      <header className="border-b border-black/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <header className="admin-topbar">
+        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <BrandMark variant="dark" />
-          <nav className="flex flex-wrap gap-1" aria-label="Mesa">
+          <nav
+            className="flex flex-wrap rounded-full border border-black/8 bg-white/70 p-1"
+            aria-label="Mesa"
+          >
             {NAV.map((item) => (
               <NavLink
                 key={item.to}
@@ -254,10 +258,10 @@ export function AdminApp() {
                 end={item.end}
                 className={({ isActive }) =>
                   cn(
-                    'rounded-full px-3 py-1.5 text-[13px] tracking-[0.08em]',
+                    'rounded-full px-3.5 py-1.5 text-[13px] tracking-[0.08em] transition-colors',
                     isActive
                       ? 'bg-[#050505] text-white'
-                      : 'text-black/60 hover:text-black',
+                      : 'text-black/55 hover:text-black',
                   )
                 }
               >
@@ -266,7 +270,10 @@ export function AdminApp() {
             ))}
           </nav>
           <div className="flex flex-wrap items-center gap-2">
-            <p className="text-sm text-black/55">{partner.name}</p>
+            <span className="mr-1 inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-2 py-1 pr-3">
+              <OwnerMark id={me} />
+              <span className="text-sm">{partner.name}</span>
+            </span>
             <Button type="button" variant="outline" size="sm" onClick={exportBoard}>
               Exportar
             </Button>
@@ -287,7 +294,7 @@ export function AdminApp() {
           </div>
         </div>
       </header>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
         <Routes>
           <Route
             index

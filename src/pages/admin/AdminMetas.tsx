@@ -1,6 +1,8 @@
+import type { ReactNode } from 'react'
 import {
   currentMonth,
   EMPTY_GOALS,
+  formatMonthLabel,
   monthGoals,
   PARTNERS,
   type AdminBoard,
@@ -11,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { OwnerMark, PageIntro } from '@/pages/admin/admin-ui'
 
 type AdminMetasProps = {
   board: AdminBoard
@@ -32,22 +35,19 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
 
   return (
     <div className="space-y-8">
-      <header>
-        <p className="text-[10px] tracking-[0.2em] text-[#9c8563] uppercase">
-          Metas · {month}
-        </p>
-        <h1 className="font-heading mt-2 text-3xl tracking-tight">
-          O combinado do mês
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-black/60">
-          Casa primeiro, depois o recorte de cada sócio. Número redondo e
-          revisável na sexta. Você está logado como{' '}
-          {PARTNERS.find((item) => item.id === me)?.name}.
-        </p>
-      </header>
+      <PageIntro kicker={`Metas · ${formatMonthLabel(month)}`} title="O combinado do mês">
+        Casa primeiro, depois o recorte de cada sócio. Número redondo e
+        revisável na sexta. Você está logado como{' '}
+        {PARTNERS.find((item) => item.id === me)?.name}.
+      </PageIntro>
 
       <GoalBlock
         title="Meta da casa"
+        mark={
+          <span className="inline-flex size-8 items-center justify-center rounded-full bg-[#9c8563] text-[11px] font-medium text-white">
+            C
+          </span>
+        }
         goals={current.casa}
         onChange={(field, value) => patch('casa', field, value)}
       />
@@ -55,6 +55,7 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
         <GoalBlock
           key={partner.id}
           title={partner.name}
+          mark={<OwnerMark id={partner.id} className="size-8" />}
           goals={current[partner.id]}
           onChange={(field, value) => patch(partner.id, field, value)}
         />
@@ -83,17 +84,22 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
 
 function GoalBlock({
   title,
+  mark,
   goals,
   onChange,
 }: {
   title: string
+  mark: ReactNode
   goals: GoalSet
   onChange: (field: keyof GoalSet, value: number) => void
 }) {
   return (
-    <section className="rounded-xl border border-black/10 bg-white p-5">
-      <h2 className="font-heading text-xl">{title}</h2>
-      <div className="mt-4 grid gap-4 sm:grid-cols-3">
+    <section className="admin-surface rounded-2xl p-5 sm:p-6">
+      <div className="flex items-center gap-3">
+        {mark}
+        <h2 className="font-heading text-xl tracking-tight">{title}</h2>
+      </div>
+      <div className="mt-5 grid gap-4 sm:grid-cols-3">
         <NumberField
           label="Abordagens"
           value={goals.abordagens}
@@ -131,7 +137,7 @@ function NumberField({
         min={0}
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
-        className="bg-[#f3efe6]"
+        className="h-12 bg-white font-heading text-2xl tracking-tight"
       />
     </div>
   )

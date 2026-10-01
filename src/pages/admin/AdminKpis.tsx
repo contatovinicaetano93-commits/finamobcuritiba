@@ -1,9 +1,9 @@
 import {
   currentMonth,
+  formatMonthLabel,
   monthGoals,
   PARTNERS,
   partnerLabel,
-  statusLabel,
   type AccountStatus,
   type AdminBoard,
   type PartnerId,
@@ -15,6 +15,12 @@ import {
   partnerActuals,
   weekActions,
 } from '@/lib/admin-kpis'
+import {
+  OwnerMark,
+  PageIntro,
+  ProgressTrack,
+  StatusPill,
+} from '@/pages/admin/admin-ui'
 
 type AdminKpisProps = {
   board: AdminBoard
@@ -41,19 +47,11 @@ export function AdminKpis({ board, me }: AdminKpisProps) {
   const week = weekActions(board)
 
   return (
-    <div className="space-y-8">
-      <header>
-        <p className="text-[10px] tracking-[0.2em] text-[#9c8563] uppercase">
-          KPIs · {month}
-        </p>
-        <h1 className="font-heading mt-2 text-3xl tracking-tight">
-          O que a casa está produzindo
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm text-black/60">
-          Números saem do CRM: abordagem com data, conversa e mandato. Meta
-          mora na aba Metas — aqui é o realizado.
-        </p>
-      </header>
+    <div className="space-y-10">
+      <PageIntro kicker={`KPIs · ${formatMonthLabel(month)}`} title="O que a casa está produzindo">
+        Números saem do CRM: abordagem com data, conversa e mandato. Meta mora
+        na aba Metas — aqui é o realizado.
+      </PageIntro>
 
       <div className="grid gap-3 sm:grid-cols-3">
         <Stat
@@ -73,47 +71,61 @@ export function AdminKpis({ board, me }: AdminKpisProps) {
         />
       </div>
 
-      <section className="rounded-xl border border-black/10 bg-white p-5">
-        <h2 className="font-heading text-xl">Sua semana, {partnerLabel(me)}</h2>
-        <p className="mt-2 text-sm text-black/60">
+      <section className="admin-surface overflow-hidden rounded-2xl">
+        <div className="flex items-center gap-3 border-b border-black/6 px-5 py-4">
+          <OwnerMark id={me} />
+          <h2 className="font-heading text-xl tracking-tight">
+            Sua semana, {partnerLabel(me)}
+          </h2>
+        </div>
+        <p className="px-5 py-5 text-sm leading-relaxed text-black/65">
           {week} abordagens na casa nesta semana. No mês, você tem{' '}
-          {mine.abordagens} abordagens, {mine.reunioes} conversas e{' '}
-          {mine.mandatos} mandatos nas contas do seu nome.
+          <strong className="font-medium text-black">{mine.abordagens}</strong>{' '}
+          abordagens,{' '}
+          <strong className="font-medium text-black">{mine.reunioes}</strong>{' '}
+          conversas e{' '}
+          <strong className="font-medium text-black">{mine.mandatos}</strong>{' '}
+          mandatos nas contas do seu nome.
         </p>
       </section>
 
       <section>
-        <h2 className="font-heading text-xl">Pipeline</h2>
+        <h2 className="font-heading text-xl tracking-tight">Pipeline</h2>
         <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {PIPELINE.map((status) => (
-            <li
-              key={status}
-              className="rounded-xl border border-black/10 bg-white px-4 py-3"
-            >
-              <p className="text-[10px] tracking-[0.14em] text-[#9c8563] uppercase">
-                {statusLabel(status)}
+            <li key={status} className="admin-surface rounded-2xl px-4 py-4">
+              <StatusPill status={status} />
+              <p className="font-heading mt-3 text-3xl tracking-tight">
+                {pipeline[status]}
               </p>
-              <p className="font-heading mt-1 text-2xl">{pipeline[status]}</p>
             </li>
           ))}
         </ul>
       </section>
 
       <section>
-        <h2 className="font-heading text-xl">Quem carrega a carteira</h2>
+        <h2 className="font-heading text-xl tracking-tight">Quem carrega a carteira</h2>
         <ul className="mt-4 grid gap-2 sm:grid-cols-4">
           {PARTNERS.map((partner) => (
             <li
               key={partner.id}
-              className="rounded-xl border border-black/10 bg-white px-4 py-3"
+              className="admin-surface flex items-center gap-3 rounded-2xl px-4 py-4"
             >
-              <p className="text-sm text-black/50">{partner.name}</p>
-              <p className="font-heading mt-1 text-2xl">{owners[partner.id]}</p>
+              <OwnerMark id={partner.id} className="size-9 text-sm" />
+              <div>
+                <p className="text-sm text-black/50">{partner.name}</p>
+                <p className="font-heading text-2xl tracking-tight">
+                  {owners[partner.id]}
+                </p>
+              </div>
             </li>
           ))}
-          <li className="rounded-xl border border-black/10 bg-white px-4 py-3">
-            <p className="text-sm text-black/50">Sem dono</p>
-            <p className="font-heading mt-1 text-2xl">{owners.livre}</p>
+          <li className="admin-surface flex items-center gap-3 rounded-2xl px-4 py-4">
+            <OwnerMark id={null} className="size-9 text-sm" />
+            <div>
+              <p className="text-sm text-black/50">Sem dono</p>
+              <p className="font-heading text-2xl tracking-tight">{owners.livre}</p>
+            </div>
           </li>
         </ul>
       </section>
@@ -130,14 +142,15 @@ function Stat({
   value: number
   goal: number
 }) {
-  const caption = goal > 0 ? `de ${goal}` : 'sem meta ainda'
+  const caption = goal > 0 ? `${value} de ${goal}` : 'sem meta ainda'
   return (
-    <article className="rounded-xl border border-black/10 bg-white px-4 py-4">
+    <article className="admin-surface rounded-2xl px-5 py-5">
       <p className="text-[10px] tracking-[0.16em] text-[#9c8563] uppercase">
         {label}
       </p>
-      <p className="font-heading mt-2 text-3xl">{value}</p>
+      <p className="font-heading mt-3 text-4xl tracking-tight">{value}</p>
       <p className="mt-1 text-xs text-black/50">{caption}</p>
+      <ProgressTrack value={value} goal={goal} />
     </article>
   )
 }
