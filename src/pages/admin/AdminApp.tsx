@@ -233,7 +233,7 @@ export function AdminApp() {
 
   if (!me) {
     return (
-      <div className="min-h-svh bg-[#f3efe6]">
+      <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
         <AdminLogin error={loginError} onSubmit={login} />
       </div>
     )
@@ -242,7 +242,7 @@ export function AdminApp() {
   const partner = partnerById(me)
 
   return (
-    <div className="min-h-svh bg-[#f3efe6] text-[#050505]">
+    <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
       <header className="border-b border-black/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <BrandMark variant="dark" />
@@ -290,7 +290,7 @@ export function AdminApp() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <Routes>
           <Route
-            path="/admin"
+            index
             element={
               <AdminHoje
                 board={board}
@@ -303,7 +303,7 @@ export function AdminApp() {
             }
           />
           <Route
-            path="/admin/crm"
+            path="crm"
             element={
               <AdminCrm
                 board={board}
@@ -316,9 +316,9 @@ export function AdminApp() {
               />
             }
           />
-          <Route path="/admin/kpis" element={<AdminKpis board={board} me={me} />} />
+          <Route path="kpis" element={<AdminKpis board={board} me={me} />} />
           <Route
-            path="/admin/metas"
+            path="metas"
             element={<AdminMetas board={board} me={me} onSave={saveGoals} />}
           />
         </Routes>

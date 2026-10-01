@@ -191,6 +191,34 @@ img {
     color: #fff;
   }
 
+  .admin-desk {
+    color: #050505;
+    background: #f3efe6;
+    --background: #f3efe6;
+    --foreground: #050505;
+    --card: #ffffff;
+    --card-foreground: #050505;
+    --popover: #ffffff;
+    --popover-foreground: #050505;
+    --primary: #050505;
+    --primary-foreground: #f3efe6;
+    --secondary: #e8e2d6;
+    --secondary-foreground: #050505;
+    --muted: #e8e2d6;
+    --muted-foreground: #5c574e;
+    --accent: #ece6da;
+    --accent-foreground: #050505;
+    --border: rgb(5 5 5 / 0.16);
+    --input: rgb(5 5 5 / 0.18);
+    --ring: #9c8563;
+  }
+
+  .admin-desk input,
+  .admin-desk textarea {
+    color: #050505;
+    background: #fff;
+  }
+
   .hero-drift {
     transform-origin: 78% 50%;
     animation: hero-drift 26s ease-out forwards;
