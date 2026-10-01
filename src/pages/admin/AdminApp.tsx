@@ -68,7 +68,12 @@ export function AdminApp() {
   }, [])
 
   function login(partner: PartnerId, password: string) {
-    if (password !== ADMIN_PASSWORD) {
+    const typed = password.trim()
+    if (!typed) {
+      setLoginError('Digite a senha da mesa.')
+      return
+    }
+    if (typed !== ADMIN_PASSWORD) {
       setLoginError('Senha não confere.')
       return
     }

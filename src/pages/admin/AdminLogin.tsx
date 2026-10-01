@@ -12,7 +12,6 @@ type AdminLoginProps = {
 
 export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
   const [partner, setPartner] = useState<PartnerId>('vini')
-  const [password, setPassword] = useState('')
 
   const hint = useMemo(
     () =>
@@ -24,6 +23,8 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const password = String(data.get('password') ?? '')
     onSubmit(partner, password)
   }
 
@@ -61,10 +62,9 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
           <Label htmlFor="admin-password">Senha da mesa</Label>
           <Input
             id="admin-password"
+            name="password"
             type="password"
             autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
           />
           <p className="text-xs text-black/50">{hint}</p>
         </div>

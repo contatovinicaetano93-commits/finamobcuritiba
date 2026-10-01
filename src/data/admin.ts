@@ -77,8 +77,15 @@ export const EMPTY_GOALS: GoalSet = {
   mandatos: 0,
 }
 
-export const ADMIN_PASSWORD =
-  import.meta.env.VITE_ADMIN_PASSWORD || 'cwb-socios'
+export const ADMIN_PASSWORD = resolveAdminPassword()
+
+function resolveAdminPassword(): string {
+  const fromEnv = import.meta.env.VITE_ADMIN_PASSWORD
+  if (typeof fromEnv === 'string' && fromEnv.trim()) {
+    return fromEnv.trim()
+  }
+  return 'cwb-socios'
+}
 
 export function isPartnerId(value: string | null): value is PartnerId {
   return value === 'vini' || value === 'rafa' || value === 'tadeu'
