@@ -1,5 +1,6 @@
 import {
   Building2,
+  Cable,
   ChartColumnIncreasing,
   LayoutDashboard,
   Target,
@@ -10,9 +11,10 @@ export const ADMIN_NAV = [
   { to: '/admin/crm', label: 'CRM', end: false, icon: Building2 },
   { to: '/admin/kpis', label: 'KPIs', end: false, icon: ChartColumnIncreasing },
   { to: '/admin/metas', label: 'Metas', end: false, icon: Target },
+  { to: '/admin/integracao', label: 'API', end: false, icon: Cable },
 ] as const
 
-export type DeskPage = 'hoje' | 'crm' | 'kpis' | 'metas'
+export type DeskPage = 'hoje' | 'crm' | 'kpis' | 'metas' | 'integracao'
 
 export function deskPage(pathname: string): DeskPage {
   if (pathname.includes('/crm')) {
@@ -23,6 +25,9 @@ export function deskPage(pathname: string): DeskPage {
   }
   if (pathname.includes('/metas')) {
     return 'metas'
+  }
+  if (pathname.includes('/integracao')) {
+    return 'integracao'
   }
   return 'hoje'
 }
@@ -48,6 +53,11 @@ export function pageMeta(page: DeskPage): { title: string; subtitle: string } {
       return {
         title: 'Metas',
         subtitle: 'O combinado do mês',
+      }
+    case 'integracao':
+      return {
+        title: 'API',
+        subtitle: 'Porta oficial para o CRM',
       }
     default: {
       const exhaustive: never = page

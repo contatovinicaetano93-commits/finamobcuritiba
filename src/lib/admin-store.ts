@@ -88,24 +88,41 @@ function isActivity(value: unknown): value is Activity {
 
 export function parseBoard(raw: string): AdminBoard | null {
   try {
-    const parsed: unknown = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object') {
-      return null
-    }
-    const board = parsed as AdminBoard
-    if (board.version !== 1 || !Array.isArray(board.accounts)) {
-      return null
-    }
-    return {
-      version: 1,
-      accounts: board.accounts.filter(isAccount),
-      goals: Array.isArray(board.goals) ? board.goals.filter(isMonthGoals) : [],
-      activity: Array.isArray(board.activity)
-        ? board.activity.filter(isActivity)
-        : [],
-    }
+    return parseRemoteCrmPayload(JSON.parse(raw))
   } catch {
     return null
+  }
+}
+
+export function parseRemoteCrmPayload(data: unknown): AdminBoard | null {
+  if (Array.isArray(data)) {
+    const accounts = data.filter(isAccount)
+    if (accounts.length === 0 && data.length > 0) {
+      return null
+    }
+    return { version: 1, accounts, goals: [], activity: [] }
+  }
+  if (!data || typeof data !== 'object') {
+    return null
+  }
+  const board = data as AdminBoard & { accounts?: unknown }
+  if (!Array.isArray(board.accounts)) {
+    return null
+  }
+  if (board.version !== 1 && board.version !== undefined) {
+    return null
+  }
+  const accounts = board.accounts.filter(isAccount)
+  if (board.accounts.length > 0 && accounts.length === 0) {
+    return null
+  }
+  return {
+    version: 1,
+    accounts,
+    goals: Array.isArray(board.goals) ? board.goals.filter(isMonthGoals) : [],
+    activity: Array.isArray(board.activity)
+      ? board.activity.filter(isActivity)
+      : [],
   }
 }
 

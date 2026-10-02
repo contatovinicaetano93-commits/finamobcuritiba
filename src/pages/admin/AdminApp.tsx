@@ -27,6 +27,7 @@ import { AdminHoje } from '@/pages/admin/AdminHoje'
 import { AdminKpis } from '@/pages/admin/AdminKpis'
 import { AdminLogin } from '@/pages/admin/AdminLogin'
 import { AdminMetas } from '@/pages/admin/AdminMetas'
+import { AdminIntegracao } from '@/pages/admin/AdminIntegracao'
 import { AdminSidebar } from '@/pages/admin/AdminSidebar'
 import { AdminTopbar } from '@/pages/admin/AdminTopbar'
 import { deskPage, pageMeta } from '@/pages/admin/admin-nav'
@@ -240,6 +241,26 @@ export function AdminApp() {
   const meta = pageMeta(deskPage(location.pathname))
   const dueCount = dueQueue(board.accounts).length
 
+  function ingestRemote(remote: AdminBoard, count: number) {
+    if (!me) {
+      return
+    }
+    persist({
+      version: 1,
+      accounts: remote.accounts,
+      goals: remote.goals.length > 0 ? remote.goals : board.goals,
+      activity: [
+        {
+          id: newId(),
+          at: new Date().toISOString(),
+          by: me,
+          text: `Puxou ${count} contas pela API.`,
+        },
+        ...board.activity,
+      ],
+    })
+  }
+
   function openCreate() {
     setCreating(true)
     navigate('/admin/crm')
@@ -306,6 +327,10 @@ export function AdminApp() {
               <Route
                 path="metas"
                 element={<AdminMetas board={board} me={me} onSave={saveGoals} />}
+              />
+              <Route
+                path="integracao"
+                element={<AdminIntegracao me={me} onApply={ingestRemote} />}
               />
             </Routes>
           </div>

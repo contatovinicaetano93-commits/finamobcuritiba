@@ -40,8 +40,11 @@ Abre em `http://127.0.0.1:43123`.
 - KPIs do mês e pipeline
 - Metas da casa e de cada sócio
 - Exportar / importar JSON para os três trabalharem no mesmo quadro até existir servidor
+- `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir. Sem contrato, usem o JSON.
 
 Senha local padrão: `cwb-socios` (troquem com `VITE_ADMIN_PASSWORD`). Os dados ficam neste navegador; usem exportar para passar o quadro ao outro sócio.
+
+A mesa **não** abre o CRM de outro sistema por conta própria. Quando houver URL, token e o JSON no formato da mesa (`VITE_CRM_API_URL` / `VITE_CRM_API_TOKEN`, ou os campos em Integração), o botão **Puxar agora** troca as contas locais pelas da API.
 
 ## PDF
 
