@@ -29,6 +29,7 @@ Abre em `http://127.0.0.1:43123`.
 - `/contato` — formulário incorporador / parceiro originador
 - `/folder` — folder em slides + PDF
 - `/mostruario` — mostruário de cliente (20 páginas) + download do PDF
+- `/sofa-aberto` — convite Sofá Aberto (incorporadores e construtores) + artes para disparar
 - `/admin` — mesa dos sócios (Vini, Rafa, Tadeu): CRM, fila do dia, KPIs e metas
 
 ## Mesa dos sócios (`/admin`)

@@ -12,6 +12,7 @@ import { HomePage } from '@/pages/HomePage'
 import { IncorporadorPage } from '@/pages/IncorporadorPage'
 import { ParceiroPage } from '@/pages/ParceiroPage'
 import { ShowcaseDownloadPage } from '@/pages/ShowcaseDownloadPage'
+import { SofaAbertoPage } from '@/pages/SofaAbertoPage'
 import { SolutionsPage } from '@/pages/SolutionsPage'
 
 function HashScroll() {
@@ -47,6 +48,7 @@ function PublicShell() {
           <Route path="/contato" element={<ContactPage />} />
           <Route path="/folder" element={<FolderPage />} />
           <Route path="/mostruario" element={<ShowcaseDownloadPage />} />
+          <Route path="/sofa-aberto" element={<SofaAbertoPage />} />
           <Route path="/baixar-directcon" element={<DirectConDownloadPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

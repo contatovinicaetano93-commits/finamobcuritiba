@@ -121,7 +121,11 @@ export function ContactForm({
   const [form, setForm] = useState<LeadForm>(() => ({
     ...EMPTY,
     audience,
-    message: window.localStorage.getItem('finamob-curitiba-farejador') ?? '',
+    message:
+      typeof window !== 'undefined' &&
+      new URLSearchParams(window.location.search).has('sofa')
+        ? 'Quero confirmar presença no Sofá Aberto da Finamob Curitiba. Incorporador / construtor.'
+        : (window.localStorage.getItem('finamob-curitiba-farejador') ?? ''),
   }))
   const [status, setStatus] = useState<FormStatus>('editing')
   const [copyState, setCopyState] = useState<'idle' | 'copied' | 'failed'>('idle')
