@@ -38,7 +38,8 @@ Abre em `http://127.0.0.1:43123`.
 
 - CRM próprio da praça: incorporadoras, construtoras e novos, com dono, estágio da ativação, contato, telefone, e-mail e próximo passo
 - Lista densa e pipeline (Novo → Abordar → Em conversa → Follow-up → Mandato)
-- Importar a base do Radar em Excel, CSV, JSON ou ZIP (merge: não apaga ativação já registrada)
+- Base da praça: 420 incorporadoras e construtoras no raio de Curitiba (backup Radar). Botão **Carregar praça Curitiba** no CRM
+- Importar Excel, CSV, JSON ou ZIP (merge: não apaga ativação já registrada)
 - Fila do dia (sua e da casa)
 - KPIs do mês e pipeline
 - Metas da casa e de cada sócio

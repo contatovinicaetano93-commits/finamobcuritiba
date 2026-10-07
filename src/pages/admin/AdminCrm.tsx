@@ -68,6 +68,7 @@ type AdminCrmProps = {
   ) => void
   onDelete: (id: string) => void
   onImport: (event: ChangeEvent<HTMLInputElement>) => void
+  onLoadSeed: () => void
 }
 
 export function AdminCrm({
@@ -84,6 +85,7 @@ export function AdminCrm({
   onCreate,
   onDelete,
   onImport,
+  onLoadSeed,
 }: AdminCrmProps) {
   const [list, setList] = useState<AccountList | 'todas'>('todas')
   const [owner, setOwner] = useState<PartnerId | 'todos' | 'livre'>('todos')
@@ -147,9 +149,12 @@ export function AdminCrm({
           quem pegou, registra o passo.
         </p>
         <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={onLoadSeed}>
+            Carregar praça Curitiba
+          </Button>
           <label className="inline-flex">
             <Button type="button" variant="outline" asChild>
-              <span>Importar base</span>
+              <span>Importar arquivo</span>
             </Button>
             <input
               type="file"
@@ -259,20 +264,12 @@ export function AdminCrm({
       {board.accounts.length === 0 ? (
         <EmptyState
           title="A mesa ainda está vazia"
-          body="Importem o backup do Radar (xlsx, csv, json ou zip) ou cadastrem a primeira conta. A ativação começa em Novo e anda até Mandato."
+          body="A praça já está no sistema: 420 incorporadoras e construtoras no raio de Curitiba. Carreguem e comecem a ativação."
           action={
             <div className="flex flex-wrap gap-2">
-              <label className="inline-flex">
-                <Button type="button" asChild>
-                  <span>Importar base Radar</span>
-                </Button>
-                <input
-                  type="file"
-                  accept=".json,.csv,.txt,.xlsx,.xlsm,.zip"
-                  className="sr-only"
-                  onChange={onImport}
-                />
-              </label>
+              <Button type="button" onClick={onLoadSeed}>
+                Carregar 420 da praça
+              </Button>
               <Button
                 type="button"
                 variant="outline"

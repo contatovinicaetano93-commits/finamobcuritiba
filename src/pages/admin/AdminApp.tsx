@@ -21,7 +21,11 @@ import {
   saveSession,
   upsertGoals,
 } from '@/lib/admin-store'
-import { importErrorMessage, ingestCrmFile } from '@/lib/crm-import'
+import {
+  fetchCuritibaSeed,
+  importErrorMessage,
+  ingestCrmFile,
+} from '@/lib/crm-import'
 import { mergeImportedAccounts } from '@/lib/crm-merge'
 import { dueQueue } from '@/lib/admin-kpis'
 import { AdminCrm } from '@/pages/admin/AdminCrm'
@@ -249,6 +253,23 @@ export function AdminApp() {
     navigate('/admin/crm')
   }
 
+  async function loadCuritibaSeed() {
+    if (!me) {
+      return
+    }
+    const result = await fetchCuritibaSeed()
+    if (!result.ok) {
+      window.alert(importErrorMessage(result))
+      return
+    }
+    const merged = mergeImportedAccounts(board, result.accounts, me)
+    persist(merged.board)
+    setImportNotice(
+      `Praça Curitiba: ${merged.added} novas, ${merged.filled} completadas. ${merged.board.accounts.length} contas na mesa.`,
+    )
+    navigate('/admin/crm')
+  }
+
   if (!me) {
     return (
       <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
@@ -341,6 +362,7 @@ export function AdminApp() {
                     onSave={saveAccount}
                     onDelete={deleteAccount}
                     onImport={(event) => void importBoard(event)}
+                    onLoadSeed={() => void loadCuritibaSeed()}
                   />
                 }
               />

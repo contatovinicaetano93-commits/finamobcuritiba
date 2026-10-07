@@ -39,6 +39,7 @@ const HEADER_ALIASES: Record<string, string> = {
   cliente: 'name',
   city: 'city',
   cidade: 'city',
+  cidadeuf: 'city',
   municipio: 'city',
   uf: 'uf',
   estado: 'uf',
@@ -54,6 +55,7 @@ const HEADER_ALIASES: Record<string, string> = {
   e_mail: 'email',
   mail: 'email',
   cnpj: 'document',
+  cnpjcompleto: 'document',
   documento: 'document',
   document: 'document',
   origem: 'source',
@@ -68,6 +70,7 @@ const HEADER_ALIASES: Record<string, string> = {
   segmento: 'list',
   list: 'list',
   status: 'status',
+  finamobfase: 'status',
   estagio: 'status',
   etapa: 'status',
   pipeline: 'status',
@@ -317,6 +320,46 @@ function xmlText(node: Element | null): string {
   return node?.textContent?.trim() ?? ''
 }
 
+function selectRadarSheets(
+  sheets: { name: string; rows: Record<string, string>[] }[],
+): { name: string; rows: Record<string, string>[] }[] {
+  const curitiba = sheets.filter((sheet) =>
+    /curitiba/i.test(sheet.name),
+  )
+  if (curitiba.length > 0) {
+    return curitiba
+  }
+  return sheets.filter(
+    (sheet) =>
+      !/catalogo|como_usar|equipe|empreend|incorporadoras_br|outbound|reporte/i.test(
+        sheet.name,
+      ),
+  )
+}
+
+export async function fetchCuritibaSeed(): Promise<ImportResult> {
+  try {
+    const response = await fetch('/crm/base-curitiba.json')
+    if (!response.ok) {
+      return { ok: false, reason: 'unreadable' }
+    }
+    const data: unknown = await response.json()
+    const board = parseRemoteCrmPayload(data)
+    if (!board || board.accounts.length === 0) {
+      return { ok: false, reason: 'empty' }
+    }
+    return {
+      ok: true,
+      mode: 'merge',
+      accounts: board.accounts,
+      sheets: ['Incorporadoras_Curitiba'],
+      skipped: 0,
+    }
+  } catch {
+    return { ok: false, reason: 'unreadable' }
+  }
+}
+
 async function xlsxSheets(buffer: ArrayBuffer): Promise<{ name: string; rows: Record<string, string>[] }[]> {
   const zip = await JSZip.loadAsync(buffer)
   const workbookXml = await zip.file('xl/workbook.xml')?.async('string')
@@ -528,7 +571,7 @@ async function ingestBuffer(
 
   if (lower.endsWith('.xlsx') || lower.endsWith('.xlsm')) {
     try {
-      const sheets = await xlsxSheets(buffer)
+      const sheets = selectRadarSheets(await xlsxSheets(buffer))
       const accounts: Account[] = []
       const names: string[] = []
       let skipped = 0
