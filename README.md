@@ -20,6 +20,25 @@ npm run dev
 
 Abre em `http://127.0.0.1:43123`.
 
+## Neon
+
+O diretório está preparado para o projeto Neon (`autumn-breeze-98514271`, branch `production`):
+
+- `neon.ts` — política vazia (`defineConfig({})`)
+- skills do agente em `.agents/skills/`
+- MCP em `.cursor/mcp.json`
+
+Na máquina local (com sessão no navegador):
+
+```bash
+npm i -g neon@latest
+neon login
+neon link --project-id autumn-breeze-98514271 --branch production -y
+neon deploy
+```
+
+`neon login` abre o OAuth no browser (timeout de 60s). Sem essa sessão, `link` e `deploy` não conseguem falar com o projeto. O arquivo `.neon` e o `DATABASE_URL` ficam fora do git.
+
 - `/` — landing (Produtos, Formulário, Farejador, Contato)
 - `/area` — escolha entre incorporador e originador parceiro
 - `/incorporador` — área do incorporador / loteador (formulário travado)
