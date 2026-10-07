@@ -30,18 +30,20 @@ Abre em `http://127.0.0.1:43123`.
 - `/folder` — folder em slides + PDF
 - `/mostruario` — mostruário de cliente (20 páginas) + download do PDF
 - `/sofa-aberto` — convite Sofá Aberto (incorporadores e construtores) + artes para disparar
-- `/admin` — mesa dos sócios (Vini, Rafa, Tadeu): CRM, fila do dia, KPIs e metas
+- `/admin` — mesa dos sócios (Vini, Rafa, Tadeu): CRM da praça, fila do dia, KPIs e metas
 
 ## Mesa dos sócios (`/admin`)
 
 Área fechada para os três. Não aparece no menu público.
 
-- CRM de incorporadoras e prospecção, com dono, status, próximo passo e registro de abordagem
+- CRM próprio da praça: incorporadoras, construtoras e novos, com dono, estágio da ativação, contato, telefone, e-mail e próximo passo
+- Lista densa e pipeline (Novo → Abordar → Em conversa → Follow-up → Mandato)
+- Importar a base do Radar em Excel, CSV, JSON ou ZIP (merge: não apaga ativação já registrada)
 - Fila do dia (sua e da casa)
 - KPIs do mês e pipeline
 - Metas da casa e de cada sócio
-- Exportar / importar JSON para os três trabalharem no mesmo quadro até existir servidor
-- `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir. Sem contrato, usem o JSON.
+- Exportar o quadro JSON para os três trabalharem no mesmo navegador até existir servidor
+- `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir. Sem chave, a base entra pelo arquivo.
 
 Senha local padrão: `cwb-socios` (troquem com `VITE_ADMIN_PASSWORD`). Os dados ficam neste navegador; usem exportar para passar o quadro ao outro sócio.
 

@@ -20,6 +20,12 @@ const SAMPLE = `{
       "name": "Nome da empresa",
       "city": "Curitiba",
       "uf": "PR",
+      "contactName": "",
+      "phone": "",
+      "email": "",
+      "document": "",
+      "source": "radar",
+      "externalId": "",
       "owner": "vini",
       "status": "novo",
       "nextAction": "Primeira abordagem",
@@ -79,13 +85,13 @@ export function AdminIntegracao({ me, onApply }: AdminIntegracaoProps) {
         <h2 className="font-heading mt-2 text-3xl tracking-tight">
           {connected
             ? 'Quando a casa ligar, a mesa puxa'
-            : 'A API entra por aqui — não por invasão'}
+            : 'A base entra pelo backup — a API só com chave oficial'}
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60">
-          Peçam URL, token e o JSON no formato da mesa. Sem isso, o caminho que
-          funciona hoje é o arquivo: exportar / importar no topo. A chave fica
-          com {partnerById(me).name} e os outros dois — não é atalho para o
-          sistema de outro.
+          O CRM da Finamob Curitiba é desta mesa. A base do Radar entra por
+          Excel, CSV, JSON ou ZIP em CRM → Importar base. URL e token só se a
+          casa emitir para a praça — sem scrape, sem chute de endpoint. A chave
+          fica com {partnerById(me).name} e os outros dois.
         </p>
       </section>
 

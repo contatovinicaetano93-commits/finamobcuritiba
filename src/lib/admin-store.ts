@@ -1,4 +1,5 @@
 import {
+  accountContactDefaults,
   currentMonth,
   emptyBoard,
   isPartnerId,
@@ -18,7 +19,11 @@ const SESSION_KEY = 'finamob-curitiba-admin-session'
 const CHANNEL = 'finamob-curitiba-admin'
 
 function isAccountList(value: unknown): value is AccountList {
-  return value === 'incorporadora' || value === 'prospeccao'
+  return (
+    value === 'incorporadora' ||
+    value === 'construtora' ||
+    value === 'prospeccao'
+  )
 }
 
 function isAccountStatus(value: unknown): value is AccountStatus {
@@ -33,18 +38,49 @@ function isAccountStatus(value: unknown): value is AccountStatus {
   )
 }
 
-function isAccount(value: unknown): value is Account {
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
+export function coerceAccount(value: unknown): Account | null {
   if (!value || typeof value !== 'object') {
-    return false
+    return null
   }
   const item = value as Account
-  return (
-    typeof item.id === 'string' &&
-    isAccountList(item.list) &&
-    typeof item.name === 'string' &&
-    (item.owner === null || isPartnerId(item.owner)) &&
-    isAccountStatus(item.status)
-  )
+  if (
+    typeof item.id !== 'string' ||
+    !item.id ||
+    typeof item.name !== 'string' ||
+    !item.name.trim() ||
+    !isAccountList(item.list) ||
+    !(item.owner === null || isPartnerId(item.owner)) ||
+    !isAccountStatus(item.status)
+  ) {
+    return null
+  }
+  const contacts = accountContactDefaults()
+  return {
+    id: item.id,
+    list: item.list,
+    name: item.name,
+    city: asString(item.city),
+    uf: asString(item.uf),
+    contactName: asString(item.contactName) || contacts.contactName,
+    phone: asString(item.phone) || contacts.phone,
+    email: asString(item.email) || contacts.email,
+    document: asString(item.document) || contacts.document,
+    source: asString(item.source) || contacts.source,
+    externalId: asString(item.externalId) || contacts.externalId,
+    owner: item.owner,
+    status: item.status,
+    nextAction: asString(item.nextAction),
+    nextActionAt: asString(item.nextActionAt),
+    lastContactAt: asString(item.lastContactAt),
+    notes: asString(item.notes),
+    createdAt: asString(item.createdAt),
+    updatedAt: asString(item.updatedAt),
+    updatedBy: isPartnerId(item.updatedBy) ? item.updatedBy : 'vini',
+  }
 }
 
 function isGoalSet(value: unknown): value is GoalSet {
@@ -96,7 +132,9 @@ export function parseBoard(raw: string): AdminBoard | null {
 
 export function parseRemoteCrmPayload(data: unknown): AdminBoard | null {
   if (Array.isArray(data)) {
-    const accounts = data.filter(isAccount)
+    const accounts = data
+      .map(coerceAccount)
+      .filter((item): item is Account => item !== null)
     if (accounts.length === 0 && data.length > 0) {
       return null
     }
@@ -112,7 +150,9 @@ export function parseRemoteCrmPayload(data: unknown): AdminBoard | null {
   if (board.version !== 1 && board.version !== undefined) {
     return null
   }
-  const accounts = board.accounts.filter(isAccount)
+  const accounts = board.accounts
+    .map(coerceAccount)
+    .filter((item): item is Account => item !== null)
   if (board.accounts.length > 0 && accounts.length === 0) {
     return null
   }

@@ -83,6 +83,9 @@ export function AdminHoje({
   const incorporadoras = board.accounts.filter(
     (account) => account.list === 'incorporadora',
   ).length
+  const construtoras = board.accounts.filter(
+    (account) => account.list === 'construtora',
+  ).length
   const prospeccao = board.accounts.filter(
     (account) => account.list === 'prospeccao',
   ).length
@@ -133,7 +136,7 @@ export function AdminHoje({
           icon={<Building2 size={16} />}
           label="Incorporadoras"
           value={String(incorporadoras)}
-          hint={`de ${board.accounts.length} contas`}
+          hint={`${construtoras} construtoras na mesa`}
           progress={{
             value: incorporadoras,
             goal: Math.max(board.accounts.length, 1),
@@ -141,9 +144,9 @@ export function AdminHoje({
         />
         <MetricCard
           icon={<Users size={16} />}
-          label="Prospecção"
+          label="Novos / prospecção"
           value={String(prospeccao)}
-          hint="Lista de conversa"
+          hint="Entradas ainda sem ativação"
           progress={{
             value: prospeccao,
             goal: Math.max(board.accounts.length, 1),

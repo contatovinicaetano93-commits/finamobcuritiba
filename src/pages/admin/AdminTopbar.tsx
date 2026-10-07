@@ -87,7 +87,7 @@ export function AdminTopbar({
             <span className="sr-only">Importar mesa</span>
             <input
               type="file"
-              accept="application/json"
+              accept=".json,.csv,.txt,.xlsx,.xlsm,.zip,application/json"
               className="sr-only"
               onChange={onImport}
             />

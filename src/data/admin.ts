@@ -2,7 +2,7 @@ export const PARTNER_IDS = ['vini', 'rafa', 'tadeu'] as const
 
 export type PartnerId = (typeof PARTNER_IDS)[number]
 
-export type AccountList = 'incorporadora' | 'prospeccao'
+export type AccountList = 'incorporadora' | 'construtora' | 'prospeccao'
 
 export type AccountStatus =
   | 'novo'
@@ -25,6 +25,12 @@ export interface Account {
   name: string
   city: string
   uf: string
+  contactName: string
+  phone: string
+  email: string
+  document: string
+  source: string
+  externalId: string
   owner: PartnerId | null
   status: AccountStatus
   nextAction: string
@@ -117,12 +123,28 @@ export function listLabel(list: AccountList): string {
   switch (list) {
     case 'incorporadora':
       return 'Incorporadora'
+    case 'construtora':
+      return 'Construtora'
     case 'prospeccao':
       return 'Prospecção'
     default: {
       const exhaustive: never = list
       return exhaustive
     }
+  }
+}
+
+export function accountContactDefaults(): Pick<
+  Account,
+  'contactName' | 'phone' | 'email' | 'document' | 'source' | 'externalId'
+> {
+  return {
+    contactName: '',
+    phone: '',
+    email: '',
+    document: '',
+    source: '',
+    externalId: '',
   }
 }
 

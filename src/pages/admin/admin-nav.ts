@@ -42,7 +42,7 @@ export function pageMeta(page: DeskPage): { title: string; subtitle: string } {
     case 'crm':
       return {
         title: 'CRM',
-        subtitle: 'Contas da praça',
+        subtitle: 'Base e estágio de cada ativação',
       }
     case 'kpis':
       return {

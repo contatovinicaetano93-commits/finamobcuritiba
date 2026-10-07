@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
   ADMIN_PASSWORD,
+  accountContactDefaults,
   currentMonth,
   newId,
   partnerById,
@@ -16,11 +17,12 @@ import {
   ensureMonth,
   loadBoard,
   loadSession,
-  parseBoard,
   saveBoard,
   saveSession,
   upsertGoals,
 } from '@/lib/admin-store'
+import { importErrorMessage, ingestCrmFile } from '@/lib/crm-import'
+import { mergeImportedAccounts } from '@/lib/crm-merge'
 import { dueQueue } from '@/lib/admin-kpis'
 import { AdminCrm } from '@/pages/admin/AdminCrm'
 import { AdminHoje } from '@/pages/admin/AdminHoje'
@@ -42,6 +44,7 @@ export function AdminApp() {
   const [navOpen, setNavOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState(false)
+  const [importNotice, setImportNotice] = useState('')
 
   const persist = useCallback((next: AdminBoard) => {
     const withMonth = ensureMonth(next)
@@ -95,6 +98,7 @@ export function AdminApp() {
     }
     const now = new Date().toISOString()
     const account: Account = {
+      ...accountContactDefaults(),
       ...draft,
       id: newId(),
       createdAt: now,
@@ -209,25 +213,40 @@ export function AdminApp() {
     URL.revokeObjectURL(url)
   }
 
-  function importBoard(event: ChangeEvent<HTMLInputElement>) {
+  async function importBoard(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (!file) {
+    if (!file || !me) {
       return
     }
-    const reader = new FileReader()
-    reader.onload = () => {
-      if (typeof reader.result !== 'string') {
-        return
-      }
-      const parsed = parseBoard(reader.result)
-      if (!parsed) {
-        window.alert('Arquivo inválido.')
-        return
-      }
-      persist(parsed)
+    const result = await ingestCrmFile(file, me)
+    if (!result.ok) {
+      window.alert(importErrorMessage(result))
+      return
     }
-    reader.readAsText(file)
+    if (result.mode === 'replace' && result.board) {
+      persist({
+        ...result.board,
+        goals: result.board.goals.length > 0 ? result.board.goals : board.goals,
+        activity: [
+          {
+            id: newId(),
+            at: new Date().toISOString(),
+            by: me,
+            text: `Restaurou o quadro da mesa (${result.accounts.length} contas).`,
+          },
+          ...board.activity,
+        ],
+      })
+      setImportNotice(`Quadro restaurado: ${result.accounts.length} contas.`)
+      return
+    }
+    const merged = mergeImportedAccounts(board, result.accounts, me)
+    persist(merged.board)
+    setImportNotice(
+      `Base importada: ${merged.added} novas, ${merged.filled} completadas. ${merged.board.accounts.length} contas na mesa.`,
+    )
+    navigate('/admin/crm')
   }
 
   if (!me) {
@@ -315,11 +334,13 @@ export function AdminApp() {
                     query={query}
                     onQuery={setQuery}
                     creating={creating}
+                    importNotice={importNotice}
                     onCreatingChange={setCreating}
                     onSelect={setSelectedId}
                     onCreate={createAccount}
                     onSave={saveAccount}
                     onDelete={deleteAccount}
+                    onImport={(event) => void importBoard(event)}
                   />
                 }
               />
