@@ -1,4 +1,4 @@
-import { handleMesaApi } from '../../server/crm'
+import { handleMesaApi } from '../lib/crm.js'
 
 type VercelRequest = {
   method?: string
@@ -22,13 +22,19 @@ function header(req: VercelRequest, name: string): string {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const url = new URL(req.url || '/api/crm', 'http://127.0.0.1')
-  const result = await handleMesaApi({
-    method: req.method || 'GET',
-    pathname: url.pathname,
-    search: url.search,
-    body: req.body,
-    password: header(req, 'x-mesa-password'),
-  })
-  res.status(result.status).json(result.body)
+  try {
+    const url = new URL(req.url || '/api/crm', 'http://127.0.0.1')
+    const result = await handleMesaApi({
+      method: req.method || 'GET',
+      pathname: url.pathname,
+      search: url.search,
+      body: req.body,
+      password: header(req, 'x-mesa-password'),
+    })
+    res.status(result.status).json(result.body)
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : 'Falha interna da mesa.'
+    res.status(500).json({ error: message })
+  }
 }
