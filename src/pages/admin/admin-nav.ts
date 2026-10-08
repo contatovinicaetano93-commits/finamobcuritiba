@@ -36,8 +36,8 @@ export function pageMeta(page: DeskPage): { title: string; subtitle: string } {
   switch (page) {
     case 'hoje':
       return {
-        title: 'Dashboard',
-        subtitle: 'Fila e performance da praça',
+        title: 'Minha fila',
+        subtitle: 'Ativação da praça — um toque no status',
       }
     case 'crm':
       return {
