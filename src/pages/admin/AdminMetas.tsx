@@ -4,10 +4,10 @@ import {
   EMPTY_GOALS,
   PARTNERS,
   type GoalSet,
-  type MonthGoals,
+  type MonthGoal,
   type PartnerId,
 } from '@/data/admin'
-import { fetchMesaGoals, saveMesaGoals } from '@/lib/mesa-api'
+import { listGoals, upsertGoals } from '@/lib/mesa-api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -19,7 +19,7 @@ type AdminMetasProps = {
   onSaved?: () => void
 }
 
-function blankGoals(month: string): MonthGoals {
+function blankGoals(month: string): MonthGoal {
   return {
     month,
     casa: { ...EMPTY_GOALS },
@@ -31,7 +31,7 @@ function blankGoals(month: string): MonthGoals {
 
 export function AdminMetas({ me, reloadToken = 0, onSaved }: AdminMetasProps) {
   const month = currentMonth()
-  const [draft, setDraft] = useState<MonthGoals>(() => blankGoals(month))
+  const [draft, setDraft] = useState<MonthGoal>(() => blankGoals(month))
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -41,7 +41,7 @@ export function AdminMetas({ me, reloadToken = 0, onSaved }: AdminMetasProps) {
     let cancelled = false
     setLoading(true)
     void (async () => {
-      const result = await fetchMesaGoals(month)
+      const result = await listGoals(month)
       if (cancelled) {
         return
       }
@@ -71,11 +71,11 @@ export function AdminMetas({ me, reloadToken = 0, onSaved }: AdminMetasProps) {
     setOk('')
   }
 
-  async function persist(next: MonthGoals) {
+  async function persist(next: MonthGoal) {
     setSaving(true)
     setError('')
     setOk('')
-    const result = await saveMesaGoals({ ...next, month })
+    const result = await upsertGoals({ ...next, month })
     setSaving(false)
     if (!result.ok) {
       setError(result.error)

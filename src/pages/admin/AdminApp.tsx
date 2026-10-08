@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
   ADMIN_PASSWORD,
-  newId,
   partnerById,
   todayIso,
   type Account,
@@ -15,6 +14,7 @@ import {
   hydrateMesaBoard,
   loadBoard,
   loadSession,
+  saveActivityRemote,
   saveBoard,
   saveSession,
 } from '@/lib/admin-store'
@@ -154,20 +154,13 @@ export function AdminApp() {
         window.alert(result.error)
         return
       }
-      const now = new Date().toISOString()
-      persist({
-        ...board,
-        activity: [
-          {
-            id: newId(),
-            at: now,
-            by: me,
-            text: `Cadastrou ${result.data.account.name}.`,
-            accountId: result.data.account.id,
-          },
-          ...board.activity,
-        ],
+      const logged = await saveActivityRemote(board, {
+        by: me,
+        text: `Cadastrou ${result.data.account.name}.`,
+        accountId: result.data.account.id,
+        kind: 'nota',
       })
+      setBoard(logged.board)
       setSelectedId(result.data.account.id)
       bumpMesa()
     })()
@@ -211,18 +204,12 @@ export function AdminApp() {
         window.alert(result.error)
         return
       }
-      persist({
-        ...board,
-        activity: [
-          {
-            id: newId(),
-            at: new Date().toISOString(),
-            by: me,
-            text: 'Removeu uma conta da mesa.',
-          },
-          ...board.activity,
-        ],
+      const logged = await saveActivityRemote(board, {
+        by: me,
+        text: 'Removeu uma conta da mesa.',
+        kind: 'nota',
       })
+      setBoard(logged.board)
       bumpMesa()
     })()
   }
@@ -253,19 +240,17 @@ export function AdminApp() {
       return
     }
     if (result.mode === 'replace' && result.board) {
-      persist({
+      const next: AdminBoard = {
         ...result.board,
         goals: result.board.goals.length > 0 ? result.board.goals : board.goals,
-        activity: [
-          {
-            id: newId(),
-            at: new Date().toISOString(),
-            by: me,
-            text: `Restaurou o quadro da mesa (${result.accounts.length} contas).`,
-          },
-          ...board.activity,
-        ],
+        activity: board.activity,
+      }
+      const logged = await saveActivityRemote(next, {
+        by: me,
+        text: `Restaurou o quadro da mesa (${result.accounts.length} contas).`,
+        kind: 'nota',
       })
+      setBoard(logged.board)
       setImportNotice(`Quadro restaurado: ${result.accounts.length} contas.`)
       return
     }
@@ -292,20 +277,20 @@ export function AdminApp() {
     if (!me) {
       return
     }
-    persist({
-      version: 1,
-      accounts: remote.accounts,
-      goals: remote.goals.length > 0 ? remote.goals : board.goals,
-      activity: [
-        {
-          id: newId(),
-          at: new Date().toISOString(),
-          by: me,
-          text: `Puxou ${count} contas pela API.`,
-        },
-        ...board.activity,
-      ],
-    })
+    void (async () => {
+      const next: AdminBoard = {
+        version: 1,
+        accounts: remote.accounts,
+        goals: remote.goals.length > 0 ? remote.goals : board.goals,
+        activity: board.activity,
+      }
+      const logged = await saveActivityRemote(next, {
+        by: me,
+        text: `Puxou ${count} contas pela API.`,
+        kind: 'nota',
+      })
+      setBoard(logged.board)
+    })()
   }
 
   function openCreate() {
