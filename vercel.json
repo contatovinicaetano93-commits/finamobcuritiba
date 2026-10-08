@@ -2,6 +2,9 @@
   "functions": {
     "api/crm/[...path].ts": {
       "includeFiles": "api/lib/**"
+    },
+    "api/crm/companies/[id].ts": {
+      "includeFiles": "api/lib/**"
     }
   },
   "headers": [
