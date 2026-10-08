@@ -45,6 +45,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { AiInsightsStrip } from '@/pages/admin/AiInsightsStrip'
 import { OwnerMark, ProgressTrack, StatusPill } from '@/pages/admin/admin-ui'
 import { cn } from '@/lib/utils'
 
@@ -214,6 +215,8 @@ export function AdminHoje({
       {loading ? (
         <p className="text-sm text-black/50">Carregando movimento do Neon…</p>
       ) : null}
+
+      <AiInsightsStrip reloadToken={reloadToken} />
 
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
         <section className="admin-surface rounded-2xl p-5">

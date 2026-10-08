@@ -25,6 +25,7 @@ import {
   type MesaQuery,
   type MesaScope,
 } from '@/lib/mesa-api'
+import { AiBriefingPanel } from '@/pages/admin/AiBriefingPanel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -897,6 +898,7 @@ function EditForm({
           <StatusPill status={draft.status} />
         </div>
       </SheetHeader>
+      <AiBriefingPanel companyId={account.id} />
       <Field label="Empresa" htmlFor="edit-name">
         <Input
           id="edit-name"

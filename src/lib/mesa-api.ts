@@ -358,6 +358,77 @@ export async function fetchMesaKpis(yearMonth: string) {
   )
 }
 
+
+export type MesaBriefingContent = {
+  headline: string
+  summary: string
+  bullets: string[]
+  nextSteps: string[]
+  gaps: string[]
+  source: 'openai' | 'heuristic'
+}
+
+export type MesaBriefing = {
+  companyId: string
+  content: MesaBriefingContent
+  model: string
+  updatedAt: string
+  cached: boolean
+}
+
+export type MesaInsightBullet = {
+  text: string
+  action?: string
+}
+
+export type MesaInsightsContent = {
+  headline: string
+  bullets: MesaInsightBullet[]
+  source: 'openai' | 'heuristic'
+}
+
+export type MesaInsights = {
+  id: string
+  scope: string
+  content: MesaInsightsContent
+  model: string
+  createdAt: string
+  cached: boolean
+}
+
+export async function fetchMesaBriefing(companyId: string) {
+  return mesaFetch<{ briefing: MesaBriefing | null; companyId: string }>(
+    `/api/crm/briefing/${encodeURIComponent(companyId)}`,
+  )
+}
+
+export async function regenerateMesaBriefing(companyId: string) {
+  return mesaFetch<{
+    briefing: MesaBriefing
+    regenerated?: boolean
+  }>(`/api/crm/briefing/${encodeURIComponent(companyId)}`, {
+    method: 'POST',
+    body: JSON.stringify({}),
+  })
+}
+
+export async function fetchMesaInsights(scope: MesaScope = 'praca') {
+  return mesaFetch<{ insights: MesaInsights | null; scope: MesaScope }>(
+    `/api/crm/insights?scope=${encodeURIComponent(scope)}`,
+  )
+}
+
+export async function regenerateMesaInsights(scope: MesaScope = 'praca') {
+  return mesaFetch<{
+    insights: MesaInsights
+    scope: MesaScope
+    regenerated?: boolean
+  }>(`/api/crm/insights?scope=${encodeURIComponent(scope)}`, {
+    method: 'POST',
+    body: JSON.stringify({ scope }),
+  })
+}
+
 export function scopeLabel(scope: MesaScope): string {
   switch (scope) {
     case 'praca':

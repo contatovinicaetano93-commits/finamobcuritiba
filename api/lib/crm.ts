@@ -1,5 +1,15 @@
 import process from 'node:process'
 import { neon } from '@neondatabase/serverless'
+import {
+  generateBriefing,
+  generateInsights,
+  getCachedBriefing,
+  getLatestInsights,
+  saveBriefing,
+  saveInsights,
+  type CompanySnapshot,
+  type PracaSnapshot,
+} from './ai-mesa.js'
 
 export const MESA_SCOPES = ['praca', 'pr', 'sul', 'brasil'] as const
 export type MesaScope = (typeof MESA_SCOPES)[number]
@@ -804,6 +814,127 @@ async function patchCompany(
   return { status: 200, body: { account: await getCompany(sql, id) } }
 }
 
+
+function toCompanySnapshot(
+  account: NonNullable<Awaited<ReturnType<typeof getCompany>>>,
+): CompanySnapshot {
+  return {
+    id: account.id,
+    name: account.name,
+    list: account.list,
+    city: account.city,
+    uf: account.uf,
+    region: account.region,
+    inCuritibaRadius: account.inCuritibaRadius,
+    empCount: account.empCount,
+    porte: account.porte,
+    atuacao: account.atuacao,
+    site: account.site,
+    contactName: account.contactName,
+    phone: account.phone,
+    email: account.email,
+    owner: account.owner,
+    status: account.status,
+    nextAction: account.nextAction,
+    nextActionAt: account.nextActionAt,
+    lastContactAt: account.lastContactAt,
+    notes: account.notes,
+    developments: (account.developments || []).map((item) => ({
+      name: item.name,
+      stage: item.stage,
+      kind: item.kind,
+      city: item.city,
+      uf: item.uf,
+      units: item.units,
+    })),
+  }
+}
+
+async function buildPracaSnapshot(
+  sql: Sql,
+  scope: MesaScope,
+): Promise<PracaSnapshot> {
+  const params = new URLSearchParams({ scope })
+  const counts = (await summary(sql, params)) as Record<string, number>
+  const due = await dueList(sql, params)
+  return {
+    scope,
+    total: Number(counts.total) || 0,
+    incorporadora: Number(counts.incorporadora) || 0,
+    construtora: Number(counts.construtora) || 0,
+    prospeccao: Number(counts.prospeccao) || 0,
+    novo: Number(counts.novo) || 0,
+    abordar: Number(counts.abordar) || 0,
+    em_conversa: Number(counts.em_conversa) || 0,
+    follow_up: Number(counts.follow_up) || 0,
+    mandato: Number(counts.mandato) || 0,
+    livre: Number(counts.livre) || 0,
+    dueCount: due.accounts.length,
+    dueSample: due.accounts.slice(0, 5).map((account) => ({
+      name: account.name,
+      status: account.status,
+      owner: account.owner,
+      nextAction: account.nextAction,
+    })),
+  }
+}
+
+async function getBriefingHandler(sql: Sql, companyId: string) {
+  const account = await getCompany(sql, companyId)
+  if (!account) {
+    return { status: 404, body: { error: 'Conta não encontrada.' } }
+  }
+  const briefing = await getCachedBriefing(sql, companyId)
+  return {
+    status: 200,
+    body: {
+      briefing,
+      companyId,
+    },
+  }
+}
+
+async function postBriefingHandler(sql: Sql, companyId: string) {
+  const account = await getCompany(sql, companyId)
+  if (!account) {
+    return { status: 404, body: { error: 'Conta não encontrada.' } }
+  }
+  const generated = await generateBriefing(toCompanySnapshot(account))
+  const briefing = await saveBriefing(
+    sql,
+    companyId,
+    generated.content,
+    generated.model,
+  )
+  return {
+    status: 200,
+    body: {
+      briefing,
+      regenerated: true,
+    },
+  }
+}
+
+async function getInsightsHandler(sql: Sql, scope: MesaScope) {
+  const insights = await getLatestInsights(sql, scope)
+  return { status: 200, body: { insights, scope } }
+}
+
+async function postInsightsHandler(sql: Sql, scope: MesaScope) {
+  const snap = await buildPracaSnapshot(sql, scope)
+  const generated = await generateInsights(snap)
+  const insights = await saveInsights(
+    sql,
+    scope,
+    generated.content,
+    generated.model,
+  )
+  return {
+    status: 200,
+    body: { insights, scope, regenerated: true },
+  }
+}
+
 export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse> {
   const params = new URLSearchParams(request.search.replace(/^\?/, ''))
   const parts = parsePath(request.pathname)
@@ -954,6 +1085,24 @@ export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse>
         params.get('month') ||
         new Date().toISOString().slice(0, 7)
       return { status: 200, body: await listKpis(sql, yearMonth) }
+    }
+    if (parts[0] === 'briefing' && parts[1] && parts.length === 2) {
+      if (method === 'GET') {
+        return await getBriefingHandler(sql, parts[1])
+      }
+      if (method === 'POST') {
+        return await postBriefingHandler(sql, parts[1])
+      }
+    }
+    if (parts[0] === 'insights' && parts.length === 1) {
+      const scopeRaw = params.get('scope') || asString(body.scope) || 'praca'
+      const scope: MesaScope = isScope(scopeRaw) ? scopeRaw : 'praca'
+      if (method === 'GET') {
+        return await getInsightsHandler(sql, scope)
+      }
+      if (method === 'POST') {
+        return await postInsightsHandler(sql, scope)
+      }
     }
     return { status: 404, body: { error: 'Rota da mesa não encontrada.' } }
   } catch (error) {

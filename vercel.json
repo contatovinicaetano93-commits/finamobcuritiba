@@ -5,6 +5,12 @@
     },
     "api/crm/companies/[id].ts": {
       "includeFiles": "api/lib/**"
+    },
+    "api/crm/briefing/[id].ts": {
+      "includeFiles": "api/lib/**"
+    },
+    "api/crm/insights.ts": {
+      "includeFiles": "api/lib/**"
     }
   },
   "headers": [

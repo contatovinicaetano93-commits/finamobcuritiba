@@ -53,6 +53,18 @@ function mesaApi(env: Record<string, string>): Plugin {
   if (env.ADMIN_PASSWORD) {
     process.env.ADMIN_PASSWORD = env.ADMIN_PASSWORD
   }
+  for (const key of [
+    'OPENAI_API_KEY',
+    'OPENAI_BASE_URL',
+    'NEON_AI_GATEWAY_TOKEN',
+    'NEON_AI_GATEWAY_BASE_URL',
+    'MESA_AI_MODEL',
+    'MESA_PASSWORD',
+  ] as const) {
+    if (env[key]) {
+      process.env[key] = env[key]
+    }
+  }
 
   const attach = (
     req: {

@@ -98,3 +98,22 @@ CREATE TABLE IF NOT EXISTS month_goals (
 
 CREATE INDEX IF NOT EXISTS month_goals_year_month_idx ON month_goals (year_month);
 CREATE INDEX IF NOT EXISTS month_goals_partner_idx ON month_goals (partner_id);
+
+CREATE TABLE IF NOT EXISTS ai_briefings (
+  company_id text PRIMARY KEY REFERENCES companies (id) ON DELETE CASCADE,
+  content jsonb NOT NULL DEFAULT '{}'::jsonb,
+  model text NOT NULL DEFAULT 'heuristic',
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS ai_insights (
+  id text PRIMARY KEY,
+  scope text NOT NULL DEFAULT 'praca',
+  content jsonb NOT NULL DEFAULT '{}'::jsonb,
+  model text NOT NULL DEFAULT 'heuristic',
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS ai_insights_scope_created_idx
+  ON ai_insights (scope, created_at DESC);
+
