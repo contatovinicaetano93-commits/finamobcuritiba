@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRight,
@@ -12,30 +12,40 @@ import {
   Users,
 } from 'lucide-react'
 import {
-  currentMonth,
   formatDay,
   formatStamp,
   formatTodayHeading,
   listLabel,
-  monthGoals,
-  PARTNERS,
   partnerById,
   partnerLabel,
   statusLabel,
   todayIso,
   type Account,
   type AccountStatus,
-  type Activity,
-  type AdminBoard,
   type PartnerId,
 } from '@/data/admin'
+import { dueQueue, ownerCounts, pipelineCounts } from '@/lib/admin-kpis'
 import {
-  dueQueue,
-  monthActuals,
-  ownerCounts,
-  pipelineCounts,
-  weekActions,
-} from '@/lib/admin-kpis'
+  createMesaActivity,
+  fetchMesaActivity,
+  fetchMesaKpis,
+  fetchMesaSummary,
+  type MesaActivity,
+  type MesaAccount,
+  type MesaKpis,
+  type MesaSummary,
+} from '@/lib/mesa-api'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { OwnerMark, ProgressTrack, StatusPill } from '@/pages/admin/admin-ui'
 import { cn } from '@/lib/utils'
 
@@ -48,55 +58,121 @@ const PIPELINE: AccountStatus[] = [
 ]
 
 type AdminHojeProps = {
-  board: AdminBoard
   me: PartnerId
+  dueAccounts: MesaAccount[]
+  reloadToken: number
   onOpen: (id: string) => void
   onCreate: () => void
   onExport: () => void
+  onActivityLogged?: () => void
 }
 
 export function AdminHoje({
-  board,
   me,
+  dueAccounts,
+  reloadToken,
   onOpen,
   onCreate,
   onExport,
+  onActivityLogged,
 }: AdminHojeProps) {
   const today = todayIso()
-  const month = currentMonth()
-  const due = dueQueue(board.accounts, today)
+  const [activity, setActivity] = useState<MesaActivity[]>([])
+  const [kpis, setKpis] = useState<MesaKpis | null>(null)
+  const [summary, setSummary] = useState<MesaSummary | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [note, setNote] = useState('')
+  const [companyId, setCompanyId] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [saveOk, setSaveOk] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    void (async () => {
+      const [activityResult, kpisResult, summaryResult] = await Promise.all([
+        fetchMesaActivity({ partnerId: me, day: today, limit: 40 }),
+        fetchMesaKpis(today.slice(0, 7)),
+        fetchMesaSummary({ scope: 'praca' }),
+      ])
+      if (cancelled) {
+        return
+      }
+      if (!activityResult.ok && !kpisResult.ok && !summaryResult.ok) {
+        setError(
+          activityResult.ok
+            ? kpisResult.ok
+              ? summaryResult.error
+              : kpisResult.error
+            : activityResult.error,
+        )
+        setLoading(false)
+        return
+      }
+      setError('')
+      if (activityResult.ok) {
+        setActivity(activityResult.data.activity)
+      }
+      if (kpisResult.ok) {
+        setKpis(kpisResult.data)
+      }
+      if (summaryResult.ok) {
+        setSummary(summaryResult.data)
+      }
+      setLoading(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [me, today, reloadToken])
+
+  const due = dueQueue(dueAccounts, today)
   const mine = due.filter((account) => account.owner === me)
   const house = due.filter((account) => account.owner !== me)
-  const week = weekActions(board)
-  const goals = monthGoals(board, month)
-  const casa = monthActuals(board, month)
-  const pipeline = pipelineCounts(board.accounts)
-  const owners = ownerCounts(board.accounts)
-  const open = board.accounts.filter(
-    (account) =>
-      account.status === 'novo' ||
-      account.status === 'abordar' ||
-      account.status === 'em_conversa' ||
-      account.status === 'follow_up',
-  ).length
-  const livre = owners.livre
-  const incorporadoras = board.accounts.filter(
-    (account) => account.list === 'incorporadora',
-  ).length
-  const construtoras = board.accounts.filter(
-    (account) => account.list === 'construtora',
-  ).length
-  const prospeccao = board.accounts.filter(
-    (account) => account.list === 'prospeccao',
-  ).length
-  const feed = board.activity.slice(0, 5)
-  const ranked = [...PARTNERS]
-    .map((partner) => ({
-      partner,
-      count: owners[partner.id],
-    }))
-    .sort((a, b) => b.count - a.count)
+  const owners = ownerCounts(dueAccounts)
+  const pipeline = pipelineCounts(dueAccounts)
+  const livre = summary?.livre ?? owners.livre
+  const open =
+    (summary?.novo ?? 0) +
+    (summary?.abordar ?? 0) +
+    (summary?.em_conversa ?? 0) +
+    (summary?.follow_up ?? 0)
+  const goals = kpis?.goals
+  const casa = kpis?.actuals.casa
+  const week = kpis?.week.casa ?? 0
   const pipelineMax = Math.max(1, ...PIPELINE.map((status) => pipeline[status]))
+  const logOptions = dueAccounts.filter(
+    (account) => account.owner === me || account.owner === null,
+  )
+
+  async function handleLog(event: FormEvent) {
+    event.preventDefault()
+    const text = note.trim()
+    if (!text) {
+      setSaveError('Escreva o que foi falado na abordagem.')
+      return
+    }
+    setSaving(true)
+    setSaveError('')
+    setSaveOk('')
+    const result = await createMesaActivity({
+      by: me,
+      note: text,
+      companyId: companyId || undefined,
+      kind: 'abordagem',
+    })
+    setSaving(false)
+    if (!result.ok) {
+      setSaveError(result.error)
+      return
+    }
+    setNote('')
+    setSaveOk('Abordagem registrada.')
+    setActivity((current) => [result.data.activity, ...current])
+    onActivityLogged?.()
+  }
 
   return (
     <div className="space-y-5">
@@ -125,52 +201,147 @@ export function AdminHoje({
         </div>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <WelcomeStat label="Fila de hoje" value={String(due.length)} hint="Vencidas e do dia" />
-          <WelcomeStat label="Abordagens na semana" value={String(week)} hint="Último contato" />
+          <WelcomeStat label="Abordagens na semana" value={String(week)} hint="Log da mesa" />
           <WelcomeStat label="Contas abertas" value={String(open)} hint="Pipeline ativo" />
           <WelcomeStat label="Sem dono" value={String(livre)} hint="Livres na mesa" />
         </div>
       </section>
 
+      {error ? (
+        <p className="rounded-2xl bg-[#f7e8e4] px-4 py-3 text-sm text-[#7a2e24]" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {loading ? (
+        <p className="text-sm text-black/50">Carregando movimento do Neon…</p>
+      ) : null}
+
+      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
+        <section className="admin-surface rounded-2xl p-5">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="font-medium">Sua atividade de hoje</h3>
+              <p className="text-xs text-black/45">
+                Abordagens de {partnerById(me).name} neste dia
+              </p>
+            </div>
+            <span className="rounded-full bg-black/5 px-2.5 py-1 text-xs">
+              {activity.length}
+            </span>
+          </div>
+          {activity.length === 0 && !loading ? (
+            <p className="mt-6 text-sm text-black/50">
+              Ainda sem registro hoje. Logue a primeira abordagem ao lado.
+            </p>
+          ) : (
+            <ol className="mt-5 space-y-4">
+              {activity.map((item) => (
+                <ActivityRow key={item.id} item={item} />
+              ))}
+            </ol>
+          )}
+        </section>
+
+        <section className="admin-surface rounded-2xl p-5">
+          <h3 className="font-medium">Registrar abordagem</h3>
+          <p className="text-xs text-black/45">Fica no log do Neon no seu nome</p>
+          <form className="mt-4 space-y-3" onSubmit={(event) => void handleLog(event)}>
+            <div className="space-y-2">
+              <Label>Conta (opcional)</Label>
+              <Select
+                value={companyId || 'none'}
+                onValueChange={(value) =>
+                  setCompanyId(value === 'none' ? '' : value)
+                }
+              >
+                <SelectTrigger className="w-full bg-white">
+                  <SelectValue placeholder="Sem conta vinculada" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Sem conta vinculada</SelectItem>
+                  {logOptions.slice(0, 40).map((account) => (
+                    <SelectItem key={account.id} value={account.id}>
+                      {account.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="hoje-note">O que foi falado</Label>
+              <Textarea
+                id="hoje-note"
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                placeholder="Quem atendeu, combinado, próximo passo."
+                className="min-h-24 bg-white"
+              />
+            </div>
+            {saveError ? (
+              <p className="text-sm text-red-700" role="alert">
+                {saveError}
+              </p>
+            ) : null}
+            {saveOk ? (
+              <p className="text-sm text-[#21553a]" role="status">
+                {saveOk}
+              </p>
+            ) : null}
+            <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+              {saving ? 'Salvando…' : 'Logar abordagem'}
+            </Button>
+          </form>
+        </section>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           icon={<Building2 size={16} />}
           label="Incorporadoras"
-          value={String(incorporadoras)}
-          hint={`${construtoras} construtoras na mesa`}
+          value={String(summary?.incorporadora ?? 0)}
+          hint={`${summary?.construtora ?? 0} construtoras na mesa`}
           progress={{
-            value: incorporadoras,
-            goal: Math.max(board.accounts.length, 1),
+            value: summary?.incorporadora ?? 0,
+            goal: Math.max(summary?.total ?? 1, 1),
           }}
         />
         <MetricCard
           icon={<Users size={16} />}
           label="Novos / prospecção"
-          value={String(prospeccao)}
+          value={String(summary?.prospeccao ?? 0)}
           hint="Entradas ainda sem ativação"
           progress={{
-            value: prospeccao,
-            goal: Math.max(board.accounts.length, 1),
+            value: summary?.prospeccao ?? 0,
+            goal: Math.max(summary?.total ?? 1, 1),
           }}
         />
         <MetricCard
           icon={<Phone size={16} />}
           label="Abordagens do mês"
-          value={String(casa.abordagens)}
+          value={String(casa?.abordagens ?? 0)}
           hint={
-            goals.casa.abordagens > 0
+            goals && goals.casa.abordagens > 0
               ? `meta ${goals.casa.abordagens}`
               : 'sem meta ainda'
           }
-          progress={{ value: casa.abordagens, goal: goals.casa.abordagens }}
+          progress={{
+            value: casa?.abordagens ?? 0,
+            goal: goals?.casa.abordagens ?? 0,
+          }}
         />
         <MetricCard
           icon={<Handshake size={16} />}
           label="Mandatos"
-          value={String(casa.mandatos)}
+          value={String(casa?.mandatos ?? 0)}
           hint={
-            goals.casa.mandatos > 0 ? `meta ${goals.casa.mandatos}` : 'sem meta ainda'
+            goals && goals.casa.mandatos > 0
+              ? `meta ${goals.casa.mandatos}`
+              : 'sem meta ainda'
           }
-          progress={{ value: casa.mandatos, goal: goals.casa.mandatos }}
+          progress={{
+            value: casa?.mandatos ?? 0,
+            goal: goals?.casa.mandatos ?? 0,
+          }}
         />
       </div>
 
@@ -179,7 +350,7 @@ export function AdminHoje({
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="font-medium">Pipeline da praça</h3>
-              <p className="text-xs text-black/45">Status das contas na mesa</p>
+              <p className="text-xs text-black/45">Status das contas na fila</p>
             </div>
             <Link
               to="/admin/kpis"
@@ -190,8 +361,11 @@ export function AdminHoje({
           </div>
           <ul className="mt-5 space-y-4">
             {PIPELINE.map((status) => {
-              const count = pipeline[status]
-              const pct = Math.round((count / pipelineMax) * 100)
+              const count =
+                summary?.[status as keyof MesaSummary] !== undefined
+                  ? Number(summary[status as keyof MesaSummary])
+                  : pipeline[status]
+              const pct = Math.round((count / Math.max(pipelineMax, count, 1)) * 100)
               return (
                 <li key={status}>
                   <div className="mb-1.5 flex items-center justify-between text-sm">
@@ -212,35 +386,6 @@ export function AdminHoje({
           </ul>
         </section>
 
-        <section className="admin-surface rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Movimento ao vivo</h3>
-            <span className="flex items-center gap-1.5 text-[11px] text-[#21553a]">
-              <span className="size-1.5 rounded-full bg-[#21553a]" />
-              Mesa
-            </span>
-          </div>
-          {feed.length === 0 ? (
-            <p className="mt-6 text-sm text-black/50">
-              Ainda sem movimento. O primeiro cadastro aparece aqui.
-            </p>
-          ) : (
-            <ol className="mt-5 space-y-4">
-              {feed.map((item) => (
-                <ActivityRow key={item.id} item={item} />
-              ))}
-            </ol>
-          )}
-          <Link
-            to="/admin/crm"
-            className="mt-5 inline-flex items-center gap-1 text-sm text-[#9c8563]"
-          >
-            Abrir CRM <ArrowRight size={14} />
-          </Link>
-        </section>
-      </div>
-
-      <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
         <section className="admin-surface rounded-2xl p-5">
           <h3 className="font-medium">Atalhos da mesa</h3>
           <p className="text-xs text-black/45">O que os três usam o dia inteiro</p>
@@ -277,32 +422,6 @@ export function AdminHoje({
               <p className="mt-1 text-xs text-black/55">Combinado da sexta</p>
             </Link>
           </div>
-        </section>
-
-        <section className="admin-surface rounded-2xl p-5">
-          <div className="flex items-center justify-between">
-            <h3 className="font-medium">Carteira por sócio</h3>
-            <span className="text-xs text-black/40">contas no nome</span>
-          </div>
-          <ol className="mt-4 space-y-3">
-            {ranked.map((row, index) => (
-              <li
-                key={row.partner.id}
-                className="flex items-center gap-3 rounded-xl bg-black/[0.03] px-3 py-2.5"
-              >
-                <span className="w-4 text-xs text-black/35">{index + 1}</span>
-                <OwnerMark id={row.partner.id} />
-                <span className="flex-1 text-sm">{row.partner.name}</span>
-                <span className="font-heading text-lg tracking-tight">{row.count}</span>
-              </li>
-            ))}
-            <li className="flex items-center gap-3 rounded-xl bg-black/[0.03] px-3 py-2.5">
-              <span className="w-4 text-xs text-black/35">—</span>
-              <OwnerMark id={null} />
-              <span className="flex-1 text-sm">Sem dono</span>
-              <span className="font-heading text-lg tracking-tight">{livre}</span>
-            </li>
-          </ol>
         </section>
       </div>
 
@@ -538,13 +657,14 @@ function QueueRow({
   )
 }
 
-function ActivityRow({ item }: { item: Activity }) {
+function ActivityRow({ item }: { item: MesaActivity }) {
   return (
     <li className="flex items-start gap-3">
       <OwnerMark id={item.by} className="mt-0.5 size-6 text-[10px]" />
       <div className="min-w-0">
         <p className="text-sm leading-snug text-black/75">{item.text}</p>
         <p className="mt-1 text-xs text-black/40">
+          {item.companyName ? `${item.companyName} · ` : ''}
           {partnerLabel(item.by)} · {formatStamp(item.at)}
         </p>
       </div>
