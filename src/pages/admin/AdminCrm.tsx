@@ -2,8 +2,10 @@ import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from '
 import {
   accountContactDefaults,
   formatDay,
+  formatStamp,
   listLabel,
   PARTNERS,
+  partnerLabel,
   statusLabel,
   todayIso,
   type Account,
@@ -12,11 +14,13 @@ import {
   type PartnerId,
 } from '@/data/admin'
 import {
+  fetchMesaActivity,
   fetchMesaCompanies,
   fetchMesaCompany,
   fetchMesaFacets,
   scopeLabel,
   type MesaAccount,
+  type MesaActivity,
   type MesaFacets,
   type MesaQuery,
   type MesaScope,
@@ -118,6 +122,10 @@ export function AdminCrm({
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [selected, setSelected] = useState<MesaAccount | null>(null)
+  const [timeline, setTimeline] = useState<MesaActivity[]>([])
+  const [timelineState, setTimelineState] = useState<
+    'idle' | 'loading' | 'error' | 'ready'
+  >('idle')
 
   const queryState: MesaQuery = useMemo(
     () => ({
@@ -178,6 +186,8 @@ export function AdminCrm({
   useEffect(() => {
     if (!selectedId) {
       setSelected(null)
+      setTimeline([])
+      setTimelineState('idle')
       return
     }
     const preview = accounts.find((item) => item.id === selectedId) ?? null
@@ -185,12 +195,25 @@ export function AdminCrm({
       setSelected(preview)
     }
     let cancelled = false
+    setTimelineState('loading')
     void (async () => {
-      const result = await fetchMesaCompany(selectedId)
-      if (cancelled || !result.ok) {
+      const [company, activity] = await Promise.all([
+        fetchMesaCompany(selectedId),
+        fetchMesaActivity({ companyId: selectedId, limit: 40 }),
+      ])
+      if (cancelled) {
         return
       }
-      setSelected(result.data.account)
+      if (company.ok) {
+        setSelected(company.data.account)
+      }
+      if (activity.ok) {
+        setTimeline(activity.data.activity)
+        setTimelineState('ready')
+      } else {
+        setTimeline([])
+        setTimelineState('error')
+      }
     })()
     return () => {
       cancelled = true
@@ -566,6 +589,8 @@ export function AdminCrm({
             <EditForm
               key={selected.id}
               account={selected}
+              timeline={timeline}
+              timelineState={timelineState}
               onDelete={() => {
                 onDelete(selected.id)
                 onSelect(null)
@@ -832,10 +857,14 @@ function CreateForm({
 
 function EditForm({
   account,
+  timeline,
+  timelineState,
   onSave,
   onDelete,
 }: {
   account: MesaAccount
+  timeline: MesaActivity[]
+  timelineState: 'idle' | 'loading' | 'error' | 'ready'
   onSave: (account: Account, note: string) => void
   onDelete: () => void
 }) {
@@ -1065,6 +1094,41 @@ function EditForm({
           </ul>
         </div>
       ) : null}
+      <div className="space-y-2">
+        <Label>Timeline de abordagens</Label>
+        {timelineState === 'loading' ? (
+          <p className="rounded-xl bg-white px-3 py-3 text-sm text-black/50">
+            Carregando histórico…
+          </p>
+        ) : null}
+        {timelineState === 'error' ? (
+          <p className="rounded-xl bg-white px-3 py-3 text-sm text-red-700">
+            Não deu para ler o histórico desta conta.
+          </p>
+        ) : null}
+        {timelineState === 'ready' && timeline.length === 0 ? (
+          <p className="rounded-xl bg-white px-3 py-3 text-sm text-black/50">
+            Nenhuma abordagem registrada ainda.
+          </p>
+        ) : null}
+        {timeline.length > 0 ? (
+          <ul className="max-h-56 space-y-2 overflow-y-auto rounded-xl bg-white p-3">
+            {timeline.map((item) => (
+              <li key={item.id} className="border-b border-black/6 pb-2 last:border-0 last:pb-0">
+                <div className="flex items-center gap-2 text-xs text-black/45">
+                  <OwnerMark id={item.by} className="size-5 text-[10px]" />
+                  <span>{partnerLabel(item.by)}</span>
+                  <span>·</span>
+                  <span>{formatStamp(item.at)}</span>
+                </div>
+                <p className="mt-1 text-sm leading-snug text-black/80">
+                  {item.text}
+                </p>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+      </div>
       <Field label="Registrar abordagem agora" htmlFor="edit-log">
         <Textarea
           id="edit-log"

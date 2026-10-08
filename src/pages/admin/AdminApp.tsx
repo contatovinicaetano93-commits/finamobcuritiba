@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
-  ADMIN_PASSWORD,
   currentMonth,
   newId,
   partnerById,
   todayIso,
   type Account,
+  type Activity,
   type AdminBoard,
   type MonthGoals,
   type PartnerId,
@@ -26,10 +26,15 @@ import {
 } from '@/lib/crm-import'
 import { mergeImportedAccounts } from '@/lib/crm-merge'
 import {
+  createMesaActivity,
   createMesaCompany,
   deleteMesaCompany,
+  fetchMesaActivity,
   fetchMesaDue,
+  fetchMesaGoals,
+  loginMesaSession,
   saveMesaCompany,
+  saveMesaGoals,
   type MesaAccount,
 } from '@/lib/mesa-api'
 import { dueQueue } from '@/lib/admin-kpis'
@@ -87,16 +92,40 @@ export function AdminApp() {
   useEffect(() => {
     let cancelled = false
     void (async () => {
-      const result = await fetchMesaDue({ scope: 'praca' })
-      if (cancelled || !result.ok) {
+      const [due, goals, activity] = await Promise.all([
+        fetchMesaDue({ scope: 'praca' }),
+        fetchMesaGoals(currentMonth()),
+        fetchMesaActivity({ limit: 80 }),
+      ])
+      if (cancelled) {
         return
       }
-      setDueAccounts(result.data.accounts)
+      if (due.ok) {
+        setDueAccounts(due.data.accounts)
+      }
+      setBoard((prev) => {
+        let next = ensureMonth(prev)
+        if (goals.ok) {
+          next = upsertGoals(next, goals.data.goals)
+        }
+        if (activity.ok) {
+          const mapped: Activity[] = activity.data.activity.map((item) => ({
+            id: item.id,
+            at: item.at,
+            by: item.by,
+            text: item.text,
+            accountId: item.accountId,
+          }))
+          next = { ...next, activity: mapped }
+        }
+        saveBoard(next)
+        return next
+      })
     })()
     return () => {
       cancelled = true
     }
-  }, [reloadToken])
+  }, [reloadToken, me])
 
   function login(partner: PartnerId, password: string) {
     const typed = password.trim()
@@ -104,13 +133,17 @@ export function AdminApp() {
       setLoginError('Digite a senha da mesa.')
       return
     }
-    if (typed !== ADMIN_PASSWORD) {
-      setLoginError('Senha não confere.')
-      return
-    }
-    saveSession(partner)
-    setMe(partner)
-    setLoginError('')
+    void (async () => {
+      const result = await loginMesaSession(partner, typed)
+      if (!result.ok) {
+        setLoginError(result.error)
+        return
+      }
+      saveSession(partner)
+      setMe(partner)
+      setLoginError('')
+      bumpMesa()
+    })()
   }
 
   function logout() {
@@ -173,21 +206,14 @@ export function AdminApp() {
         window.alert(result.error)
         return
       }
-      persist({
-        ...board,
-        activity: [
-          {
-            id: newId(),
-            at: new Date().toISOString(),
-            by: me,
-            text: note
-              ? `Abordou ${stamped.name}: ${note}`
-              : `Atualizou ${stamped.name}.`,
-            accountId: stamped.id,
-          },
-          ...board.activity,
-        ],
-      })
+      if (note.trim()) {
+        await createMesaActivity({
+          by: me,
+          accountId: stamped.id,
+          text: `Abordou ${stamped.name}: ${note.trim()}`,
+          kind: 'abordagem',
+        })
+      }
       bumpMesa()
     })()
   }
@@ -222,18 +248,21 @@ export function AdminApp() {
     if (!me) {
       return
     }
-    persist({
-      ...upsertGoals(board, { ...goals, month: currentMonth() }),
-      activity: [
-        {
-          id: newId(),
-          at: new Date().toISOString(),
-          by: me,
-          text: `Atualizou as metas de ${currentMonth()}.`,
-        },
-        ...board.activity,
-      ],
-    })
+    const next = { ...goals, month: currentMonth() }
+    persist(upsertGoals(board, next))
+    void (async () => {
+      const result = await saveMesaGoals(next)
+      if (!result.ok) {
+        window.alert(result.error)
+        return
+      }
+      await createMesaActivity({
+        by: me,
+        text: `Atualizou as metas de ${next.month}.`,
+        kind: 'meta',
+      })
+      bumpMesa()
+    })()
   }
 
   function exportBoard() {

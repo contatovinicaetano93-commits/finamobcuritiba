@@ -98,6 +98,7 @@ function sqlClient(): Sql {
 
 function expectedPassword(): string {
   return (
+    process.env.MESA_PASSWORD?.trim() ||
     process.env.ADMIN_PASSWORD?.trim() ||
     process.env.VITE_ADMIN_PASSWORD?.trim() ||
     'cwb-socios'
@@ -468,6 +469,277 @@ async function createCompany(sql: Sql, body: Record<string, unknown>, actor: str
   return { status: 201, body: { account: created } }
 }
 
+const GOAL_METRICS = ['abordagens', 'reunioes', 'mandatos'] as const
+type GoalMetric = (typeof GOAL_METRICS)[number]
+const GOAL_OWNERS = ['casa', 'vini', 'rafa', 'tadeu'] as const
+
+function isGoalMetric(value: string): value is GoalMetric {
+  return (
+    value === 'abordagens' || value === 'reunioes' || value === 'mandatos'
+  )
+}
+
+function isGoalOwner(value: string): boolean {
+  return (
+    value === 'casa' ||
+    value === 'vini' ||
+    value === 'rafa' ||
+    value === 'tadeu'
+  )
+}
+
+function emptyGoalSet() {
+  return { abordagens: 0, reunioes: 0, mandatos: 0 }
+}
+
+async function listPartners(sql: Sql) {
+  const rows = (await sql.query(
+    'SELECT id, name FROM partners ORDER BY id ASC',
+  )) as Array<{ id: string; name: string }>
+  return {
+    partners: rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      short: row.name.slice(0, 1).toUpperCase(),
+    })),
+  }
+}
+
+async function listActivity(sql: Sql, params: URLSearchParams) {
+  const companyId = (params.get('company_id') || '').trim()
+  const partnerId = (params.get('partner_id') || '').trim()
+  const day = (params.get('day') || '').trim()
+  const month = (params.get('month') || params.get('year_month') || '').trim()
+  const limit = Math.min(200, Math.max(1, Number(params.get('limit') || 80) || 80))
+  const clauses: string[] = []
+  const values: unknown[] = []
+  if (companyId) {
+    values.push(companyId)
+    clauses.push(`a.company_id = $${values.length}`)
+  }
+  if (partnerId && isOwner(partnerId)) {
+    values.push(partnerId)
+    clauses.push(`a.partner_id = $${values.length}`)
+  }
+  if (/^\d{4}-\d{2}-\d{2}$/.test(day)) {
+    values.push(day)
+    clauses.push(`a.created_at::date = $${values.length}::date`)
+  }
+  if (/^\d{4}-\d{2}$/.test(month)) {
+    values.push(month)
+    clauses.push(`to_char(a.created_at AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') = $${values.length}`)
+  }
+  const where = clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : ''
+  values.push(limit)
+  const rows = (await sql.query(
+    `SELECT a.id, a.partner_id, a.company_id, a.kind, a.note, a.meta, a.created_at,
+            c.name AS company_name
+     FROM activity_log a
+     LEFT JOIN companies c ON c.id = a.company_id
+     ${where}
+     ORDER BY a.created_at DESC
+     LIMIT $${values.length}`,
+    values,
+  )) as Array<{
+    id: string
+    partner_id: string
+    company_id: string | null
+    kind: string
+    note: string
+    meta: unknown
+    created_at: string | Date
+    company_name: string | null
+  }>
+  return {
+    activity: rows.map((row) => ({
+      id: String(row.id),
+      at: asStamp(row.created_at),
+      by: isOwner(row.partner_id) ? row.partner_id : 'vini',
+      text: row.note,
+      accountId: row.company_id || undefined,
+      companyName: row.company_name || undefined,
+      kind: row.kind,
+      meta: row.meta ?? {},
+    })),
+  }
+}
+
+async function createActivity(
+  sql: Sql,
+  body: Record<string, unknown>,
+  actor: string,
+) {
+  const partnerRaw = asString(body.by || body.partnerId || actor).trim()
+  const partnerId = isOwner(partnerRaw) ? partnerRaw : actor
+  if (!isOwner(partnerId)) {
+    return { status: 400, body: { error: 'Sócio inválido.' } }
+  }
+  const note = asString(body.text || body.note).trim()
+  if (!note) {
+    return { status: 400, body: { error: 'Texto da abordagem é obrigatório.' } }
+  }
+  const id = asString(body.id).trim() || crypto.randomUUID()
+  const companyId = asString(body.accountId || body.companyId).trim() || null
+  const kind = asString(body.kind).trim() || 'abordagem'
+  const meta =
+    body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
+      ? body.meta
+      : {}
+  await sql.query(
+    `INSERT INTO activity_log (id, partner_id, company_id, kind, note, meta)
+     VALUES ($1, $2, $3, $4, $5, $6::jsonb)`,
+    [id, partnerId, companyId, kind, note, JSON.stringify(meta)],
+  )
+  if (companyId) {
+    await sql.query(
+      `UPDATE companies SET last_contact_at = CURRENT_DATE, updated_at = now(), updated_by = $2
+       WHERE id = $1`,
+      [companyId, partnerId],
+    )
+  }
+  const listed = await listActivity(
+    sql,
+    new URLSearchParams(
+      companyId
+        ? { company_id: companyId, limit: '20' }
+        : { partner_id: partnerId, limit: '20' },
+    ),
+  )
+  const created =
+    listed.activity.find((item) => item.id === id) ??
+    listed.activity[0] ?? {
+      id,
+      at: new Date().toISOString(),
+      by: partnerId,
+      text: note,
+      accountId: companyId || undefined,
+      kind,
+      meta,
+    }
+  return { status: 201, body: { activity: created } }
+}
+
+function kindToMetric(kind: string): GoalMetric | null {
+  switch (kind) {
+    case 'abordagem':
+    case 'nota':
+      return 'abordagens'
+    case 'reuniao':
+    case 'reuniao_conversa':
+      return 'reunioes'
+    case 'mandato':
+      return 'mandatos'
+    default:
+      return null
+  }
+}
+
+async function listKpis(sql: Sql, yearMonth: string) {
+  const goalsBody = await listGoals(sql, yearMonth)
+  const rows = (await sql.query(
+    `SELECT partner_id, kind, count(*)::int AS total
+     FROM activity_log
+     WHERE to_char(created_at AT TIME ZONE 'America/Sao_Paulo', 'YYYY-MM') = $1
+     GROUP BY partner_id, kind`,
+    [yearMonth],
+  )) as Array<{ partner_id: string; kind: string; total: number }>
+
+  const actuals = {
+    casa: emptyGoalSet(),
+    vini: emptyGoalSet(),
+    rafa: emptyGoalSet(),
+    tadeu: emptyGoalSet(),
+  }
+
+  for (const row of rows) {
+    const metric = kindToMetric(row.kind)
+    if (!metric || !isOwner(row.partner_id)) {
+      continue
+    }
+    const partner = row.partner_id as 'vini' | 'rafa' | 'tadeu'
+    actuals[partner][metric] += row.total
+    actuals.casa[metric] += row.total
+  }
+
+  const weekRows = (await sql.query(
+    `SELECT partner_id, count(*)::int AS total
+     FROM activity_log
+     WHERE created_at AT TIME ZONE 'America/Sao_Paulo' >=
+           date_trunc('week', now() AT TIME ZONE 'America/Sao_Paulo')
+     GROUP BY partner_id`,
+    [],
+  )) as Array<{ partner_id: string; total: number }>
+  const weekByPartner = { vini: 0, rafa: 0, tadeu: 0, casa: 0 }
+  for (const row of weekRows) {
+    if (!isOwner(row.partner_id)) {
+      continue
+    }
+    weekByPartner[row.partner_id as 'vini' | 'rafa' | 'tadeu'] = row.total
+    weekByPartner.casa += row.total
+  }
+
+  return {
+    month: yearMonth,
+    goals: goalsBody.goals,
+    actuals,
+    week: weekByPartner,
+  }
+}
+
+async function listGoals(sql: Sql, yearMonth: string) {
+  const rows = (await sql.query(
+    `SELECT partner_id, metric, target
+     FROM month_goals WHERE year_month = $1`,
+    [yearMonth],
+  )) as Array<{ partner_id: string; metric: string; target: string | number }>
+  const goals = {
+    month: yearMonth,
+    casa: emptyGoalSet(),
+    vini: emptyGoalSet(),
+    rafa: emptyGoalSet(),
+    tadeu: emptyGoalSet(),
+  }
+  for (const row of rows) {
+    if (!isGoalOwner(row.partner_id) || !isGoalMetric(row.metric)) {
+      continue
+    }
+    const owner = row.partner_id as (typeof GOAL_OWNERS)[number]
+    goals[owner][row.metric] = Number(row.target) || 0
+  }
+  return { goals }
+}
+
+async function upsertGoals(
+  sql: Sql,
+  yearMonth: string,
+  body: Record<string, unknown>,
+) {
+  const month = asString(body.month).trim() || yearMonth
+  if (!/^\d{4}-\d{2}$/.test(month)) {
+    return { status: 400, body: { error: 'year_month inválido (YYYY-MM).' } }
+  }
+  for (const owner of GOAL_OWNERS) {
+    const block = body[owner]
+    if (!block || typeof block !== 'object' || Array.isArray(block)) {
+      continue
+    }
+    const set = block as Record<string, unknown>
+    for (const metric of GOAL_METRICS) {
+      const raw = set[metric]
+      const target = typeof raw === 'number' ? raw : Number(raw) || 0
+      const id = `${month}:${owner}:${metric}`
+      await sql.query(
+        `INSERT INTO month_goals (id, partner_id, year_month, metric, target, updated_at)
+         VALUES ($1, $2, $3, $4, $5, now())
+         ON CONFLICT (partner_id, year_month, metric)
+         DO UPDATE SET target = EXCLUDED.target, updated_at = now()`,
+        [id, owner, month, metric, target],
+      )
+    }
+  }
+  return { status: 200, body: await listGoals(sql, month) }
+}
+
 async function patchCompany(
   sql: Sql,
   id: string,
@@ -533,6 +805,56 @@ async function patchCompany(
 }
 
 export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse> {
+  const params = new URLSearchParams(request.search.replace(/^\?/, ''))
+  const parts = parsePath(request.pathname)
+  const method = request.method.toUpperCase()
+  const body = readBody(request.body)
+
+  if (parts[0] === 'session' && method === 'POST') {
+    const password =
+      asString(body.password).trim() || request.password.trim()
+    const partnerId = asString(body.partnerId || body.partner).trim()
+    if (!isOwner(partnerId)) {
+      return { status: 400, body: { error: 'Escolha Vini, Rafa ou Tadeu.' } }
+    }
+    if (password !== expectedPassword()) {
+      return { status: 401, body: { error: 'Senha da mesa não confere.' } }
+    }
+    let sql: Sql
+    try {
+      sql = sqlClient()
+    } catch (error) {
+      return {
+        status: 503,
+        body: {
+          error: error instanceof Error ? error.message : 'Banco indisponível.',
+        },
+      }
+    }
+    try {
+      const partners = await listPartners(sql)
+      const partner =
+        partners.partners.find((item) => item.id === partnerId) ?? {
+          id: partnerId,
+          name:
+            partnerId === 'vini'
+              ? 'Vini'
+              : partnerId === 'rafa'
+                ? 'Rafa'
+                : 'Tadeu',
+          short: partnerId.slice(0, 1).toUpperCase(),
+        }
+      return { status: 200, body: { ok: true, partner } }
+    } catch (error) {
+      return {
+        status: 500,
+        body: {
+          error: error instanceof Error ? error.message : 'Falha na mesa.',
+        },
+      }
+    }
+  }
+
   if (request.password !== expectedPassword()) {
     return { status: 401, body: { error: 'Senha da mesa não confere.' } }
   }
@@ -549,10 +871,11 @@ export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse>
     }
   }
 
-  const params = new URLSearchParams(request.search.replace(/^\?/, ''))
-  const parts = parsePath(request.pathname)
-  const method = request.method.toUpperCase()
-  const actor = params.get('by') || asString(readBody(request.body).updatedBy) || 'vini'
+  const actor =
+    params.get('by') ||
+    asString(body.updatedBy) ||
+    asString(body.by) ||
+    'vini'
 
   try {
     if (parts.length === 0 || (parts[0] === 'companies' && parts.length === 1)) {
@@ -560,7 +883,7 @@ export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse>
         return { status: 200, body: await listCompanies(sql, params) }
       }
       if (method === 'POST') {
-        return await createCompany(sql, readBody(request.body), actor)
+        return await createCompany(sql, body, actor)
       }
     }
     if (parts[0] === 'companies' && parts[1] && parts.length === 2) {
@@ -572,14 +895,21 @@ export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse>
         return { status: 200, body: { account } }
       }
       if (method === 'PATCH') {
-        const body = readBody(request.body)
-        return await patchCompany(
-          sql,
-          parts[1],
-          body,
-          actor,
-          asString(body.note).trim(),
-        )
+        const note = asString(body.note).trim()
+        const patched = await patchCompany(sql, parts[1], body, actor, note)
+        if (patched.status === 200 && note && isOwner(actor)) {
+          await createActivity(
+            sql,
+            {
+              by: actor,
+              accountId: parts[1],
+              text: note,
+              kind: 'abordagem',
+            },
+            actor,
+          )
+        }
+        return patched
       }
       if (method === 'DELETE') {
         await sql.query('DELETE FROM companies WHERE id = $1', [parts[1]])
@@ -594,6 +924,36 @@ export async function handleMesaApi(request: MesaRequest): Promise<MesaResponse>
     }
     if (parts[0] === 'facets' && method === 'GET') {
       return { status: 200, body: await facets(sql, params) }
+    }
+    if (parts[0] === 'partners' && method === 'GET') {
+      return { status: 200, body: await listPartners(sql) }
+    }
+    if (parts[0] === 'activity' && parts.length === 1) {
+      if (method === 'GET') {
+        return { status: 200, body: await listActivity(sql, params) }
+      }
+      if (method === 'POST') {
+        return await createActivity(sql, body, actor)
+      }
+    }
+    if (parts[0] === 'goals' && parts.length === 1) {
+      const yearMonth =
+        params.get('year_month') ||
+        asString(body.month).trim() ||
+        new Date().toISOString().slice(0, 7)
+      if (method === 'GET') {
+        return { status: 200, body: await listGoals(sql, yearMonth) }
+      }
+      if (method === 'PUT' || method === 'POST') {
+        return await upsertGoals(sql, yearMonth, body)
+      }
+    }
+    if (parts[0] === 'kpis' && method === 'GET') {
+      const yearMonth =
+        params.get('year_month') ||
+        params.get('month') ||
+        new Date().toISOString().slice(0, 7)
+      return { status: 200, body: await listKpis(sql, yearMonth) }
     }
     return { status: 404, body: { error: 'Rota da mesa não encontrada.' } }
   } catch (error) {

@@ -56,3 +56,45 @@ CREATE TABLE IF NOT EXISTS developments (
 CREATE INDEX IF NOT EXISTS developments_company_idx ON developments (company_id);
 CREATE INDEX IF NOT EXISTS developments_uf_idx ON developments (uf);
 CREATE INDEX IF NOT EXISTS developments_city_idx ON developments (city);
+
+CREATE TABLE IF NOT EXISTS partners (
+  id text PRIMARY KEY,
+  name text NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+INSERT INTO partners (id, name) VALUES
+  ('vini', 'Vini'),
+  ('rafa', 'Rafa'),
+  ('tadeu', 'Tadeu')
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
+
+CREATE TABLE IF NOT EXISTS activity_log (
+  id text PRIMARY KEY,
+  partner_id text NOT NULL REFERENCES partners (id),
+  company_id text REFERENCES companies (id) ON DELETE SET NULL,
+  kind text NOT NULL DEFAULT 'abordagem',
+  note text NOT NULL DEFAULT '',
+  meta jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS activity_log_partner_idx ON activity_log (partner_id);
+CREATE INDEX IF NOT EXISTS activity_log_company_idx ON activity_log (company_id);
+CREATE INDEX IF NOT EXISTS activity_log_created_idx ON activity_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS activity_log_kind_idx ON activity_log (kind);
+
+-- partner_id may be a partner id or the synthetic "casa" bucket for house goals
+CREATE TABLE IF NOT EXISTS month_goals (
+  id text PRIMARY KEY,
+  partner_id text NOT NULL,
+  year_month text NOT NULL,
+  metric text NOT NULL,
+  target numeric NOT NULL DEFAULT 0,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (partner_id, year_month, metric)
+);
+
+CREATE INDEX IF NOT EXISTS month_goals_year_month_idx ON month_goals (year_month);
+CREATE INDEX IF NOT EXISTS month_goals_partner_idx ON month_goals (partner_id);

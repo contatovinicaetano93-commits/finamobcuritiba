@@ -62,6 +62,7 @@ export interface Activity {
   by: PartnerId
   text: string
   accountId?: string
+  kind?: string
 }
 
 export interface AdminBoard {

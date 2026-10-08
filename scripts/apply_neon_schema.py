@@ -40,13 +40,22 @@ def main() -> None:
                 SELECT table_name
                 FROM information_schema.tables
                 WHERE table_schema = 'public'
-                  AND table_name IN ('companies', 'developments')
+                  AND table_name IN (
+                    'companies',
+                    'developments',
+                    'partners',
+                    'activity_log',
+                    'month_goals'
+                  )
                 ORDER BY table_name
                 """
             )
             tables = [row[0] for row in cur.fetchall()]
+            cur.execute("SELECT id, name FROM partners ORDER BY id")
+            partners = [f"{row[0]}={row[1]}" for row in cur.fetchall()]
         conn.commit()
     print("schema ok", ",".join(tables))
+    print("partners", ",".join(partners))
 
 
 if __name__ == "__main__":

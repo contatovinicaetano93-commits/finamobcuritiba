@@ -73,16 +73,28 @@ export function dueQueue(accounts: Account[], today = todayIso()): Account[] {
 
 export function weekActions(board: AdminBoard): number {
   const start = weekStart()
+  const fromActivity = board.activity.filter((item) => {
+    const day = item.at.slice(0, 10)
+    return day >= start && (item.kind === 'abordagem' || !item.kind)
+  }).length
+  if (fromActivity > 0) {
+    return fromActivity
+  }
   return board.accounts.filter(
     (account) => account.lastContactAt && account.lastContactAt >= start,
   ).length
 }
 
 export function monthActuals(board: AdminBoard, month = currentMonth()): GoalSet {
-  const accounts = board.accounts
-  const abordagens = accounts.filter((account) =>
-    inMonth(account.lastContactAt, month),
+  const activityAbordagens = board.activity.filter(
+    (item) =>
+      inMonth(item.at.slice(0, 10), month) && item.kind !== 'meta',
   ).length
+  const accounts = board.accounts
+  const abordagens =
+    activityAbordagens > 0
+      ? activityAbordagens
+      : accounts.filter((account) => inMonth(account.lastContactAt, month)).length
   const reunioes = accounts.filter(
     (account) =>
       (account.status === 'em_conversa' || account.status === 'follow_up') &&
@@ -100,6 +112,16 @@ export function partnerActuals(
   partner: PartnerId,
   month = currentMonth(),
 ): GoalSet {
+  const partnerActivity = board.activity.filter((item) => item.by === partner)
+  const fromLog = partnerActivity.filter(
+    (item) =>
+      inMonth(item.at.slice(0, 10), month) &&
+      item.kind !== 'meta',
+  ).length
   const mine = board.accounts.filter((account) => account.owner === partner)
-  return monthActuals({ ...board, accounts: mine }, month)
+  const base = monthActuals({ ...board, accounts: mine, activity: partnerActivity }, month)
+  if (fromLog > 0) {
+    return { ...base, abordagens: fromLog }
+  }
+  return base
 }
