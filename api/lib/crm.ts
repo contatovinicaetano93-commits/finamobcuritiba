@@ -632,6 +632,7 @@ async function createActivity(
 function kindToMetric(kind: string): GoalMetric | null {
   switch (kind) {
     case 'abordagem':
+    case 'whatsapp':
     case 'nota':
       return 'abordagens'
     case 'reuniao':

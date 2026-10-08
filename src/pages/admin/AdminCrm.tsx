@@ -14,6 +14,7 @@ import {
   type PartnerId,
 } from '@/data/admin'
 import {
+  createMesaActivity,
   fetchMesaActivity,
   fetchMesaCompanies,
   fetchMesaCompany,
@@ -25,6 +26,11 @@ import {
   type MesaQuery,
   type MesaScope,
 } from '@/lib/mesa-api'
+import {
+  buildWhatsAppUrl,
+  defaultWhatsAppMessage,
+  normalizePhoneBr,
+} from '@/lib/whatsapp'
 import { AiBriefingPanel } from '@/pages/admin/AiBriefingPanel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -874,6 +880,42 @@ function EditForm({
 }) {
   const [draft, setDraft] = useState(account)
   const [log, setLog] = useState('')
+  const [waBusy, setWaBusy] = useState(false)
+  const waOk = Boolean(normalizePhoneBr(draft.phone))
+
+  async function openWhatsApp() {
+    const url = buildWhatsAppUrl(
+      draft.phone,
+      defaultWhatsAppMessage(draft.name, draft.city, draft.uf),
+    )
+    if (!url || waBusy) {
+      return
+    }
+    setWaBusy(true)
+    window.open(url, '_blank', 'noopener,noreferrer')
+    const result = await createMesaActivity({
+      by: me,
+      accountId: account.id,
+      text: `Abriu WhatsApp com ${draft.name}.`,
+      kind: 'whatsapp',
+    })
+    setWaBusy(false)
+    if (!result.ok) {
+      window.alert(result.error)
+      return
+    }
+    if (draft.status === 'novo' || draft.status === 'abordar') {
+      onSave(
+        {
+          ...draft,
+          status: 'em_conversa',
+          owner: draft.owner ?? me,
+          lastContactAt: draft.lastContactAt || todayIso(),
+        },
+        'WhatsApp aberto.',
+      )
+    }
+  }
 
   return (
     <form
@@ -898,6 +940,21 @@ function EditForm({
           <StatusPill status={draft.status} />
         </div>
       </SheetHeader>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          type="button"
+          disabled={!waOk || waBusy}
+          onClick={() => void openWhatsApp()}
+          className="bg-[#128C7E] text-white hover:bg-[#0e6e63]"
+        >
+          {waBusy ? 'Abrindo…' : 'WhatsApp'}
+        </Button>
+        {!waOk ? (
+          <p className="text-xs text-black/45">
+            Sem telefone válido para WhatsApp.
+          </p>
+        ) : null}
+      </div>
       <AiBriefingPanel companyId={account.id} />
       <Field label="Empresa" htmlFor="edit-name">
         <Input

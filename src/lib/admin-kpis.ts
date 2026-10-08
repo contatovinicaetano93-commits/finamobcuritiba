@@ -75,7 +75,7 @@ export function weekActions(board: AdminBoard): number {
   const start = weekStart()
   const fromActivity = board.activity.filter((item) => {
     const day = item.at.slice(0, 10)
-    return day >= start && (item.kind === 'abordagem' || !item.kind)
+    return day >= start && (item.kind === 'abordagem' || item.kind === 'whatsapp' || !item.kind)
   }).length
   if (fromActivity > 0) {
     return fromActivity
