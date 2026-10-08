@@ -14,6 +14,7 @@ import {
   type PartnerId,
 } from '@/data/admin'
 import {
+  createMesaActivity,
   fetchMesaActivity,
   fetchMesaCompanies,
   fetchMesaCompany,
@@ -25,6 +26,11 @@ import {
   type MesaQuery,
   type MesaScope,
 } from '@/lib/mesa-api'
+import {
+  buildWhatsAppUrl,
+  defaultWhatsAppMessage,
+  normalizePhoneBr,
+} from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,6 +56,7 @@ import {
   StatusPill,
 } from '@/pages/admin/admin-ui'
 import { cn } from '@/lib/utils'
+import { MessageCircle } from 'lucide-react'
 
 const STATUSES: AccountStatus[] = [
   'novo',
@@ -81,6 +88,7 @@ type AdminCrmProps = {
   ) => void
   onDelete: (id: string) => void
   onImport: (event: ChangeEvent<HTMLInputElement>) => void
+  onActivityLogged?: () => void
 }
 
 export function AdminCrm({
@@ -97,6 +105,7 @@ export function AdminCrm({
   onCreate,
   onDelete,
   onImport,
+  onActivityLogged,
 }: AdminCrmProps) {
   const [scope, setScope] = useState<MesaScope>('praca')
   const [region, setRegion] = useState('')
@@ -599,6 +608,7 @@ export function AdminCrm({
               onSave={(next, note) => {
                 onSave(next, note)
               }}
+              onActivityLogged={onActivityLogged}
             />
           ) : null}
         </SheetContent>
@@ -863,6 +873,7 @@ function EditForm({
   timelineState,
   onSave,
   onDelete,
+  onActivityLogged,
 }: {
   me: PartnerId
   account: MesaAccount
@@ -870,9 +881,36 @@ function EditForm({
   timelineState: 'idle' | 'loading' | 'error' | 'ready'
   onSave: (account: Account, note: string) => void
   onDelete: () => void
+  onActivityLogged?: () => void
 }) {
   const [draft, setDraft] = useState(account)
   const [log, setLog] = useState('')
+  const [whatsappBusy, setWhatsappBusy] = useState(false)
+  const whatsappPhone = normalizePhoneBr(draft.phone)
+  const whatsappUrl = buildWhatsAppUrl(
+    draft.phone,
+    defaultWhatsAppMessage(draft.name, draft.city, draft.uf),
+  )
+
+  async function openWhatsApp() {
+    if (!whatsappUrl || whatsappBusy) {
+      return
+    }
+    setWhatsappBusy(true)
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+    const result = await createMesaActivity({
+      by: me,
+      accountId: account.id,
+      kind: 'whatsapp',
+      text: `WhatsApp aberto para ${draft.name.trim() || account.name}.`,
+    })
+    setWhatsappBusy(false)
+    if (!result.ok) {
+      window.alert(result.error)
+      return
+    }
+    onActivityLogged?.()
+  }
 
   return (
     <form
@@ -1004,6 +1042,8 @@ function EditForm({
               setDraft({ ...draft, phone: event.target.value })
             }
             className="bg-white"
+            inputMode="tel"
+            autoComplete="tel"
           />
         </Field>
         <Field label="E-mail" htmlFor="edit-email">
@@ -1017,6 +1057,26 @@ function EditForm({
             className="bg-white"
           />
         </Field>
+      </div>
+      <div className="space-y-1.5">
+        <Button
+          type="button"
+          className="w-full sm:w-auto"
+          disabled={!whatsappPhone || whatsappBusy}
+          onClick={() => void openWhatsApp()}
+        >
+          <MessageCircle className="size-4" />
+          {whatsappBusy ? 'Abrindo…' : 'WhatsApp'}
+        </Button>
+        {!whatsappPhone ? (
+          <p className="text-xs text-black/45">
+            Informe um telefone válido (DDD + número) para abrir o WhatsApp.
+          </p>
+        ) : (
+          <p className="text-xs text-black/45">
+            Abre wa.me/{whatsappPhone} com mensagem pronta · registra no Neon.
+          </p>
+        )}
       </div>
       <Field label="CNPJ" htmlFor="edit-doc">
         <Input

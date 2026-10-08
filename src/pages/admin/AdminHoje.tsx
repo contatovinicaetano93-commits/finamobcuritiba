@@ -6,6 +6,7 @@ import {
   CalendarClock,
   ChartColumnIncreasing,
   Handshake,
+  MessageCircle,
   Phone,
   Plus,
   Target,
@@ -35,6 +36,11 @@ import {
   type MesaKpis,
   type MesaSummary,
 } from '@/lib/mesa-api'
+import {
+  buildWhatsAppUrl,
+  defaultWhatsAppMessage,
+  normalizePhoneBr,
+} from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -471,7 +477,13 @@ export function AdminHoje({
         {due.length > 0 ? (
           <ul className="mt-4 divide-y divide-black/6">
             {due.slice(0, 4).map((account) => (
-              <QueueRow key={account.id} account={account} onOpen={onOpen} />
+              <QueueRow
+                key={account.id}
+                account={account}
+                me={me}
+                onOpen={onOpen}
+                onActivityLogged={onActivityLogged}
+              />
             ))}
           </ul>
         ) : null}
@@ -628,17 +640,48 @@ function pendingTone(tone: 'warm' | 'cool' | 'alert'): {
 
 function QueueRow({
   account,
+  me,
   onOpen,
+  onActivityLogged,
 }: {
   account: Account
+  me: PartnerId
   onOpen: (id: string) => void
+  onActivityLogged?: () => void
 }) {
+  const [busy, setBusy] = useState(false)
+  const phoneOk = Boolean(normalizePhoneBr(account.phone))
+  const whatsappUrl = buildWhatsAppUrl(
+    account.phone,
+    defaultWhatsAppMessage(account.name, account.city, account.uf),
+  )
+
+  async function openWhatsApp() {
+    if (!whatsappUrl || busy) {
+      return
+    }
+    setBusy(true)
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+    const result = await createMesaActivity({
+      by: me,
+      accountId: account.id,
+      kind: 'whatsapp',
+      text: `WhatsApp aberto para ${account.name}.`,
+    })
+    setBusy(false)
+    if (!result.ok) {
+      window.alert(result.error)
+      return
+    }
+    onActivityLogged?.()
+  }
+
   return (
-    <li>
+    <li className="flex items-center gap-2 py-3">
       <button
         type="button"
         onClick={() => onOpen(account.id)}
-        className="flex w-full items-center gap-3 py-3 text-left"
+        className="flex min-w-0 flex-1 items-center gap-3 text-left"
       >
         <OwnerMark id={account.owner} />
         <span className="min-w-0 flex-1">
@@ -651,6 +694,29 @@ function QueueRow({
         <span className="hidden text-xs text-black/40 sm:inline">
           {formatDay(account.nextActionAt)}
         </span>
+      </button>
+      <button
+        type="button"
+        disabled={!phoneOk || busy}
+        title={
+          phoneOk
+            ? 'Abrir WhatsApp'
+            : 'Telefone inválido ou ausente'
+        }
+        aria-label={
+          phoneOk
+            ? `WhatsApp ${account.name}`
+            : 'WhatsApp indisponível — telefone ausente'
+        }
+        onClick={() => void openWhatsApp()}
+        className={cn(
+          'inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-black/10',
+          phoneOk
+            ? 'bg-[#21553a] text-white hover:bg-[#1a4430]'
+            : 'cursor-not-allowed bg-black/5 text-black/30',
+        )}
+      >
+        <MessageCircle size={16} />
       </button>
     </li>
   )
