@@ -48,19 +48,17 @@ A API local/Vercel fica em `/api/crm`. Copie `DATABASE_URL` no painel da Vercel 
 
 Área fechada para os três. Não aparece no menu público.
 
-- CRM próprio da praça: incorporadoras, construtoras e novos, com dono, estágio da ativação, contato, telefone, e-mail e próximo passo
-- Lista densa e pipeline (Novo → Abordar → Em conversa → Follow-up → Mandato)
-- Base da praça: 420 incorporadoras e construtoras no raio de Curitiba (backup Radar). Botão **Carregar praça Curitiba** no CRM
+- CRM no Neon: 8.498 empresas do Brasil e 40.521 empreendimentos. O recorte padrão é a **praça Curitiba** (420 no raio de 100 km)
+- Filtros: Praça Curitiba, Paraná, Sul, Brasil, região, UF e cidade
+- Card da empresa lista os empreendimentos do dump (nome, cidade, estágio, unidades)
+- Lista e pipeline (Novo → Abordar → Em conversa → Follow-up → Mandato)
+- Fila do dia, KPIs e metas (metas e log de atividade ainda no navegador)
 - Importar Excel, CSV, JSON ou ZIP (merge: não apaga ativação já registrada)
-- Fila do dia (sua e da casa)
-- KPIs do mês e pipeline
-- Metas da casa e de cada sócio
-- Exportar o quadro JSON para os três trabalharem no mesmo navegador até existir servidor
-- `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir. Sem chave, a base entra pelo arquivo.
+- `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir
 
-Senha local padrão: `cwb-socios` (troquem com `VITE_ADMIN_PASSWORD`). Os dados ficam neste navegador; usem exportar para passar o quadro ao outro sócio.
+Senha local padrão: `cwb-socios` (troquem com `VITE_ADMIN_PASSWORD` e `ADMIN_PASSWORD`). A base de contas vive no Postgres; não commite `DATABASE_URL`.
 
-A mesa **não** abre o CRM de outro sistema por conta própria. Quando houver URL, token e o JSON no formato da mesa (`VITE_CRM_API_URL` / `VITE_CRM_API_TOKEN`, ou os campos em Integração), o botão **Puxar agora** troca as contas locais pelas da API.
+A mesa **não** abre o CRM de outro sistema por conta própria.
 
 ## PDF
 
