@@ -26,3 +26,4 @@ agent-tools
 *.njsproj
 *.sln
 *.sw?
+.vercel
