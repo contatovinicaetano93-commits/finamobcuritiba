@@ -52,7 +52,7 @@ A API local/Vercel fica em `/api/crm`. Copie `DATABASE_URL` no painel da Vercel 
 - Filtros: Praça Curitiba, Paraná, Sul, Brasil, região, UF e cidade
 - Card da empresa lista os empreendimentos do dump (nome, cidade, estágio, unidades)
 - Lista e pipeline (Novo → Abordar → Em conversa → Follow-up → Mandato)
-- Fila do dia, KPIs e metas (metas e log de atividade ainda no navegador)
+- Fila do dia, KPIs e metas no Neon (`activity_log` + `month_goals`), com identidade do sócio na sessão
 - Importar Excel, CSV, JSON ou ZIP (merge: não apaga ativação já registrada)
 - `/admin/integracao` — porta para uma API oficial: cole URL e token que a casa emitir
 

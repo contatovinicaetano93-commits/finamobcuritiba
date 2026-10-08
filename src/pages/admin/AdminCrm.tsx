@@ -588,6 +588,7 @@ export function AdminCrm({
           ) : selected ? (
             <EditForm
               key={selected.id}
+              me={me}
               account={selected}
               timeline={timeline}
               timelineState={timelineState}
@@ -856,12 +857,14 @@ function CreateForm({
 }
 
 function EditForm({
+  me,
   account,
   timeline,
   timelineState,
   onSave,
   onDelete,
 }: {
+  me: PartnerId
   account: MesaAccount
   timeline: MesaActivity[]
   timelineState: 'idle' | 'loading' | 'error' | 'ready'
@@ -1129,7 +1132,10 @@ function EditForm({
           </ul>
         ) : null}
       </div>
-      <Field label="Registrar abordagem agora" htmlFor="edit-log">
+      <Field
+        label={`Registrar abordagem agora · ${partnerLabel(me)}`}
+        htmlFor="edit-log"
+      >
         <Textarea
           id="edit-log"
           value={log}
@@ -1137,6 +1143,9 @@ function EditForm({
           placeholder="O que foi falado, quem atendeu, próximo passo."
           className="min-h-20 bg-white"
         />
+        <p className="text-xs text-black/45">
+          Entra no activity_log do Neon no nome de {partnerLabel(me)}.
+        </p>
       </Field>
       <div className="flex flex-wrap gap-2">
         <Button type="submit">Salvar</Button>

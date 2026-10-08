@@ -9,10 +9,11 @@ import { cn } from '@/lib/utils'
 
 type AdminLoginProps = {
   error: string
+  busy?: boolean
   onSubmit: (partner: PartnerId, password: string) => void
 }
 
-export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
+export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
   const [partner, setPartner] = useState<PartnerId>('vini')
 
   const hint = useMemo(
@@ -73,17 +74,19 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
           </h2>
         </div>
         <p className="mt-4 text-sm leading-relaxed text-black/60">
-          Escolha o sócio e entre com a senha da casa.
+          Escolha o sócio (Vini, Rafa ou Tadeu) e entre com a senha da mesa. A
+          sessão fica no navegador e o quadro puxa metas e timeline no Neon.
         </p>
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="mb-3 text-sm font-medium">Sessão</legend>
+            <legend className="mb-3 text-sm font-medium">Quem está na mesa</legend>
             <div className="grid grid-cols-3 gap-2">
               {PARTNERS.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => setPartner(item.id)}
+                  aria-pressed={partner === item.id}
                   className={cn(
                     'flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 text-sm transition-colors',
                     partner === item.id
@@ -96,6 +99,7 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
                 </button>
               ))}
             </div>
+            <input type="hidden" name="partnerId" value={partner} />
           </fieldset>
           <div className="space-y-2">
             <Label htmlFor="admin-password">Senha da mesa</Label>
@@ -103,6 +107,7 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
               id="admin-password"
               name="password"
               type="password"
+              required
               autoComplete="current-password"
             />
             <p className="text-xs text-black/50">{hint}</p>
@@ -112,8 +117,8 @@ export function AdminLogin({ error, onSubmit }: AdminLoginProps) {
               {error}
             </p>
           ) : null}
-          <Button type="submit" size="lg" className="w-full">
-            Entrar na mesa
+          <Button type="submit" size="lg" className="w-full" disabled={busy}>
+            {busy ? 'Entrando…' : 'Entrar na mesa'}
           </Button>
         </form>
       </section>

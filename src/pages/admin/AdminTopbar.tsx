@@ -92,7 +92,7 @@ export function AdminTopbar({
               onChange={onImport}
             />
           </label>
-          <span className="hidden items-center gap-2 rounded-full border border-black/8 bg-white py-1 pr-3 pl-1 sm:inline-flex">
+          <span className="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white py-1 pr-3 pl-1">
             <OwnerMark id={me} />
             <span className="text-sm">{partner.name}</span>
           </span>

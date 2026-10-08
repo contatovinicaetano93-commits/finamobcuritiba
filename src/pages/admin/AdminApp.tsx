@@ -1,24 +1,22 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
-  currentMonth,
+  ADMIN_PASSWORD,
   newId,
   partnerById,
   todayIso,
   type Account,
-  type Activity,
   type AdminBoard,
-  type MonthGoals,
   type PartnerId,
 } from '@/data/admin'
 import {
   clearSession,
   ensureMonth,
+  hydrateMesaBoard,
   loadBoard,
   loadSession,
   saveBoard,
   saveSession,
-  upsertGoals,
 } from '@/lib/admin-store'
 import {
   importErrorMessage,
@@ -26,15 +24,11 @@ import {
 } from '@/lib/crm-import'
 import { mergeImportedAccounts } from '@/lib/crm-merge'
 import {
-  createMesaActivity,
   createMesaCompany,
   deleteMesaCompany,
-  fetchMesaActivity,
   fetchMesaDue,
-  fetchMesaGoals,
   loginMesaSession,
   saveMesaCompany,
-  saveMesaGoals,
   type MesaAccount,
 } from '@/lib/mesa-api'
 import { dueQueue } from '@/lib/admin-kpis'
@@ -54,6 +48,7 @@ export function AdminApp() {
   const [me, setMe] = useState<PartnerId | null>(null)
   const [board, setBoard] = useState<AdminBoard>(() => ensureMonth(loadBoard()))
   const [loginError, setLoginError] = useState('')
+  const [loginBusy, setLoginBusy] = useState(false)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [navOpen, setNavOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -90,12 +85,14 @@ export function AdminApp() {
   }, [])
 
   useEffect(() => {
+    if (!me) {
+      return
+    }
     let cancelled = false
     void (async () => {
-      const [due, goals, activity] = await Promise.all([
+      const [due, hydrated] = await Promise.all([
         fetchMesaDue({ scope: 'praca' }),
-        fetchMesaGoals(currentMonth()),
-        fetchMesaActivity({ limit: 80 }),
+        hydrateMesaBoard(loadBoard()),
       ])
       if (cancelled) {
         return
@@ -103,24 +100,7 @@ export function AdminApp() {
       if (due.ok) {
         setDueAccounts(due.data.accounts)
       }
-      setBoard((prev) => {
-        let next = ensureMonth(prev)
-        if (goals.ok) {
-          next = upsertGoals(next, goals.data.goals)
-        }
-        if (activity.ok) {
-          const mapped: Activity[] = activity.data.activity.map((item) => ({
-            id: item.id,
-            at: item.at,
-            by: item.by,
-            text: item.text,
-            accountId: item.accountId,
-          }))
-          next = { ...next, activity: mapped }
-        }
-        saveBoard(next)
-        return next
-      })
+      setBoard(hydrated)
     })()
     return () => {
       cancelled = true
@@ -133,16 +113,26 @@ export function AdminApp() {
       setLoginError('Digite a senha da mesa.')
       return
     }
+    setLoginBusy(true)
+    setLoginError('')
     void (async () => {
       const result = await loginMesaSession(partner, typed)
-      if (!result.ok) {
-        setLoginError(result.error)
+      if (result.ok) {
+        saveSession(partner, typed)
+        setMe(partner)
+        setLoginBusy(false)
+        bumpMesa()
         return
       }
-      saveSession(partner)
-      setMe(partner)
-      setLoginError('')
-      bumpMesa()
+      // Offline / API down: allow local password so the mesa still opens.
+      if (typed === ADMIN_PASSWORD) {
+        saveSession(partner, typed)
+        setMe(partner)
+        setLoginBusy(false)
+        return
+      }
+      setLoginError(result.error || 'Senha não confere.')
+      setLoginBusy(false)
     })()
   }
 
@@ -206,14 +196,7 @@ export function AdminApp() {
         window.alert(result.error)
         return
       }
-      if (note.trim()) {
-        await createMesaActivity({
-          by: me,
-          accountId: stamped.id,
-          text: `Abordou ${stamped.name}: ${note.trim()}`,
-          kind: 'abordagem',
-        })
-      }
+      // PATCH with note already writes activity_log on the API.
       bumpMesa()
     })()
   }
@@ -239,27 +222,6 @@ export function AdminApp() {
           },
           ...board.activity,
         ],
-      })
-      bumpMesa()
-    })()
-  }
-
-  function saveGoals(goals: MonthGoals) {
-    if (!me) {
-      return
-    }
-    const next = { ...goals, month: currentMonth() }
-    persist(upsertGoals(board, next))
-    void (async () => {
-      const result = await saveMesaGoals(next)
-      if (!result.ok) {
-        window.alert(result.error)
-        return
-      }
-      await createMesaActivity({
-        by: me,
-        text: `Atualizou as metas de ${next.month}.`,
-        kind: 'meta',
       })
       bumpMesa()
     })()
@@ -318,7 +280,7 @@ export function AdminApp() {
   if (!me) {
     return (
       <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
-        <AdminLogin error={loginError} onSubmit={login} />
+        <AdminLogin error={loginError} busy={loginBusy} onSubmit={login} />
       </div>
     )
   }
@@ -379,18 +341,16 @@ export function AdminApp() {
                 index
                 element={
                   <AdminHoje
-                    board={{
-                      ...board,
-                      accounts:
-                        dueAccounts.length > 0 ? dueAccounts : board.accounts,
-                    }}
                     me={me}
+                    dueAccounts={dueAccounts}
+                    reloadToken={reloadToken}
                     onOpen={(id) => {
                       setSelectedId(id)
                       navigate('/admin/crm')
                     }}
                     onCreate={openCreate}
                     onExport={exportBoard}
+                    onActivityLogged={bumpMesa}
                   />
                 }
               />
@@ -414,10 +374,19 @@ export function AdminApp() {
                   />
                 }
               />
-              <Route path="kpis" element={<AdminKpis board={board} me={me} />} />
+              <Route
+                path="kpis"
+                element={<AdminKpis me={me} reloadToken={reloadToken} />}
+              />
               <Route
                 path="metas"
-                element={<AdminMetas board={board} me={me} onSave={saveGoals} />}
+                element={
+                  <AdminMetas
+                    me={me}
+                    reloadToken={reloadToken}
+                    onSaved={bumpMesa}
+                  />
+                }
               />
               <Route
                 path="integracao"

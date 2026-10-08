@@ -85,25 +85,46 @@ export function weekActions(board: AdminBoard): number {
   ).length
 }
 
-export function monthActuals(board: AdminBoard, month = currentMonth()): GoalSet {
-  const activityAbordagens = board.activity.filter(
+function activityInMonth(board: AdminBoard, month: string, kinds: string[]) {
+  return board.activity.filter(
     (item) =>
-      inMonth(item.at.slice(0, 10), month) && item.kind !== 'meta',
+      inMonth(item.at.slice(0, 10), month) &&
+      kinds.includes(item.kind || 'abordagem'),
   ).length
+}
+
+export function monthActuals(board: AdminBoard, month = currentMonth()): GoalSet {
   const accounts = board.accounts
+  const fromLogAbordagens = activityInMonth(board, month, [
+    'abordagem',
+    'nota',
+  ])
+  const fromLogReunioes = activityInMonth(board, month, [
+    'reuniao',
+    'reuniao_conversa',
+  ])
+  const fromLogMandatos = activityInMonth(board, month, ['mandato'])
+
   const abordagens =
-    activityAbordagens > 0
-      ? activityAbordagens
+    fromLogAbordagens > 0
+      ? fromLogAbordagens
       : accounts.filter((account) => inMonth(account.lastContactAt, month)).length
-  const reunioes = accounts.filter(
-    (account) =>
-      (account.status === 'em_conversa' || account.status === 'follow_up') &&
-      inMonth(account.updatedAt.slice(0, 10), month),
-  ).length
-  const mandatos = accounts.filter(
-    (account) =>
-      account.status === 'mandato' && inMonth(account.updatedAt.slice(0, 10), month),
-  ).length
+  const reunioes =
+    fromLogReunioes > 0
+      ? fromLogReunioes
+      : accounts.filter(
+          (account) =>
+            (account.status === 'em_conversa' || account.status === 'follow_up') &&
+            inMonth(account.updatedAt.slice(0, 10), month),
+        ).length
+  const mandatos =
+    fromLogMandatos > 0
+      ? fromLogMandatos
+      : accounts.filter(
+          (account) =>
+            account.status === 'mandato' &&
+            inMonth(account.updatedAt.slice(0, 10), month),
+        ).length
   return { abordagens, reunioes, mandatos }
 }
 
@@ -113,15 +134,9 @@ export function partnerActuals(
   month = currentMonth(),
 ): GoalSet {
   const partnerActivity = board.activity.filter((item) => item.by === partner)
-  const fromLog = partnerActivity.filter(
-    (item) =>
-      inMonth(item.at.slice(0, 10), month) &&
-      item.kind !== 'meta',
-  ).length
   const mine = board.accounts.filter((account) => account.owner === partner)
-  const base = monthActuals({ ...board, accounts: mine, activity: partnerActivity }, month)
-  if (fromLog > 0) {
-    return { ...base, abordagens: fromLog }
-  }
-  return base
+  return monthActuals(
+    { ...board, accounts: mine, activity: partnerActivity },
+    month,
+  )
 }

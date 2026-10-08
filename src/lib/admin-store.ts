@@ -7,12 +7,20 @@ import {
   type Account,
   type AccountList,
   type AccountStatus,
-  type Activity,
+  type ActivityEntry,
   type AdminBoard,
   type GoalSet,
-  type MonthGoals,
+  type MonthGoal,
   type PartnerId,
 } from '@/data/admin'
+import {
+  clearMesaPassword,
+  createActivity,
+  listActivity,
+  listGoals,
+  saveMesaPassword,
+  upsertGoals as upsertGoalsApi,
+} from '@/lib/mesa-api'
 
 const BOARD_KEY = 'finamob-curitiba-admin-board-v1'
 const SESSION_KEY = 'finamob-curitiba-admin-session'
@@ -95,11 +103,11 @@ function isGoalSet(value: unknown): value is GoalSet {
   )
 }
 
-function isMonthGoals(value: unknown): value is MonthGoals {
+function isMonthGoals(value: unknown): value is MonthGoal {
   if (!value || typeof value !== 'object') {
     return false
   }
-  const item = value as MonthGoals
+  const item = value as MonthGoal
   return (
     typeof item.month === 'string' &&
     isGoalSet(item.casa) &&
@@ -109,11 +117,11 @@ function isMonthGoals(value: unknown): value is MonthGoals {
   )
 }
 
-function isActivity(value: unknown): value is Activity {
+function isActivity(value: unknown): value is ActivityEntry {
   if (!value || typeof value !== 'object') {
     return false
   }
-  const item = value as Activity
+  const item = value as ActivityEntry
   return (
     typeof item.id === 'string' &&
     typeof item.at === 'string' &&
@@ -205,11 +213,14 @@ export function loadSession(): PartnerId | null {
   }
 }
 
-export function saveSession(id: PartnerId): void {
+export function saveSession(id: PartnerId, password?: string): void {
   try {
     window.sessionStorage.setItem(SESSION_KEY, id)
   } catch {
-    return
+    // ignore
+  }
+  if (typeof password === 'string' && password.trim()) {
+    saveMesaPassword(password)
   }
 }
 
@@ -217,11 +228,13 @@ export function clearSession(): void {
   try {
     window.sessionStorage.removeItem(SESSION_KEY)
   } catch {
-    return
+    // ignore
   }
+  clearMesaPassword()
 }
 
-export function upsertGoals(board: AdminBoard, next: MonthGoals): AdminBoard {
+/** Merge a MonthGoal into the in-memory board (local cache shape). */
+export function upsertGoals(board: AdminBoard, next: MonthGoal): AdminBoard {
   const rest = board.goals.filter((item) => item.month !== next.month)
   return { ...board, goals: [...rest, next] }
 }
@@ -232,4 +245,91 @@ export function ensureMonth(board: AdminBoard): AdminBoard {
     return board
   }
   return upsertGoals(board, monthGoals(board, month))
+}
+
+/**
+ * Pull goals + activity from Neon via `/api/crm`.
+ * On network/API failure, keeps whatever is already in the localStorage cache.
+ */
+export async function hydrateMesaBoard(
+  board: AdminBoard,
+  month = currentMonth(),
+): Promise<AdminBoard> {
+  let next = ensureMonth(board)
+  const [goalsResult, activityResult] = await Promise.all([
+    listGoals(month),
+    listActivity({ limit: 80 }),
+  ])
+  if (goalsResult.ok) {
+    next = upsertGoals(next, goalsResult.data.goals)
+  }
+  if (activityResult.ok) {
+    next = {
+      ...next,
+      activity: activityResult.data.activity.filter(isActivity),
+    }
+  }
+  saveBoard(next)
+  return next
+}
+
+/** Persist month goals to Neon; always updates the localStorage cache. */
+export async function saveGoalsRemote(
+  board: AdminBoard,
+  goals: MonthGoal,
+): Promise<
+  | { ok: true; board: AdminBoard; goals: MonthGoal }
+  | { ok: false; board: AdminBoard; error: string }
+> {
+  const cached = upsertGoals(board, goals)
+  saveBoard(cached)
+  const result = await upsertGoalsApi(goals)
+  if (!result.ok) {
+    return { ok: false, board: cached, error: result.error }
+  }
+  const synced = upsertGoals(cached, result.data.goals)
+  saveBoard(synced)
+  return { ok: true, board: synced, goals: result.data.goals }
+}
+
+/** Append an activity row to Neon; caches optimistically on failure. */
+export async function saveActivityRemote(
+  board: AdminBoard,
+  input: {
+    by: PartnerId
+    text: string
+    accountId?: string
+    kind?: string
+  },
+): Promise<
+  | { ok: true; board: AdminBoard; activity: ActivityEntry }
+  | { ok: false; board: AdminBoard; error: string }
+> {
+  const result = await createActivity(input)
+  if (!result.ok) {
+    const fallback: ActivityEntry = {
+      id: `local-${Date.now()}`,
+      at: new Date().toISOString(),
+      by: input.by,
+      text: input.text,
+      accountId: input.accountId,
+      kind: input.kind,
+    }
+    const cached: AdminBoard = {
+      ...board,
+      activity: [fallback, ...board.activity].slice(0, 80),
+    }
+    saveBoard(cached)
+    return { ok: false, board: cached, error: result.error }
+  }
+  const entry = result.data.activity
+  const synced: AdminBoard = {
+    ...board,
+    activity: [entry, ...board.activity.filter((item) => item.id !== entry.id)].slice(
+      0,
+      80,
+    ),
+  }
+  saveBoard(synced)
+  return { ok: true, board: synced, activity: entry }
 }

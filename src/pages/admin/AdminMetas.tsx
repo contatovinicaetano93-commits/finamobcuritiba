@@ -1,35 +1,89 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import {
   currentMonth,
   EMPTY_GOALS,
-  monthGoals,
   PARTNERS,
-  type AdminBoard,
   type GoalSet,
   type MonthGoals,
   type PartnerId,
 } from '@/data/admin'
+import { fetchMesaGoals, saveMesaGoals } from '@/lib/mesa-api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { OwnerMark } from '@/pages/admin/admin-ui'
 
 type AdminMetasProps = {
-  board: AdminBoard
   me: PartnerId
-  onSave: (goals: MonthGoals) => void
+  reloadToken?: number
+  onSaved?: () => void
 }
 
-export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
+function blankGoals(month: string): MonthGoals {
+  return {
+    month,
+    casa: { ...EMPTY_GOALS },
+    vini: { ...EMPTY_GOALS },
+    rafa: { ...EMPTY_GOALS },
+    tadeu: { ...EMPTY_GOALS },
+  }
+}
+
+export function AdminMetas({ me, reloadToken = 0, onSaved }: AdminMetasProps) {
   const month = currentMonth()
-  const current = monthGoals(board, month)
+  const [draft, setDraft] = useState<MonthGoals>(() => blankGoals(month))
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+  const [ok, setOk] = useState('')
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    void (async () => {
+      const result = await fetchMesaGoals(month)
+      if (cancelled) {
+        return
+      }
+      if (!result.ok) {
+        setError(result.error)
+        setDraft(blankGoals(month))
+        setLoading(false)
+        return
+      }
+      setError('')
+      setDraft(result.data.goals)
+      setLoading(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [month, reloadToken])
 
   function patch(who: 'casa' | PartnerId, field: keyof GoalSet, value: number) {
-    const next: MonthGoals = {
+    setDraft((current) => ({
       ...current,
-      [who]: { ...current[who], [field]: Number.isFinite(value) ? value : 0 },
+      [who]: {
+        ...current[who],
+        [field]: Number.isFinite(value) ? Math.max(0, value) : 0,
+      },
+    }))
+    setOk('')
+  }
+
+  async function persist(next: MonthGoals) {
+    setSaving(true)
+    setError('')
+    setOk('')
+    const result = await saveMesaGoals({ ...next, month })
+    setSaving(false)
+    if (!result.ok) {
+      setError(result.error)
+      return
     }
-    onSave(next)
+    setDraft(result.data.goals)
+    setOk('Metas salvas no Neon.')
+    onSaved?.()
   }
 
   return (
@@ -37,8 +91,23 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
       <p className="max-w-2xl text-sm text-black/60">
         Casa primeiro, depois o recorte de cada sócio. Número redondo e
         revisável na sexta. Você está logado como{' '}
-        {PARTNERS.find((item) => item.id === me)?.name}.
+        {PARTNERS.find((item) => item.id === me)?.name}. Metas de {month}{' '}
+        persistem no Neon.
       </p>
+
+      {loading ? (
+        <p className="text-sm text-black/50">Carregando metas…</p>
+      ) : null}
+      {error ? (
+        <p className="rounded-2xl bg-[#f7e8e4] px-4 py-3 text-sm text-[#7a2e24]" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {ok ? (
+        <p className="rounded-2xl bg-[#e8f1eb] px-4 py-3 text-sm text-[#21553a]" role="status">
+          {ok}
+        </p>
+      ) : null}
 
       <GoalBlock
         title="Meta da casa"
@@ -47,7 +116,7 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
             C
           </span>
         }
-        goals={current.casa}
+        goals={draft.casa}
         onChange={(field, value) => patch('casa', field, value)}
       />
       {PARTNERS.map((partner) => (
@@ -55,24 +124,28 @@ export function AdminMetas({ board, me, onSave }: AdminMetasProps) {
           key={partner.id}
           title={partner.name}
           mark={<OwnerMark id={partner.id} className="size-8" />}
-          goals={current[partner.id]}
+          goals={draft[partner.id]}
           onChange={(field, value) => patch(partner.id, field, value)}
         />
       ))}
 
-      <div>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          type="button"
+          disabled={saving || loading}
+          onClick={() => void persist(draft)}
+        >
+          {saving ? 'Salvando…' : 'Salvar metas'}
+        </Button>
         <Button
           type="button"
           variant="outline"
-          onClick={() =>
-            onSave({
-              month,
-              casa: { ...EMPTY_GOALS },
-              vini: { ...EMPTY_GOALS },
-              rafa: { ...EMPTY_GOALS },
-              tadeu: { ...EMPTY_GOALS },
-            })
-          }
+          disabled={saving || loading}
+          onClick={() => {
+            const cleared = blankGoals(month)
+            setDraft(cleared)
+            void persist(cleared)
+          }}
         >
           Zerar metas do mês
         </Button>

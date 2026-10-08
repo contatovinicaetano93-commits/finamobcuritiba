@@ -36,7 +36,6 @@ import {
   type MesaSummary,
 } from '@/lib/mesa-api'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -159,8 +158,8 @@ export function AdminHoje({
     setSaveOk('')
     const result = await createMesaActivity({
       by: me,
-      note: text,
-      companyId: companyId || undefined,
+      text,
+      accountId: companyId || undefined,
       kind: 'abordagem',
     })
     setSaving(false)

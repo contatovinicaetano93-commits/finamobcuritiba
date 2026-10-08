@@ -48,7 +48,8 @@ export interface GoalSet {
   mandatos: number
 }
 
-export interface MonthGoals {
+/** Month goals block aligned with `/api/crm/goals` (Neon month_goals). */
+export interface MonthGoal {
   month: string
   casa: GoalSet
   vini: GoalSet
@@ -56,20 +57,29 @@ export interface MonthGoals {
   tadeu: GoalSet
 }
 
-export interface Activity {
+/** @deprecated Prefer MonthGoal — kept for existing board helpers. */
+export type MonthGoals = MonthGoal
+
+/** Activity log entry aligned with `/api/crm/activity` (Neon activity_log). */
+export interface ActivityEntry {
   id: string
   at: string
   by: PartnerId
   text: string
   accountId?: string
+  companyName?: string
   kind?: string
+  meta?: Record<string, unknown>
 }
+
+/** @deprecated Prefer ActivityEntry. */
+export type Activity = ActivityEntry
 
 export interface AdminBoard {
   version: 1
   accounts: Account[]
-  goals: MonthGoals[]
-  activity: Activity[]
+  goals: MonthGoal[]
+  activity: ActivityEntry[]
 }
 
 export const PARTNERS: Partner[] = [
