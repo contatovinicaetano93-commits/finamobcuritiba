@@ -1,4 +1,4 @@
-import { useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ChangeEvent, type ReactNode } from 'react'
 import {
   accountContactDefaults,
   formatDay,
@@ -9,9 +9,18 @@ import {
   type Account,
   type AccountList,
   type AccountStatus,
-  type AdminBoard,
   type PartnerId,
 } from '@/data/admin'
+import {
+  fetchMesaCompanies,
+  fetchMesaCompany,
+  fetchMesaFacets,
+  scopeLabel,
+  type MesaAccount,
+  type MesaFacets,
+  type MesaQuery,
+  type MesaScope,
+} from '@/lib/mesa-api'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -53,11 +62,11 @@ const PAGE_SIZE = 60
 type CrmView = 'lista' | 'pipeline'
 
 type AdminCrmProps = {
-  board: AdminBoard
   me: PartnerId
   selectedId: string | null
   query: string
   importNotice: string
+  reloadToken: number
   onQuery: (value: string) => void
   creating: boolean
   onCreatingChange: (open: boolean) => void
@@ -68,15 +77,14 @@ type AdminCrmProps = {
   ) => void
   onDelete: (id: string) => void
   onImport: (event: ChangeEvent<HTMLInputElement>) => void
-  onLoadSeed: () => void
 }
 
 export function AdminCrm({
-  board,
   me,
   selectedId,
   query,
   importNotice,
+  reloadToken,
   onQuery,
   creating,
   onCreatingChange,
@@ -85,55 +93,113 @@ export function AdminCrm({
   onCreate,
   onDelete,
   onImport,
-  onLoadSeed,
 }: AdminCrmProps) {
+  const [scope, setScope] = useState<MesaScope>('praca')
+  const [region, setRegion] = useState('')
+  const [uf, setUf] = useState('')
+  const [city, setCity] = useState('')
   const [list, setList] = useState<AccountList | 'todas'>('todas')
   const [owner, setOwner] = useState<PartnerId | 'todos' | 'livre'>('todos')
   const [status, setStatus] = useState<AccountStatus | 'todos'>('todos')
   const [view, setView] = useState<CrmView>('lista')
   const [page, setPage] = useState(0)
+  const [accounts, setAccounts] = useState<MesaAccount[]>([])
+  const [total, setTotal] = useState(0)
+  const [counts, setCounts] = useState({
+    incorporadora: 0,
+    construtora: 0,
+    prospeccao: 0,
+  })
+  const [facets, setFacets] = useState<MesaFacets>({
+    ufs: [],
+    cities: [],
+    regions: [],
+  })
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [selected, setSelected] = useState<MesaAccount | null>(null)
 
-  const selected = board.accounts.find((item) => item.id === selectedId) ?? null
+  const queryState: MesaQuery = useMemo(
+    () => ({
+      scope,
+      region,
+      uf,
+      city,
+      list,
+      status,
+      owner,
+      q: query,
+      page,
+      limit: view === 'pipeline' ? 200 : PAGE_SIZE,
+    }),
+    [scope, region, uf, city, list, status, owner, query, page, view],
+  )
 
-  const visible = useMemo(() => {
-    const needle = query.trim().toLowerCase()
-    return board.accounts.filter((account) => {
-      if (list !== 'todas' && account.list !== list) {
-        return false
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    void (async () => {
+      const result = await fetchMesaCompanies(queryState)
+      if (cancelled) {
+        return
       }
-      if (owner === 'livre' && account.owner) {
-        return false
+      if (!result.ok) {
+        setError(result.error)
+        setAccounts([])
+        setTotal(0)
+        setLoading(false)
+        return
       }
-      if (owner !== 'todos' && owner !== 'livre' && account.owner !== owner) {
-        return false
-      }
-      if (status !== 'todos' && account.status !== status) {
-        return false
-      }
-      if (!needle) {
-        return true
-      }
-      return `${account.name} ${account.city} ${account.contactName} ${account.phone} ${account.email} ${account.notes} ${account.document}`
-        .toLowerCase()
-        .includes(needle)
-    })
-  }, [board.accounts, list, owner, query, status])
-
-  const counts = useMemo(() => {
-    const next = {
-      incorporadora: 0,
-      construtora: 0,
-      prospeccao: 0,
+      setError('')
+      setAccounts(result.data.accounts)
+      setTotal(result.data.total)
+      setCounts(result.data.counts)
+      setLoading(false)
+    })()
+    return () => {
+      cancelled = true
     }
-    for (const account of board.accounts) {
-      next[account.list] += 1
-    }
-    return next
-  }, [board.accounts])
+  }, [queryState, reloadToken])
 
-  const pages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE))
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const result = await fetchMesaFacets({ scope, region, uf })
+      if (cancelled || !result.ok) {
+        return
+      }
+      setFacets(result.data)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [scope, region, uf, reloadToken])
+
+  useEffect(() => {
+    if (!selectedId) {
+      setSelected(null)
+      return
+    }
+    const preview = accounts.find((item) => item.id === selectedId) ?? null
+    if (preview) {
+      setSelected(preview)
+    }
+    let cancelled = false
+    void (async () => {
+      const result = await fetchMesaCompany(selectedId)
+      if (cancelled || !result.ok) {
+        return
+      }
+      setSelected(result.data.account)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [accounts, selectedId, reloadToken])
+
+  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE))
   const safePage = Math.min(page, pages - 1)
-  const slice = visible.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE)
+  const slice = accounts
 
   function changeList(next: AccountList | 'todas') {
     setList(next)
@@ -144,14 +210,12 @@ export function AdminCrm({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-black/55">
+          {total.toLocaleString('pt-BR')} contas neste recorte ·{' '}
           {counts.incorporadora} incorporadoras · {counts.construtora}{' '}
           construtoras · {counts.prospeccao} novos. A ativação vive no estágio —
           quem pegou, registra o passo.
         </p>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={onLoadSeed}>
-            Carregar praça Curitiba
-          </Button>
           <label className="inline-flex">
             <Button type="button" variant="outline" asChild>
               <span>Importar arquivo</span>
@@ -176,6 +240,68 @@ export function AdminCrm({
       ) : null}
 
       <div className="admin-surface flex flex-col gap-4 rounded-2xl p-4">
+        <div className="flex flex-wrap gap-2">
+          <FilterChip
+            active={scope === 'praca'}
+            onClick={() => {
+              setScope('praca')
+              setRegion('')
+              setUf('')
+              setCity('')
+              setPage(0)
+            }}
+            label="Praça Curitiba"
+          />
+          <FilterChip
+            active={scope === 'pr'}
+            onClick={() => {
+              setScope('pr')
+              setRegion('Sul')
+              setUf('PR')
+              setCity('')
+              setPage(0)
+            }}
+            label="Paraná"
+          />
+          <FilterChip
+            active={scope === 'sul'}
+            onClick={() => {
+              setScope('sul')
+              setRegion('Sul')
+              setUf('')
+              setCity('')
+              setPage(0)
+            }}
+            label="Sul"
+          />
+          <FilterChip
+            active={scope === 'brasil'}
+            onClick={() => {
+              setScope('brasil')
+              setRegion('')
+              setUf('')
+              setCity('')
+              setPage(0)
+            }}
+            label="Brasil"
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {facets.regions.map((item) => (
+            <FilterChip
+              key={item}
+              active={region === item}
+              onClick={() => {
+                setScope('brasil')
+                setRegion(region === item ? '' : item)
+                setUf('')
+                setCity('')
+                setPage(0)
+              }}
+              label={item}
+            />
+          ))}
+        </div>
         <div className="flex flex-wrap gap-2">
           <FilterChip
             active={list === 'todas'}
@@ -247,6 +373,45 @@ export function AdminCrm({
               ))}
             </SelectContent>
           </Select>
+          <Select
+            value={uf || 'todas'}
+            onValueChange={(value) => {
+              setUf(value === 'todas' ? '' : value)
+              setCity('')
+              setPage(0)
+            }}
+          >
+            <SelectTrigger className="bg-white sm:w-36">
+              <SelectValue placeholder="UF" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas as UFs</SelectItem>
+              {facets.ufs.map((item) => (
+                <SelectItem key={item.uf} value={item.uf}>
+                  {item.uf} · {item.total}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={city || 'todas'}
+            onValueChange={(value) => {
+              setCity(value === 'todas' ? '' : value)
+              setPage(0)
+            }}
+          >
+            <SelectTrigger className="bg-white sm:w-48">
+              <SelectValue placeholder="Cidade" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todas">Todas as cidades</SelectItem>
+              {facets.cities.map((item) => (
+                <SelectItem key={`${item.city}-${item.uf}`} value={item.city}>
+                  {item.city} · {item.uf}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex rounded-lg bg-black/5 p-1">
             <ViewTab active={view === 'lista'} onClick={() => setView('lista')}>
               Lista
@@ -261,32 +426,29 @@ export function AdminCrm({
         </div>
       </div>
 
-      {board.accounts.length === 0 ? (
+      {error ? (
+        <EmptyState title="A mesa não carregou" body={error} />
+      ) : loading && accounts.length === 0 ? (
         <EmptyState
-          title="A mesa ainda está vazia"
-          body="A praça já está no sistema: 420 incorporadoras e construtoras no raio de Curitiba. Carreguem e comecem a ativação."
-          action={
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={onLoadSeed}>
-                Carregar 420 da praça
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onCreatingChange(true)}
-              >
-                Cadastrar na mão
-              </Button>
-            </div>
-          }
+          title="Abrindo a base"
+          body={`Carregando ${scopeLabel(scope).toLowerCase()} no banco da casa.`}
         />
-      ) : visible.length === 0 ? (
+      ) : total === 0 ? (
         <EmptyState
           title="Nenhuma conta neste recorte"
           body="Soltem o filtro ou busquem pelo nome da empresa."
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onCreatingChange(true)}
+            >
+              Cadastrar na mão
+            </Button>
+          }
         />
       ) : view === 'pipeline' ? (
-        <PipelineBoard accounts={visible} onSelect={onSelect} />
+        <PipelineBoard accounts={accounts} onSelect={onSelect} />
       ) : (
         <div className="admin-surface overflow-hidden rounded-2xl">
           <div className="overflow-x-auto">
@@ -319,6 +481,11 @@ export function AdminCrm({
                     <td className="px-4 py-3 text-black/65">
                       {account.city || '—'}
                       {account.uf ? ` · ${account.uf}` : ''}
+                      {account.empCount ? (
+                        <span className="block text-xs text-black/40">
+                          {account.empCount} emp.
+                        </span>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3">
                       <StatusPill status={account.status} />
@@ -345,7 +512,8 @@ export function AdminCrm({
           {pages > 1 ? (
             <div className="flex items-center justify-between gap-3 border-t border-black/8 px-4 py-3 text-sm text-black/55">
               <span>
-                {visible.length} contas · página {safePage + 1}/{pages}
+                {total.toLocaleString('pt-BR')} contas · {scopeLabel(scope)} ·
+                página {safePage + 1}/{pages}
               </span>
               <div className="flex gap-2">
                 <Button
@@ -667,7 +835,7 @@ function EditForm({
   onSave,
   onDelete,
 }: {
-  account: Account
+  account: MesaAccount
   onSave: (account: Account, note: string) => void
   onDelete: () => void
 }) {
@@ -689,6 +857,9 @@ function EditForm({
             <SheetTitle>{account.name}</SheetTitle>
             <SheetDescription>
               {listLabel(account.list)} · {account.city || 'sem cidade'}
+              {account.uf ? `/${account.uf}` : ''}
+              {account.region ? ` · ${account.region}` : ''}
+              {account.inCuritibaRadius ? ' · praça Curitiba' : ''}
             </SheetDescription>
           </div>
           <StatusPill status={draft.status} />
@@ -869,6 +1040,31 @@ function EditForm({
           className="min-h-24 bg-white"
         />
       </Field>
+      {account.site || account.porte ? (
+        <p className="text-xs text-black/50">
+          {account.porte ? `Porte ${account.porte}` : ''}
+          {account.porte && account.site ? ' · ' : ''}
+          {account.site || ''}
+        </p>
+      ) : null}
+      {account.developments && account.developments.length > 0 ? (
+        <div className="space-y-2">
+          <Label>Empreendimentos ({account.developments.length})</Label>
+          <ul className="max-h-56 space-y-2 overflow-y-auto rounded-xl bg-white p-3">
+            {account.developments.slice(0, 40).map((item) => (
+              <li key={item.id} className="text-sm">
+                <span className="block font-medium">{item.name}</span>
+                <span className="text-xs text-black/45">
+                  {[item.city, item.uf, item.stage, item.kind]
+                    .filter(Boolean)
+                    .join(' · ')}
+                  {item.units ? ` · ${item.units} un.` : ''}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <Field label="Registrar abordagem agora" htmlFor="edit-log">
         <Textarea
           id="edit-log"

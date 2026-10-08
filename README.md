@@ -22,22 +22,15 @@ Abre em `http://127.0.0.1:43123`.
 
 ## Neon
 
-O diretório está preparado para o projeto Neon (`autumn-breeze-98514271`, branch `production`):
-
-- `neon.ts` — política vazia (`defineConfig({})`)
-- skills do agente em `.agents/skills/`
-- MCP em `.cursor/mcp.json`
-
-Na máquina local (com sessão no navegador):
+A mesa lê a base no Neon (`DATABASE_URL` no `.env`, fora do git). Já entram 8.498 empresas do Brasil e 40.521 empreendimentos. O CRM abre na praça Curitiba (420) e filtra por Paraná, Sul, Brasil, UF e cidade.
 
 ```bash
-npm i -g neon@latest
-neon login
-neon link --project-id autumn-breeze-98514271 --branch production -y
-neon deploy
+python3 scripts/apply_neon_schema.py
+python3 scripts/seed_neon_radar.py
+npm run dev
 ```
 
-`neon login` abre o OAuth no browser (timeout de 60s). Sem essa sessão, `link` e `deploy` não conseguem falar com o projeto. O arquivo `.neon` e o `DATABASE_URL` ficam fora do git.
+A API local/Vercel fica em `/api/crm`. Copie `DATABASE_URL` no painel da Vercel para a mesa em produção.
 
 - `/` — landing (Produtos, Formulário, Farejador, Contato)
 - `/area` — escolha entre incorporador e originador parceiro

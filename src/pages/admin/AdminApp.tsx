@@ -2,7 +2,6 @@ import { useCallback, useEffect, useState, type ChangeEvent } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import {
   ADMIN_PASSWORD,
-  accountContactDefaults,
   currentMonth,
   newId,
   partnerById,
@@ -22,11 +21,17 @@ import {
   upsertGoals,
 } from '@/lib/admin-store'
 import {
-  fetchCuritibaSeed,
   importErrorMessage,
   ingestCrmFile,
 } from '@/lib/crm-import'
 import { mergeImportedAccounts } from '@/lib/crm-merge'
+import {
+  createMesaCompany,
+  deleteMesaCompany,
+  fetchMesaDue,
+  saveMesaCompany,
+  type MesaAccount,
+} from '@/lib/mesa-api'
 import { dueQueue } from '@/lib/admin-kpis'
 import { AdminCrm } from '@/pages/admin/AdminCrm'
 import { AdminHoje } from '@/pages/admin/AdminHoje'
@@ -49,12 +54,18 @@ export function AdminApp() {
   const [query, setQuery] = useState('')
   const [creating, setCreating] = useState(false)
   const [importNotice, setImportNotice] = useState('')
+  const [reloadToken, setReloadToken] = useState(0)
+  const [dueAccounts, setDueAccounts] = useState<MesaAccount[]>([])
 
   const persist = useCallback((next: AdminBoard) => {
     const withMonth = ensureMonth(next)
     setBoard(withMonth)
     saveBoard(withMonth)
   }, [])
+
+  function bumpMesa() {
+    setReloadToken((value) => value + 1)
+  }
 
   useEffect(() => {
     setMe(loadSession())
@@ -72,6 +83,20 @@ export function AdminApp() {
       channel?.close()
     }
   }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      const result = await fetchMesaDue({ scope: 'praca' })
+      if (cancelled || !result.ok) {
+        return
+      }
+      setDueAccounts(result.data.accounts)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [reloadToken])
 
   function login(partner: PartnerId, password: string) {
     const typed = password.trim()
@@ -100,89 +125,97 @@ export function AdminApp() {
     if (!me) {
       return
     }
-    const now = new Date().toISOString()
-    const account: Account = {
-      ...accountContactDefaults(),
-      ...draft,
-      id: newId(),
-      createdAt: now,
-      updatedAt: now,
-      updatedBy: me,
-    }
-    persist({
-      ...board,
-      accounts: [account, ...board.accounts],
-      activity: [
-        {
-          id: newId(),
-          at: now,
-          by: me,
-          text: `Cadastrou ${account.name}.`,
-          accountId: account.id,
-        },
-        ...board.activity,
-      ],
-    })
-    setSelectedId(account.id)
+    void (async () => {
+      const result = await createMesaCompany(draft, me)
+      if (!result.ok) {
+        window.alert(result.error)
+        return
+      }
+      const now = new Date().toISOString()
+      persist({
+        ...board,
+        activity: [
+          {
+            id: newId(),
+            at: now,
+            by: me,
+            text: `Cadastrou ${result.data.account.name}.`,
+            accountId: result.data.account.id,
+          },
+          ...board.activity,
+        ],
+      })
+      setSelectedId(result.data.account.id)
+      bumpMesa()
+    })()
   }
 
   function saveAccount(next: Account, note: string) {
     if (!me) {
       return
     }
-    const now = new Date().toISOString()
     const stamped: Account = {
       ...next,
       name: next.name.trim(),
-      updatedAt: now,
-      updatedBy: me,
       lastContactAt: note
         ? next.lastContactAt || todayIso()
         : next.lastContactAt,
-      notes: note
-        ? [next.notes.trim(), `${todayIso()} · ${partnerById(me).name}: ${note}`]
-            .filter(Boolean)
-            .join('\n')
-        : next.notes,
     }
-    persist({
-      ...board,
-      accounts: board.accounts.map((item) =>
-        item.id === stamped.id ? stamped : item,
-      ),
-      activity: [
-        {
-          id: newId(),
-          at: now,
-          by: me,
-          text: note
-            ? `Abordou ${stamped.name}: ${note}`
-            : `Atualizou ${stamped.name}.`,
-          accountId: stamped.id,
-        },
-        ...board.activity,
-      ],
-    })
+    void (async () => {
+      const result = await saveMesaCompany(
+        stamped,
+        note
+          ? `${todayIso()} · ${partnerById(me).name}: ${note}`
+          : '',
+        me,
+      )
+      if (!result.ok) {
+        window.alert(result.error)
+        return
+      }
+      persist({
+        ...board,
+        activity: [
+          {
+            id: newId(),
+            at: new Date().toISOString(),
+            by: me,
+            text: note
+              ? `Abordou ${stamped.name}: ${note}`
+              : `Atualizou ${stamped.name}.`,
+            accountId: stamped.id,
+          },
+          ...board.activity,
+        ],
+      })
+      bumpMesa()
+    })()
   }
 
   function deleteAccount(id: string) {
     if (!me) {
       return
     }
-    const account = board.accounts.find((item) => item.id === id)
-    persist({
-      ...board,
-      accounts: board.accounts.filter((item) => item.id !== id),
-      activity: [
-        {
-          id: newId(),
-          at: new Date().toISOString(),
-          by: me,
-          text: `Removeu ${account?.name ?? 'uma conta'}.`,
-        },
-        ...board.activity,
-      ],
-    })
+    void (async () => {
+      const result = await deleteMesaCompany(id)
+      if (!result.ok) {
+        window.alert(result.error)
+        return
+      }
+      persist({
+        ...board,
+        activity: [
+          {
+            id: newId(),
+            at: new Date().toISOString(),
+            by: me,
+            text: 'Removeu uma conta da mesa.',
+          },
+          ...board.activity,
+        ],
+      })
+      bumpMesa()
+    })()
   }
 
   function saveGoals(goals: MonthGoals) {
@@ -253,23 +286,6 @@ export function AdminApp() {
     navigate('/admin/crm')
   }
 
-  async function loadCuritibaSeed() {
-    if (!me) {
-      return
-    }
-    const result = await fetchCuritibaSeed()
-    if (!result.ok) {
-      window.alert(importErrorMessage(result))
-      return
-    }
-    const merged = mergeImportedAccounts(board, result.accounts, me)
-    persist(merged.board)
-    setImportNotice(
-      `Praça Curitiba: ${merged.added} novas, ${merged.filled} completadas. ${merged.board.accounts.length} contas na mesa.`,
-    )
-    navigate('/admin/crm')
-  }
-
   if (!me) {
     return (
       <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
@@ -279,7 +295,7 @@ export function AdminApp() {
   }
 
   const meta = pageMeta(deskPage(location.pathname))
-  const dueCount = dueQueue(board.accounts).length
+  const dueCount = dueAccounts.length || dueQueue(board.accounts).length
 
   function ingestRemote(remote: AdminBoard, count: number) {
     if (!me) {
@@ -334,7 +350,11 @@ export function AdminApp() {
                 index
                 element={
                   <AdminHoje
-                    board={board}
+                    board={{
+                      ...board,
+                      accounts:
+                        dueAccounts.length > 0 ? dueAccounts : board.accounts,
+                    }}
                     me={me}
                     onOpen={(id) => {
                       setSelectedId(id)
@@ -349,20 +369,19 @@ export function AdminApp() {
                 path="crm"
                 element={
                   <AdminCrm
-                    board={board}
                     me={me}
                     selectedId={selectedId}
                     query={query}
                     onQuery={setQuery}
                     creating={creating}
                     importNotice={importNotice}
+                    reloadToken={reloadToken}
                     onCreatingChange={setCreating}
                     onSelect={setSelectedId}
                     onCreate={createAccount}
                     onSave={saveAccount}
                     onDelete={deleteAccount}
                     onImport={(event) => void importBoard(event)}
-                    onLoadSeed={() => void loadCuritibaSeed()}
                   />
                 }
               />

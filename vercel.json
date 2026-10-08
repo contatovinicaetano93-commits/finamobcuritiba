@@ -29,7 +29,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!.*\\.pdf$).*)",
+      "source": "/((?!api/|.*\\.pdf$).*)",
       "destination": "/index.html"
     }
   ]
