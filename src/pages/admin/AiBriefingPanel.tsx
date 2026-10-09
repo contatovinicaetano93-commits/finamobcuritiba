@@ -55,13 +55,13 @@ export function AiBriefingPanel({ companyId }: AiBriefingPanelProps) {
   }
 
   return (
-    <div className="space-y-2 rounded-xl border border-black/8 bg-[#f7f4ef] p-3">
+    <div className="space-y-2 rounded-xl border border-[rgb(18_17_15/0.14)] bg-[#f7f4ef] p-3">
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-[10px] font-medium tracking-[0.16em] text-black/45 uppercase">
+          <p className="text-[10px] font-semibold tracking-[0.16em] text-[#7a6648] uppercase">
             Briefing IA
           </p>
-          <p className="text-xs text-black/45">
+          <p className="text-xs text-[#3f3b34]">
             Cache Neon · sem inventar telefone, e-mail ou sede
           </p>
         </div>
@@ -71,29 +71,30 @@ export function AiBriefingPanel({ companyId }: AiBriefingPanelProps) {
           variant="outline"
           disabled={busy || state === 'loading'}
           onClick={() => void refresh()}
+          className="border-[rgb(18_17_15/0.2)]"
         >
           {busy ? 'Gerando…' : briefing ? 'Atualizar' : 'Gerar'}
         </Button>
       </div>
       {state === 'loading' ? (
-        <p className="text-sm text-black/50">Carregando briefing…</p>
+        <p className="text-sm text-[#3f3b34]">Carregando briefing…</p>
       ) : null}
       {state === 'empty' ? (
-        <p className="text-sm text-black/50">
+        <p className="text-sm text-[#3f3b34]">
           Ainda sem briefing. Gere a partir dos dados da ficha.
         </p>
       ) : null}
       {error ? (
-        <p className="text-sm text-red-700" role="alert">
+        <p className="text-sm font-medium text-[#6b241c]" role="alert">
           {error}
         </p>
       ) : null}
       {briefing ? (
         <div className="space-y-2 text-sm">
-          <p className="font-medium text-black/85">{briefing.content.headline}</p>
-          <p className="leading-snug text-black/70">{briefing.content.summary}</p>
+          <p className="font-semibold text-[#12110f]">{briefing.content.headline}</p>
+          <p className="leading-snug text-[#3f3b34]">{briefing.content.summary}</p>
           {briefing.content.bullets.length > 0 ? (
-            <ul className="list-disc space-y-1 pl-4 text-black/75">
+            <ul className="list-disc space-y-1 pl-4 text-[#12110f]">
               {briefing.content.bullets.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -101,10 +102,10 @@ export function AiBriefingPanel({ companyId }: AiBriefingPanelProps) {
           ) : null}
           {briefing.content.nextSteps.length > 0 ? (
             <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-black/40">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[#5c574e]">
                 Próximos passos
               </p>
-              <ul className="mt-1 list-disc space-y-1 pl-4 text-black/75">
+              <ul className="mt-1 list-disc space-y-1 pl-4 text-[#12110f]">
                 {briefing.content.nextSteps.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
@@ -112,11 +113,11 @@ export function AiBriefingPanel({ companyId }: AiBriefingPanelProps) {
             </div>
           ) : null}
           {briefing.content.gaps.length > 0 ? (
-            <p className="text-xs text-[#7a4a16]">
+            <p className="text-xs font-medium text-[#6b4e16]">
               Lacunas: {briefing.content.gaps.join(' · ')}
             </p>
           ) : null}
-          <p className="text-[11px] text-black/40">
+          <p className="text-[11px] font-medium text-[#5c574e]">
             {briefing.cached ? 'Cache Neon' : 'Sem persistência'} · {briefing.model}
             {briefing.updatedAt ? ` · ${formatStamp(briefing.updatedAt)}` : ''}
           </p>

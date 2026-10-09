@@ -44,12 +44,12 @@ export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
             <br />
             Curitiba
           </h1>
-          <p className="mt-8 max-w-sm text-sm leading-relaxed text-white/62">
+          <p className="mt-8 max-w-sm text-sm leading-relaxed text-white/78">
             CRM, fila do dia, KPIs e metas da praça. Um dono por conta. O que
             entra aqui não aparece no site.
           </p>
         </div>
-        <ul className="flex gap-8 text-[11px] tracking-[0.18em] text-white/45 uppercase">
+        <ul className="flex gap-8 text-[11px] font-medium tracking-[0.18em] text-white/65 uppercase">
           <li>Hoje</li>
           <li>CRM</li>
           <li>KPIs</li>
@@ -73,13 +73,15 @@ export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
             Quem está na mesa
           </h2>
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-black/60">
+        <p className="mt-4 text-sm leading-relaxed text-[#3f3b34]">
           Escolha o sócio (Vini, Rafa ou Tadeu) e entre com a senha da mesa. A
           sessão fica no navegador e o quadro puxa metas e timeline no Neon.
         </p>
         <form className="mt-10 space-y-6" onSubmit={handleSubmit}>
           <fieldset>
-            <legend className="mb-3 text-sm font-medium">Quem está na mesa</legend>
+            <legend className="mb-3 text-sm font-semibold text-[#12110f]">
+              Quem está na mesa
+            </legend>
             <div className="grid grid-cols-3 gap-2">
               {PARTNERS.map((item) => (
                 <button
@@ -88,10 +90,10 @@ export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
                   onClick={() => setPartner(item.id)}
                   aria-pressed={partner === item.id}
                   className={cn(
-                    'flex flex-col items-center gap-2 rounded-2xl border px-2 py-4 text-sm transition-colors',
+                    'flex flex-col items-center gap-2 rounded-xl border px-2 py-4 text-sm font-medium transition-colors',
                     partner === item.id
-                      ? 'border-[#050505] bg-[#050505] text-white'
-                      : 'border-black/12 bg-white text-black/70 hover:border-[#9c8563]',
+                      ? 'border-[#12110f] bg-[#12110f] text-white'
+                      : 'border-[rgb(18_17_15/0.18)] bg-white text-[#3f3b34] hover:border-[rgb(18_17_15/0.4)]',
                   )}
                 >
                   <OwnerMark id={item.id} />
@@ -110,10 +112,10 @@ export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
               required
               autoComplete="current-password"
             />
-            <p className="text-xs text-black/50">{hint}</p>
+            <p className="text-xs text-[#5c574e]">{hint}</p>
           </div>
           {error ? (
-            <p className="text-sm text-red-700" role="alert">
+            <p className="text-sm font-medium text-[#6b241c]" role="alert">
               {error}
             </p>
           ) : null}

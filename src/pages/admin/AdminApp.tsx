@@ -264,7 +264,7 @@ export function AdminApp() {
 
   if (!me) {
     return (
-      <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
+      <div className="admin-desk min-h-svh text-[#12110f]">
         <AdminLogin error={loginError} busy={loginBusy} onSubmit={login} />
       </div>
     )
@@ -299,15 +299,15 @@ export function AdminApp() {
   }
 
   return (
-    <div className="admin-desk min-h-svh bg-[#f3efe6] text-[#050505]">
-      <div className="flex min-h-svh">
+    <div className="admin-desk min-h-svh text-[#12110f]">
+      <div className="admin-shell">
         <AdminSidebar
           me={me}
           open={navOpen}
           onClose={() => setNavOpen(false)}
           onLogout={logout}
         />
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="admin-main">
           <AdminTopbar
             me={me}
             title={meta.title}
@@ -320,7 +320,7 @@ export function AdminApp() {
             onExport={exportBoard}
             onImport={importBoard}
           />
-          <div className="flex-1 px-4 py-5 sm:px-6 lg:px-8">
+          <div className="admin-content">
             <Routes>
               <Route
                 index

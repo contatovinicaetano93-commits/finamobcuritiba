@@ -241,7 +241,7 @@ export function AdminCrm({
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm text-black/55">
+        <p className="text-sm text-[#3f3b34]">
           {total.toLocaleString('pt-BR')} contas neste recorte ·{' '}
           {counts.incorporadora} incorporadoras · {counts.construtora}{' '}
           construtoras · {counts.prospeccao} novos. A ativação vive no estágio —
@@ -271,7 +271,7 @@ export function AdminCrm({
         </p>
       ) : null}
 
-      <div className="admin-surface flex flex-col gap-4 rounded-2xl p-4">
+      <div className="admin-surface flex flex-col gap-4 rounded-xl p-4">
         <div className="flex flex-wrap gap-2">
           <FilterChip
             active={scope === 'praca'}
@@ -482,39 +482,44 @@ export function AdminCrm({
       ) : view === 'pipeline' ? (
         <PipelineBoard accounts={accounts} onSelect={onSelect} />
       ) : (
-        <div className="admin-surface overflow-hidden rounded-2xl">
+        <div className="admin-surface overflow-hidden rounded-xl">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-left text-sm">
-              <thead className="border-b border-black/8 text-[11px] tracking-[0.12em] text-black/45 uppercase">
+              <thead className="border-b border-[rgb(18_17_15/0.12)] bg-[#f7f4ef] text-[11px] font-semibold tracking-[0.12em] text-[#3f3b34] uppercase">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Empresa</th>
-                  <th className="px-4 py-3 font-medium">Praça</th>
-                  <th className="px-4 py-3 font-medium">Estágio</th>
-                  <th className="px-4 py-3 font-medium">Dono</th>
-                  <th className="px-4 py-3 font-medium">Próximo</th>
+                  <th className="px-4 py-3">Empresa</th>
+                  <th className="px-4 py-3">Praça</th>
+                  <th className="px-4 py-3">Estágio</th>
+                  <th className="px-4 py-3">Dono</th>
+                  <th className="px-4 py-3">Próximo</th>
                 </tr>
               </thead>
               <tbody>
                 {slice.map((account) => (
-                  <tr key={account.id} className="border-b border-black/5 last:border-0">
+                  <tr
+                    key={account.id}
+                    className="admin-table-row border-b border-[rgb(18_17_15/0.08)] last:border-0"
+                  >
                     <td className="px-4 py-3">
                       <button
                         type="button"
                         onClick={() => onSelect(account.id)}
                         className="text-left"
                       >
-                        <span className="block font-medium">{account.name}</span>
-                        <span className="text-xs text-black/45">
+                        <span className="block font-semibold text-[#12110f]">
+                          {account.name}
+                        </span>
+                        <span className="text-xs font-medium text-[#3f3b34]">
                           {listLabel(account.list)}
                           {account.contactName ? ` · ${account.contactName}` : ''}
                         </span>
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-black/65">
+                    <td className="px-4 py-3 text-[#3f3b34]">
                       {account.city || '—'}
                       {account.uf ? ` · ${account.uf}` : ''}
                       {account.empCount ? (
-                        <span className="block text-xs text-black/40">
+                        <span className="block text-xs text-[#5c574e]">
                           {account.empCount} emp.
                         </span>
                       ) : null}
@@ -523,15 +528,15 @@ export function AdminCrm({
                       <StatusPill status={account.status} />
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center gap-2">
+                      <span className="inline-flex items-center gap-2 font-medium text-[#12110f]">
                         <OwnerMark id={account.owner} />
                         {account.owner
                           ? PARTNERS.find((item) => item.id === account.owner)?.name
                           : 'Livre'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-black/55">
-                      <span className="block truncate max-w-48">
+                    <td className="px-4 py-3 text-[#3f3b34]">
+                      <span className="block max-w-48 truncate font-medium text-[#12110f]">
                         {account.nextAction || 'Sem passo'}
                       </span>
                       <span className="text-xs">{formatDay(account.nextActionAt)}</span>
@@ -542,7 +547,7 @@ export function AdminCrm({
             </table>
           </div>
           {pages > 1 ? (
-            <div className="flex items-center justify-between gap-3 border-t border-black/8 px-4 py-3 text-sm text-black/55">
+            <div className="flex items-center justify-between gap-3 border-t border-[rgb(18_17_15/0.12)] px-4 py-3 text-sm text-[#3f3b34]">
               <span>
                 {total.toLocaleString('pt-BR')} contas · {scopeLabel(scope)} ·
                 página {safePage + 1}/{pages}
@@ -631,8 +636,10 @@ function ViewTab({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-md px-3 py-1.5 text-sm',
-        active ? 'bg-white text-black shadow-sm' : 'text-black/55',
+        'rounded-md px-3 py-1.5 text-sm font-medium',
+        active
+          ? 'bg-white text-[#12110f] shadow-sm'
+          : 'text-[#3f3b34] hover:text-[#12110f]',
       )}
     >
       {children}
@@ -654,11 +661,13 @@ function PipelineBoard({
         return (
           <section
             key={status}
-            className="admin-surface w-64 shrink-0 rounded-2xl p-3"
+            className="admin-surface w-64 shrink-0 rounded-xl p-3"
           >
             <div className="flex items-center justify-between gap-2 px-1">
               <StatusPill status={status} />
-              <span className="text-xs text-black/40">{column.length}</span>
+              <span className="text-xs font-semibold tabular-nums text-[#3f3b34]">
+                {column.length}
+              </span>
             </div>
             <ul className="mt-3 space-y-2">
               {column.slice(0, 40).map((account) => (
@@ -666,12 +675,12 @@ function PipelineBoard({
                   <button
                     type="button"
                     onClick={() => onSelect(account.id)}
-                    className="w-full rounded-xl bg-white px-3 py-3 text-left"
+                    className="w-full rounded-lg border border-[rgb(18_17_15/0.1)] bg-[#f7f4ef] px-3 py-2.5 text-left hover:border-[rgb(18_17_15/0.22)] hover:bg-white"
                   >
-                    <span className="block text-sm font-medium leading-tight">
+                    <span className="block text-sm font-semibold leading-tight text-[#12110f]">
                       {account.name}
                     </span>
-                    <span className="mt-1 block text-xs text-black/45">
+                    <span className="mt-1 block text-xs font-medium text-[#3f3b34]">
                       {account.city || listLabel(account.list)}
                     </span>
                   </button>
@@ -679,7 +688,7 @@ function PipelineBoard({
               ))}
             </ul>
             {column.length > 40 ? (
-              <p className="mt-2 px-1 text-xs text-black/40">
+              <p className="mt-2 px-1 text-xs font-medium text-[#5c574e]">
                 +{column.length - 40} nesta coluna. Filtre para ver todas.
               </p>
             ) : null}

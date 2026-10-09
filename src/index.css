@@ -192,36 +192,43 @@ img {
   }
 
   .admin-desk {
-    color: #050505;
+    color: #12110f;
     background:
-      radial-gradient(1100px 480px at 8% -10%, rgb(156 133 99 / 0.16), transparent 58%),
-      radial-gradient(900px 420px at 110% 0%, rgb(5 5 5 / 0.06), transparent 50%),
-      #f3efe6;
-    --background: #f3efe6;
-    --foreground: #050505;
+      linear-gradient(180deg, #ebe6dc 0%, #e4dfd4 100%);
+    --background: #e4dfd4;
+    --foreground: #12110f;
     --card: #ffffff;
-    --card-foreground: #050505;
+    --card-foreground: #12110f;
     --popover: #ffffff;
-    --popover-foreground: #050505;
-    --primary: #050505;
-    --primary-foreground: #f3efe6;
-    --secondary: #e8e2d6;
-    --secondary-foreground: #050505;
-    --muted: #e8e2d6;
-    --muted-foreground: #5c574e;
-    --accent: #ece6da;
-    --accent-foreground: #050505;
-    --border: rgb(5 5 5 / 0.16);
-    --input: rgb(5 5 5 / 0.18);
-    --ring: #9c8563;
+    --popover-foreground: #12110f;
+    --primary: #12110f;
+    --primary-foreground: #f7f4ef;
+    --secondary: #ddd6c8;
+    --secondary-foreground: #12110f;
+    --muted: #ddd6c8;
+    --muted-foreground: #3f3b34;
+    --accent: #d8d0c0;
+    --accent-foreground: #12110f;
+    --border: rgb(18 17 15 / 0.22);
+    --input: rgb(18 17 15 / 0.24);
+    --ring: #7a6648;
+    --admin-ink: #12110f;
+    --admin-ink-soft: #3f3b34;
+    --admin-ink-faint: #5c574e;
+    --admin-line: rgb(18 17 15 / 0.14);
+    --admin-line-strong: rgb(18 17 15 / 0.22);
+    --admin-paper: #f7f4ef;
+    --admin-bronze: #7a6648;
+    --admin-bronze-soft: #9c8563;
   }
 
   .admin-desk input,
   .admin-desk textarea,
   .admin-desk [data-slot="select-trigger"] {
-    color: #050505;
+    color: #12110f;
     background: #fff;
     height: 2.5rem;
+    border-color: rgb(18 17 15 / 0.22);
   }
 
   .admin-desk textarea {
@@ -229,62 +236,122 @@ img {
     min-height: 5.5rem;
   }
 
+  .admin-desk input::placeholder,
+  .admin-desk textarea::placeholder {
+    color: #5c574e;
+    opacity: 1;
+  }
+
+  .admin-shell {
+    min-height: 100svh;
+    display: flex;
+  }
+
+  .admin-main {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    flex-direction: column;
+    background: transparent;
+  }
+
+  .admin-content {
+    flex: 1;
+    padding: 1.15rem 1rem 2rem;
+  }
+
+  @media (min-width: 640px) {
+    .admin-content {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .admin-content {
+      padding-inline: 2rem;
+      padding-top: 1.35rem;
+    }
+  }
+
   .admin-topbar {
     position: sticky;
     top: 0;
     z-index: 30;
-    border-bottom: 1px solid rgb(5 5 5 / 0.06);
-    background: #fff;
+    border-bottom: 1px solid rgb(18 17 15 / 0.12);
+    background: rgb(247 244 239 / 0.92);
+    backdrop-filter: blur(14px) saturate(1.1);
   }
 
   .admin-sidebar {
-    background:
-      radial-gradient(420px 280px at 0% 0%, rgb(156 133 99 / 0.22), transparent 55%),
-      #050505;
-    color: #f3efe6;
+    background: #0c0b0a;
+    color: #f7f4ef;
+    border-right: 1px solid rgb(255 255 255 / 0.08);
   }
 
   .admin-welcome {
-    border-radius: 1.35rem;
-    background:
-      radial-gradient(720px 280px at 92% -30%, rgb(156 133 99 / 0.38), transparent 52%),
-      linear-gradient(160deg, #050505 0%, #16130f 100%);
-    color: #f3efe6;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background: linear-gradient(145deg, #12110f 0%, #1c1915 100%);
+    color: #f7f4ef;
   }
 
   .admin-welcome-stat {
-    border-radius: 1rem;
-    border: 1px solid rgb(255 255 255 / 0.1);
-    background: rgb(255 255 255 / 0.08);
+    border-radius: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    background: rgb(255 255 255 / 0.1);
   }
 
   .admin-login-ink {
     background:
-      radial-gradient(720px 460px at 18% -8%, rgb(156 133 99 / 0.32), transparent 58%),
-      radial-gradient(520px 320px at 90% 110%, rgb(156 133 99 / 0.14), transparent 50%),
-      #050505;
+      radial-gradient(720px 460px at 18% -8%, rgb(156 133 99 / 0.28), transparent 58%),
+      #0c0b0a;
   }
 
   .admin-surface {
-    border: 1px solid rgb(5 5 5 / 0.08);
-    background: rgb(255 255 255 / 0.78);
-    box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset;
-    backdrop-filter: blur(10px);
+    border: 1px solid rgb(18 17 15 / 0.14);
+    background: #fff;
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.55) inset;
   }
 
   .admin-card {
-    border: 1px solid rgb(5 5 5 / 0.08);
+    border: 1px solid rgb(18 17 15 / 0.14);
     background: #fff;
     transition:
-      transform 180ms ease,
-      box-shadow 180ms ease,
-      border-color 180ms ease;
+      box-shadow 160ms ease,
+      border-color 160ms ease;
   }
 
   .admin-card:hover {
-    border-color: rgb(156 133 99 / 0.55);
-    box-shadow: 0 14px 40px rgb(5 5 5 / 0.06);
-    transform: translateY(-1px);
+    border-color: rgb(122 102 72 / 0.55);
+    box-shadow: 0 8px 24px rgb(18 17 15 / 0.08);
+  }
+
+  .admin-queue-card {
+    border: 1px solid rgb(18 17 15 / 0.14);
+    background: #fff;
+    border-radius: 0.85rem;
+    transition: border-color 140ms ease, box-shadow 140ms ease;
+  }
+
+  .admin-queue-card:hover {
+    border-color: rgb(18 17 15 / 0.28);
+    box-shadow: 0 4px 16px rgb(18 17 15 / 0.06);
+  }
+
+  .admin-table-row {
+    transition: background-color 120ms ease;
+  }
+
+  .admin-table-row:hover {
+    background: #f7f4ef;
+  }
+
+  .admin-meta {
+    color: #3f3b34;
+  }
+
+  .admin-meta-faint {
+    color: #5c574e;
   }
 
   .hero-drift {

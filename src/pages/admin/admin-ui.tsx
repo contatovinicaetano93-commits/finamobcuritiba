@@ -20,7 +20,7 @@ export function OwnerMark({
   return (
     <span
       className={cn(
-        'inline-flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-medium tracking-wide',
+        'inline-flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold tracking-wide',
         partnerTone(id),
         className,
       )}
@@ -41,7 +41,7 @@ export function StatusPill({
   return (
     <span
       className={cn(
-        'inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium tracking-wide',
+        'inline-flex rounded-md px-2 py-0.5 text-[11px] font-semibold tracking-wide',
         statusTone(status),
         className,
       )}
@@ -53,7 +53,7 @@ export function StatusPill({
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="text-[10px] tracking-[0.22em] text-[#9c8563] uppercase">
+    <p className="text-[10px] font-semibold tracking-[0.2em] text-[#7a6648] uppercase">
       {children}
     </p>
   )
@@ -75,14 +75,14 @@ export function ProgressTrack({
     <div
       className={cn(
         'mt-4 h-1.5 overflow-hidden rounded-full',
-        tone === 'ink' ? 'bg-white/15' : 'bg-black/8',
+        tone === 'ink' ? 'bg-white/20' : 'bg-[#12110f]/12',
         className,
       )}
     >
       <div
         className={cn(
           'h-full rounded-full transition-[width] duration-500',
-          tone === 'ink' ? 'bg-[#c4b49a]' : 'bg-[#9c8563]',
+          tone === 'ink' ? 'bg-[#c4b49a]' : 'bg-[#7a6648]',
         )}
         style={{ width: `${pct}%` }}
       />
@@ -104,10 +104,10 @@ export function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        'rounded-full px-4 py-2 text-sm transition-colors',
+        'rounded-md px-3.5 py-1.5 text-sm font-medium transition-colors',
         active
-          ? 'bg-[#050505] text-white'
-          : 'border border-black/12 bg-white text-black/70 hover:border-[#9c8563] hover:text-black',
+          ? 'bg-[#12110f] text-white'
+          : 'border border-[rgb(18_17_15/0.18)] bg-white text-[#3f3b34] hover:border-[rgb(18_17_15/0.35)] hover:text-[#12110f]',
       )}
     >
       {label}
@@ -125,10 +125,10 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="admin-surface rounded-2xl px-6 py-16 text-center">
-      <div className="mx-auto mb-5 h-px w-16 bg-[#9c8563]/70" />
-      <p className="font-heading text-2xl tracking-tight">{title}</p>
-      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-black/55">
+    <div className="admin-surface rounded-xl px-6 py-14 text-center">
+      <div className="mx-auto mb-4 h-px w-14 bg-[#7a6648]" />
+      <p className="font-heading text-2xl tracking-tight text-[#12110f]">{title}</p>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[#3f3b34]">
         {body}
       </p>
       {action ? <div className="mt-6">{action}</div> : null}
@@ -151,10 +151,10 @@ export function PageIntro({
     <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
         <Eyebrow>{kicker}</Eyebrow>
-        <h1 className="font-heading mt-2 text-3xl tracking-tight sm:text-4xl">
+        <h1 className="font-heading mt-2 text-3xl tracking-tight text-[#12110f] sm:text-4xl">
           {title}
         </h1>
-        <p className="mt-3 text-sm leading-relaxed text-black/60">{children}</p>
+        <p className="mt-3 text-sm leading-relaxed text-[#3f3b34]">{children}</p>
       </div>
       {action}
     </header>

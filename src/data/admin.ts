@@ -185,19 +185,19 @@ export function statusLabel(status: AccountStatus): string {
 export function statusTone(status: AccountStatus): string {
   switch (status) {
     case 'novo':
-      return 'bg-black/[0.06] text-black/70'
+      return 'bg-[#ebe6dc] text-[#2a2620] ring-1 ring-[#12110f]/12'
     case 'abordar':
-      return 'bg-[#9c8563]/18 text-[#6a5438]'
+      return 'bg-[#efe4d2] text-[#4a3820] ring-1 ring-[#7a6648]/35'
     case 'em_conversa':
-      return 'bg-[#d7e6ef] text-[#1f4a63]'
+      return 'bg-[#d4e5f0] text-[#16384d] ring-1 ring-[#1f4a63]/25'
     case 'follow_up':
-      return 'bg-[#f3e2c4] text-[#6b4e16]'
+      return 'bg-[#f0dcb0] text-[#5a3f0e] ring-1 ring-[#6b4e16]/30'
     case 'mandato':
-      return 'bg-[#d7eadc] text-[#21553a]'
+      return 'bg-[#cfe8d6] text-[#174530] ring-1 ring-[#21553a]/28'
     case 'pausado':
-      return 'bg-black/[0.05] text-black/45'
+      return 'bg-[#e5e1d8] text-[#3f3b34] ring-1 ring-[#12110f]/10'
     case 'sem_fit':
-      return 'bg-[#f3d6d2] text-[#7a2e24]'
+      return 'bg-[#f0d0cb] text-[#6b241c] ring-1 ring-[#7a2e24]/28'
     default: {
       const exhaustive: never = status
       return exhaustive
@@ -207,15 +207,15 @@ export function statusTone(status: AccountStatus): string {
 
 export function partnerTone(id: PartnerId | null): string {
   if (!id) {
-    return 'bg-black/10 text-black/50'
+    return 'bg-[#ddd6c8] text-[#3f3b34] ring-1 ring-[#12110f]/12'
   }
   switch (id) {
     case 'vini':
-      return 'bg-[#9c8563] text-white'
+      return 'bg-[#7a6648] text-white'
     case 'rafa':
-      return 'bg-[#050505] text-white'
+      return 'bg-[#12110f] text-white'
     case 'tadeu':
-      return 'bg-[#c4b49a] text-[#050505]'
+      return 'bg-[#c4b49a] text-[#12110f] ring-1 ring-[#12110f]/15'
     default: {
       const exhaustive: never = id
       return exhaustive

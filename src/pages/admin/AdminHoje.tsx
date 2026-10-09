@@ -249,35 +249,35 @@ export function AdminHoje({
   }
 
   return (
-    <div className="space-y-5">
-      <section className="admin-welcome px-5 py-6 sm:px-7 sm:py-7">
+    <div className="space-y-4">
+      <section className="admin-welcome px-5 py-5 sm:px-6 sm:py-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h2 className="font-heading text-3xl tracking-tight sm:text-4xl">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h2 className="font-heading text-2xl tracking-tight sm:text-3xl">
                 Minha fila · {partnerById(me).name}
               </h2>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-white/70">
+              <span className="rounded-md bg-white/12 px-2.5 py-1 text-xs font-medium text-white/85">
                 {formatTodayHeading(today)}
               </span>
             </div>
-            <p className="mt-2 max-w-xl text-sm text-white/55">
-              Praça Curitiba. Um toque no status atualiza a conta no Neon.
-              Sem inventar contato — só o que já está na mesa.
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/72">
+              Praça Curitiba. Um toque no status grava no Neon. WhatsApp abre e
+              registra a abordagem.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 self-start">
             <button
               type="button"
               onClick={onExport}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-sm text-white/80 hover:bg-white/8"
+              className="inline-flex items-center gap-2 rounded-md border border-white/22 px-3.5 py-2 text-sm font-medium text-white/90 hover:bg-white/10"
             >
               Exportar
             </button>
             <Button
               type="button"
               onClick={onCreate}
-              className="rounded-full bg-white text-[#050505] hover:bg-white/90"
+              className="rounded-md bg-white text-[#12110f] hover:bg-white/92"
             >
               Nova conta
             </Button>
@@ -300,7 +300,7 @@ export function AdminHoje({
         </div>
         <Link
           to="/admin/crm"
-          className="text-sm text-[#9c8563] hover:text-black"
+          className="text-sm font-medium text-[#7a6648] underline-offset-4 hover:text-[#12110f] hover:underline"
         >
           Abrir CRM
         </Link>
@@ -310,7 +310,7 @@ export function AdminHoje({
 
       {error ? (
         <p
-          className="rounded-2xl bg-[#f7e8e4] px-4 py-3 text-sm text-[#7a2e24]"
+          className="rounded-xl border border-[#7a2e24]/25 bg-[#f7e8e4] px-4 py-3 text-sm font-medium text-[#6b241c]"
           role="alert"
         >
           {error}
@@ -325,7 +325,7 @@ export function AdminHoje({
       ) : null}
 
       {loading ? (
-        <p className="text-sm text-black/50">Carregando fila da praça…</p>
+        <p className="text-sm font-medium text-[#3f3b34]">Carregando fila da praça…</p>
       ) : null}
 
       {!loading && !error && queue.length === 0 ? (
@@ -409,7 +409,7 @@ function QueueCard({
   }
 
   return (
-    <li className="admin-surface rounded-2xl px-4 py-4 sm:px-5">
+    <li className="admin-queue-card px-3.5 py-3.5 sm:px-4">
       <div className="flex items-start gap-3">
         <OwnerMark id={account.owner} className="mt-0.5" />
         <div className="min-w-0 flex-1">
@@ -419,8 +419,12 @@ function QueueCard({
               onClick={() => onOpen(account.id)}
               className="min-w-0 text-left"
             >
-              <span className="block truncate font-medium">{account.name}</span>
-              <span className="text-xs text-black/45">{placeLabel(account)}</span>
+              <span className="block truncate text-[15px] font-semibold text-[#12110f]">
+                {account.name}
+              </span>
+              <span className="text-xs font-medium text-[#3f3b34]">
+                {placeLabel(account)}
+              </span>
             </button>
             <div className="flex flex-wrap items-center gap-2">
               <StatusPill status={account.status} />
@@ -429,17 +433,17 @@ function QueueCard({
                 size="sm"
                 disabled={!waOk || waBusy || busy}
                 onClick={() => void openWhatsApp()}
-                className="bg-[#128C7E] text-white hover:bg-[#0e6e63]"
+                className="h-8 rounded-md bg-[#0f7a6c] px-3 font-semibold text-white hover:bg-[#0c6358] disabled:bg-[#9aa39f]"
               >
                 {waBusy ? '…' : 'WhatsApp'}
               </Button>
             </div>
           </div>
 
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-black/50">
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#3f3b34]">
             <span>
               Próximo:{' '}
-              <span className="text-black/70">
+              <span className="font-medium text-[#12110f]">
                 {account.nextAction || '—'}
                 {account.nextActionAt
                   ? ` · ${formatDay(account.nextActionAt)}`
@@ -448,7 +452,7 @@ function QueueCard({
             </span>
             <span>
               Último contato:{' '}
-              <span className="text-black/70">
+              <span className="font-medium text-[#12110f]">
                 {account.lastContactAt
                   ? formatDay(account.lastContactAt)
                   : '—'}
@@ -456,13 +460,13 @@ function QueueCard({
             </span>
           </div>
           {!waOk ? (
-            <p className="mt-1 text-[11px] text-black/40">
+            <p className="mt-1 text-[11px] font-medium text-[#6b241c]">
               Sem telefone válido para WhatsApp.
             </p>
           ) : null}
 
           <div
-            className="mt-3 flex flex-wrap gap-1.5"
+            className="mt-3 flex flex-wrap gap-1.5 border-t border-[rgb(18_17_15/0.08)] pt-3"
             role="group"
             aria-label={`Status de ${account.name}`}
           >
@@ -475,11 +479,11 @@ function QueueCard({
                   disabled={busy || active}
                   onClick={() => onStatus(status)}
                   className={cn(
-                    'rounded-full px-2.5 py-1 text-[11px] transition-colors',
+                    'rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors',
                     active
-                      ? 'bg-[#050505] text-white'
-                      : 'border border-black/10 bg-white text-black/65 hover:border-[#9c8563] hover:text-black',
-                    busy && !active ? 'opacity-50' : '',
+                      ? 'bg-[#12110f] text-white'
+                      : 'border border-[rgb(18_17_15/0.16)] bg-[#f7f4ef] text-[#3f3b34] hover:border-[rgb(18_17_15/0.35)] hover:bg-white hover:text-[#12110f]',
+                    busy && !active ? 'opacity-45' : '',
                   )}
                 >
                   {statusLabel(status)}
