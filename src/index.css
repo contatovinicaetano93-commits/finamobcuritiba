@@ -228,7 +228,14 @@ img {
     color: #12110f;
     background: #fff;
     height: 2.5rem;
-    border-color: rgb(18 17 15 / 0.22);
+    border-color: rgb(18 17 15 / 0.28);
+    box-shadow: none;
+  }
+
+  .admin-desk input:focus,
+  .admin-desk textarea:focus,
+  .admin-desk [data-slot="select-trigger"]:focus {
+    border-color: #7a6648;
   }
 
   .admin-desk textarea {

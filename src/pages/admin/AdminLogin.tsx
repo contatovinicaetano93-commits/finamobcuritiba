@@ -90,10 +90,10 @@ export function AdminLogin({ error, busy = false, onSubmit }: AdminLoginProps) {
                   onClick={() => setPartner(item.id)}
                   aria-pressed={partner === item.id}
                   className={cn(
-                    'flex flex-col items-center gap-2 rounded-xl border px-2 py-4 text-sm font-medium transition-colors',
+                    'flex flex-col items-center gap-2 rounded-xl border-2 px-2 py-4 text-sm font-medium shadow-sm transition-colors',
                     partner === item.id
-                      ? 'border-[#12110f] bg-[#12110f] text-white'
-                      : 'border-[rgb(18_17_15/0.18)] bg-white text-[#3f3b34] hover:border-[rgb(18_17_15/0.4)]',
+                      ? 'border-[#12110f] bg-[#12110f] text-white shadow-none'
+                      : 'border-[rgb(18_17_15/0.28)] bg-white text-[#3f3b34] hover:border-[#12110f]',
                   )}
                 >
                   <OwnerMark id={item.id} />
