@@ -356,6 +356,7 @@ export function AdminApp() {
                     onSave={saveAccount}
                     onDelete={deleteAccount}
                     onImport={(event) => void importBoard(event)}
+                    onActivityLogged={bumpMesa}
                   />
                 }
               />

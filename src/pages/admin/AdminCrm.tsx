@@ -88,6 +88,7 @@ type AdminCrmProps = {
   ) => void
   onDelete: (id: string) => void
   onImport: (event: ChangeEvent<HTMLInputElement>) => void
+  onActivityLogged?: () => void
 }
 
 export function AdminCrm({
@@ -104,6 +105,7 @@ export function AdminCrm({
   onCreate,
   onDelete,
   onImport,
+  onActivityLogged,
 }: AdminCrmProps) {
   const [scope, setScope] = useState<MesaScope>('praca')
   const [region, setRegion] = useState('')
@@ -599,6 +601,7 @@ export function AdminCrm({
               account={selected}
               timeline={timeline}
               timelineState={timelineState}
+              onActivityLogged={onActivityLogged}
               onDelete={() => {
                 onDelete(selected.id)
                 onSelect(null)
@@ -870,6 +873,7 @@ function EditForm({
   timelineState,
   onSave,
   onDelete,
+  onActivityLogged,
 }: {
   me: PartnerId
   account: MesaAccount
@@ -877,6 +881,7 @@ function EditForm({
   timelineState: 'idle' | 'loading' | 'error' | 'ready'
   onSave: (account: Account, note: string) => void
   onDelete: () => void
+  onActivityLogged?: () => void
 }) {
   const [draft, setDraft] = useState(account)
   const [log, setLog] = useState('')
@@ -914,6 +919,8 @@ function EditForm({
         },
         'WhatsApp aberto.',
       )
+    } else {
+      onActivityLogged?.()
     }
   }
 
