@@ -12,6 +12,7 @@ import { HomePage } from '@/pages/HomePage'
 import { IncorporadorPage } from '@/pages/IncorporadorPage'
 import { ParceiroPage } from '@/pages/ParceiroPage'
 import { ShowcaseDownloadPage } from '@/pages/ShowcaseDownloadPage'
+import { InauguracaoFlyer, InauguracaoPage } from '@/pages/InauguracaoPage'
 import { SofaAbertoPage } from '@/pages/SofaAbertoPage'
 import { SolutionsPage } from '@/pages/SolutionsPage'
 
@@ -49,11 +50,28 @@ function PublicShell() {
           <Route path="/folder" element={<FolderPage />} />
           <Route path="/mostruario" element={<ShowcaseDownloadPage />} />
           <Route path="/sofa-aberto" element={<SofaAbertoPage />} />
+          <Route path="/inauguracao" element={<InauguracaoPage />} />
+          <Route path="/soft-open" element={<Navigate to="/inauguracao" replace />} />
           <Route path="/baixar-directcon" element={<DirectConDownloadPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
       <SiteFooter />
+    </div>
+  )
+}
+
+function InauguracaoExportPage() {
+  const params = new URLSearchParams(window.location.search)
+  const formatParam = params.get('format')
+  const format =
+    formatParam === 'quadrado' || formatParam === 'paisagem'
+      ? formatParam
+      : 'story'
+
+  return (
+    <div className="h-svh w-svw overflow-hidden bg-[#050505]">
+      <InauguracaoFlyer format={format} fill />
     </div>
   )
 }
@@ -64,6 +82,7 @@ export default function App() {
       <HashScroll />
       <Routes>
         <Route path="/admin/*" element={<AdminApp />} />
+        <Route path="/convite/export" element={<InauguracaoExportPage />} />
         <Route path="*" element={<PublicShell />} />
       </Routes>
     </>
