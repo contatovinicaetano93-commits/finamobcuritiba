@@ -118,7 +118,12 @@ export function isAreaRoute(pathname: string): boolean {
 
 export function isHeroPath(pathname: string): boolean {
   const path = normalizePath(pathname)
-  return path === '/' || path === '/sofa-aberto' || isAreaRoute(pathname)
+  return (
+    path === '/' ||
+    path === '/sofa-aberto' ||
+    path === '/inauguracao' ||
+    isAreaRoute(pathname)
+  )
 }
 
 export function formCtaTo(pathname: string): string {
@@ -131,6 +136,9 @@ export function formCtaTo(pathname: string): string {
   }
   if (path === '/sofa-aberto') {
     return '/contato?sofa=1'
+  }
+  if (path === '/inauguracao') {
+    return '/contato'
   }
   return '/contato'
 }
