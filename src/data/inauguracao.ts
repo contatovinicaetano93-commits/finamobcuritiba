@@ -15,7 +15,7 @@ export const INAUGURACAO = {
       label: 'Story / WhatsApp',
       hint: '1080 × 1920',
       src: '/convite/inauguracao-story.svg',
-      png: '/convite/inauguracao-story.png',
+      png: '/convite/inauguracao-story.svg',
       svg: '/convite/inauguracao-story.svg',
     },
     {
@@ -23,7 +23,7 @@ export const INAUGURACAO = {
       label: 'Feed quadrado',
       hint: '1080 × 1080',
       src: '/convite/inauguracao-quadrado.svg',
-      png: '/convite/inauguracao-quadrado.png',
+      png: '/convite/inauguracao-quadrado.svg',
       svg: '/convite/inauguracao-quadrado.svg',
     },
     {
@@ -31,7 +31,7 @@ export const INAUGURACAO = {
       label: 'Paisagem',
       hint: '1600 × 900',
       src: '/convite/inauguracao-paisagem.svg',
-      png: '/convite/inauguracao-paisagem.png',
+      png: '/convite/inauguracao-paisagem.svg',
       svg: '/convite/inauguracao-paisagem.svg',
     },
   ],
