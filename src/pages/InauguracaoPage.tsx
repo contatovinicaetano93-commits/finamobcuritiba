@@ -199,12 +199,12 @@ export function InauguracaoPage() {
             {INAUGURACAO.arts.map((art) => (
               <li key={art.id} className="space-y-3">
                 <a
-                  href={art.src}
+                  href={art.png}
                   download
                   className="block overflow-hidden rounded-sm ring-1 ring-white/12 transition hover:ring-white/30"
                 >
                   <img
-                    src={art.src}
+                    src={art.png}
                     alt={`${art.label} — Soft open Finamob Curitiba`}
                     className="w-full bg-black object-cover"
                   />
@@ -212,24 +212,15 @@ export function InauguracaoPage() {
                 <div className="flex items-baseline justify-between gap-3">
                   <div>
                     <p className="text-sm font-medium">{art.label}</p>
-                    <p className="text-xs text-white/45">{art.hint}</p>
+                    <p className="text-xs text-white/45">{art.hint} · PNG</p>
                   </div>
-                  <div className="flex gap-3">
-                    <a
-                      href={art.png}
-                      download
-                      className="text-xs tracking-wide text-[#c4b49a] uppercase hover:text-white"
-                    >
-                      PNG
-                    </a>
-                    <a
-                      href={art.svg}
-                      download
-                      className="text-xs tracking-wide text-white/55 uppercase hover:text-white"
-                    >
-                      SVG
-                    </a>
-                  </div>
+                  <a
+                    href={art.png}
+                    download
+                    className="text-xs font-semibold tracking-wide text-[#c4b49a] uppercase hover:text-white"
+                  >
+                    Baixar PNG
+                  </a>
                 </div>
               </li>
             ))}
