@@ -1,0 +1,35 @@
+export const INAUGURACAO = {
+  kicker: 'Soft open',
+  title: 'Lançamento',
+  unit: 'Finamob Curitiba',
+  audience: 'Incorporadores e construtores de Curitiba e região',
+  dateLabel: '20 de outubro',
+  dateShort: '20/10',
+  time: '19h30',
+  year: '2026',
+  placeHint: 'Curitiba',
+  note: 'Convite para a abertura da unidade. Casa aberta — conversa sobre funding com a mesa da praça.',
+  arts: [
+    {
+      id: 'story',
+      label: 'Story / WhatsApp',
+      hint: '1080 × 1920',
+      src: '/convite/inauguracao-story.png',
+      svg: '/convite/inauguracao-story.svg',
+    },
+    {
+      id: 'quadrado',
+      label: 'Feed quadrado',
+      hint: '1080 × 1080',
+      src: '/convite/inauguracao-quadrado.png',
+      svg: '/convite/inauguracao-quadrado.svg',
+    },
+    {
+      id: 'paisagem',
+      label: 'Paisagem',
+      hint: '1600 × 900',
+      src: '/convite/inauguracao-paisagem.png',
+      svg: '/convite/inauguracao-paisagem.svg',
+    },
+  ],
+} as const
