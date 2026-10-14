@@ -1,3 +1,5 @@
+import { partnerById, type PartnerId } from '@/data/admin'
+
 /** Brazilian phone helpers for WhatsApp deep links. */
 
 export function digitsOnly(value: string): string {
@@ -23,8 +25,16 @@ export function buildWhatsAppUrl(phone: string, message = ''): string | null {
   return text ? `${base}?text=${encodeURIComponent(text)}` : base
 }
 
-export function defaultWhatsAppMessage(companyName: string, city = '', uf = ''): string {
-  const place = [city, uf].filter(Boolean).join('/')
-  const where = place ? ` (${place})` : ''
-  return `Olá! Aqui é da Finamob Curitiba. Gostaria de falar com alguém de ${companyName.trim()}${where} sobre funding imobiliário.`
+/** Activation opener personalized with the logged-in partner. */
+export function defaultWhatsAppMessage(partnerId: PartnerId): string {
+  const name = partnerById(partnerId).introName
+  return [
+    `Olá, tudo bem? Sou o ${name}, da Finamob Curitiba.`,
+    '',
+    'Conectamos incorporadoras a uma rede de mais de 200 fundos de investimento, buscando soluções de capital para financiar obras e viabilizar novos empreendimentos.',
+    '',
+    'Gostaria de conhecer os projetos de vocês e avaliar alternativas de financiamento alinhadas à fase e à necessidade de cada empreendimento.',
+    '',
+    'Podemos agendar uma conversa breve? Se esse assunto estiver com outra pessoa, poderia me indicar quem cuida da captação de recursos?',
+  ].join('\n')
 }
