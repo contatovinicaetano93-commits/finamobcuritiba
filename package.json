@@ -4,13 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/decode-invite-arts.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/decode-invite-arts.mjs",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview",
-    "decode:invite-arts": "node scripts/decode-invite-arts.mjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
