@@ -3,7 +3,7 @@
   <rect width="1080" height="1920" fill="#050505"/>
   <defs>
     <radialGradient id="glow" cx="50%" cy="0%" r="70%">
-      <stop offset="0%" stop-color="#9c8563" stop-opacity="0.22"/>
+      <stop offset="0%" stop-color="#9c8563" stop-opacity="0.28"/>
       <stop offset="58%" stop-color="#9c8563" stop-opacity="0"/>
     </radialGradient>
   </defs>
@@ -11,20 +11,20 @@
   <g transform="translate(96,120)">
     <rect x="18" y="0" width="4" height="56" rx="2" fill="#fff"/>
     <circle cx="20" cy="28" r="10" fill="#fff"/>
-    <text x="48" y="22" fill="#fff" font-family="Geist, Inter, Arial, sans-serif" font-size="18" font-weight="500" letter-spacing="4.5">FINAMOB</text>
-    <text x="48" y="44" fill="#ffffffb3" font-family="Geist, Inter, Arial, sans-serif" font-size="12" font-weight="500" letter-spacing="4">CURITIBA</text>
+    <text x="48" y="22" fill="#fff" font-family="Geist, Inter, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="4.5">FINAMOB</text>
+    <text x="48" y="44" fill="#fffffff0" font-family="Geist, Inter, Arial, sans-serif" font-size="12" font-weight="600" letter-spacing="4">CURITIBA</text>
   </g>
-  <text x="96" y="240" fill="#c4b49a" font-family="Geist, Inter, Arial, sans-serif" font-size="14" font-weight="500" letter-spacing="5">SOFT OPEN</text>
+  <text x="96" y="240" fill="#edd9b0" font-family="Geist, Inter, Arial, sans-serif" font-size="14" font-weight="600" letter-spacing="5">SOFT OPEN</text>
   <text x="96" y="820" fill="#fff" font-family="Georgia, 'Times New Roman', serif" font-size="92">Lan&#231;amento</text>
-  <text x="96" y="900" fill="#ffffffcc" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-style="italic">da unidade Finamob Curitiba</text>
-  <text x="96" y="980" fill="#ffffffb8" font-family="Geist, Inter, Arial, sans-serif" font-size="22">Soft open para incorporadores e construtores</text>
-  <text x="96" y="1014" fill="#ffffffb8" font-family="Geist, Inter, Arial, sans-serif" font-size="22">de Curitiba e regi&#227;o.</text>
-  <line x1="96" y1="1520" x2="984" y2="1520" stroke="#ffffff26"/>
-  <text x="96" y="1580" fill="#c4b49a" font-family="Geist, Inter, Arial, sans-serif" font-size="13" letter-spacing="3.5">QUANDO</text>
-  <text x="96" y="1624" fill="#fff" font-family="Geist, Inter, Arial, sans-serif" font-size="28" font-weight="500">20 de outubro &#183; 2026</text>
-  <text x="96" y="1664" fill="#ffffffb3" font-family="Geist, Inter, Arial, sans-serif" font-size="20">A partir das 19h30</text>
-  <text x="560" y="1580" fill="#c4b49a" font-family="Geist, Inter, Arial, sans-serif" font-size="13" letter-spacing="3.5">PARA QUEM</text>
-  <text x="560" y="1624" fill="#ffffffcc" font-family="Geist, Inter, Arial, sans-serif" font-size="20">Incorporadores e construtores</text>
-  <text x="560" y="1656" fill="#ffffff8c" font-family="Geist, Inter, Arial, sans-serif" font-size="18">Curitiba e regi&#227;o</text>
-  <text x="96" y="1800" fill="#ffffff66" font-family="Geist, Inter, Arial, sans-serif" font-size="13" letter-spacing="3.5">FINAMOB CURITIBA &#183; SOFT OPEN</text>
+  <text x="96" y="900" fill="#fffffff5" font-family="Georgia, 'Times New Roman', serif" font-size="34" font-style="italic">da unidade Finamob Curitiba</text>
+  <text x="96" y="980" fill="#ffffffe6" font-family="Geist, Inter, Arial, sans-serif" font-size="22" font-weight="500">Soft open para incorporadores e construtores</text>
+  <text x="96" y="1014" fill="#ffffffe6" font-family="Geist, Inter, Arial, sans-serif" font-size="22" font-weight="500">de Curitiba e regi&#227;o.</text>
+  <line x1="96" y1="1520" x2="984" y2="1520" stroke="#ffffff55"/>
+  <text x="96" y="1580" fill="#edd9b0" font-family="Geist, Inter, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="3.5">QUANDO</text>
+  <text x="96" y="1624" fill="#fff" font-family="Geist, Inter, Arial, sans-serif" font-size="28" font-weight="600">20 de outubro &#183; 2026</text>
+  <text x="96" y="1664" fill="#fffffff0" font-family="Geist, Inter, Arial, sans-serif" font-size="20" font-weight="500">A partir das 19h30</text>
+  <text x="560" y="1580" fill="#edd9b0" font-family="Geist, Inter, Arial, sans-serif" font-size="13" font-weight="600" letter-spacing="3.5">PARA QUEM</text>
+  <text x="560" y="1624" fill="#fffffff5" font-family="Geist, Inter, Arial, sans-serif" font-size="20" font-weight="500">Incorporadores e construtores</text>
+  <text x="560" y="1656" fill="#ffffffd9" font-family="Geist, Inter, Arial, sans-serif" font-size="18" font-weight="500">Curitiba e regi&#227;o</text>
+  <text x="96" y="1800" fill="#ffffffb8" font-family="Geist, Inter, Arial, sans-serif" font-size="13" font-weight="500" letter-spacing="3.5">FINAMOB CURITIBA &#183; SOFT OPEN</text>
 </svg>

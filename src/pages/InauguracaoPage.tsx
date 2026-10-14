@@ -48,7 +48,7 @@ export function InauguracaoFlyer({
 
       <header className="relative">
         <FlyerMark size={isLandscape ? 'sm' : 'lg'} />
-        <p className="mt-8 text-[10px] font-medium tracking-[0.28em] text-[#c4b49a] uppercase">
+        <p className="mt-8 text-[10px] font-semibold tracking-[0.28em] text-[#edd9b0] uppercase">
           {INAUGURACAO.kicker}
         </p>
       </header>
@@ -56,7 +56,7 @@ export function InauguracaoFlyer({
       <div className="relative max-w-xl">
         <h1
           className={[
-            'font-heading tracking-tight',
+            'font-heading tracking-tight text-white',
             isLandscape
               ? 'text-4xl leading-[0.95] sm:text-5xl'
               : isSquare
@@ -65,13 +65,13 @@ export function InauguracaoFlyer({
           ].join(' ')}
         >
           {INAUGURACAO.title}
-          <span className="mt-3 block text-[1.35rem] font-normal tracking-normal text-white/80 italic sm:text-2xl">
+          <span className="mt-3 block text-[1.35rem] font-normal tracking-normal text-white/95 italic sm:text-2xl">
             da unidade {INAUGURACAO.unit}
           </span>
         </h1>
         <p
           className={[
-            'mt-6 text-sm leading-relaxed text-white/72 sm:text-base',
+            'mt-6 text-sm leading-relaxed text-white/90 sm:text-base',
             isLandscape ? 'max-w-md' : 'max-w-sm',
           ].join(' ')}
         >
@@ -82,45 +82,45 @@ export function InauguracaoFlyer({
       <footer className="relative">
         <div
           className={[
-            'grid gap-6 border-t border-white/15 pt-6',
+            'grid gap-6 border-t border-white/30 pt-6',
             isLandscape ? 'grid-cols-3 max-w-2xl' : 'grid-cols-1 sm:grid-cols-2',
           ].join(' ')}
         >
           <div>
-            <p className="text-[10px] tracking-[0.2em] text-[#c4b49a] uppercase">
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-[#edd9b0] uppercase">
               Quando
             </p>
-            <p className="mt-1.5 text-lg font-medium tracking-tight">
+            <p className="mt-1.5 text-lg font-medium tracking-tight text-white">
               {INAUGURACAO.dateLabel}
-              <span className="text-white/55"> · {INAUGURACAO.year}</span>
+              <span className="text-white/80"> · {INAUGURACAO.year}</span>
             </p>
-            <p className="mt-0.5 text-sm text-white/70">
+            <p className="mt-0.5 text-sm text-white/90">
               A partir das {INAUGURACAO.time}
             </p>
           </div>
           <div>
-            <p className="text-[10px] tracking-[0.2em] text-[#c4b49a] uppercase">
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-[#edd9b0] uppercase">
               Para quem
             </p>
-            <p className="mt-1.5 text-sm leading-snug text-white/80">
+            <p className="mt-1.5 text-sm leading-snug text-white/95">
               Incorporadores e construtores
-              <span className="block text-white/55">
+              <span className="block text-white/80">
                 Curitiba e região
               </span>
             </p>
           </div>
           {isLandscape ? (
             <div>
-              <p className="text-[10px] tracking-[0.2em] text-[#c4b49a] uppercase">
+              <p className="text-[10px] font-semibold tracking-[0.2em] text-[#edd9b0] uppercase">
                 O quê
               </p>
-              <p className="mt-1.5 text-sm leading-snug text-white/80">
+              <p className="mt-1.5 text-sm leading-snug text-white/95">
                 Soft open · lançamento da unidade
               </p>
             </div>
           ) : null}
         </div>
-        <p className="mt-8 text-[10px] tracking-[0.22em] text-white/40 uppercase">
+        <p className="mt-8 text-[10px] font-medium tracking-[0.22em] text-white/70 uppercase">
           Finamob Curitiba · Soft open
         </p>
       </footer>
@@ -164,15 +164,15 @@ function ArtDownloadCard({
       </button>
       <div className="flex items-baseline justify-between gap-3">
         <div>
-          <p className="text-sm font-medium">{art.label}</p>
-          <p className="text-xs text-white/45">{art.hint} · PNG</p>
+          <p className="text-sm font-medium text-white">{art.label}</p>
+          <p className="text-xs text-white/75">{art.hint} · PNG</p>
           {error ? <p className="mt-1 text-xs text-red-300">{error}</p> : null}
         </div>
         <button
           type="button"
           onClick={() => void handleDownload()}
           disabled={busy}
-          className="text-xs font-semibold tracking-wide text-[#c4b49a] uppercase hover:text-white disabled:opacity-60"
+          className="text-xs font-semibold tracking-wide text-[#edd9b0] uppercase hover:text-white disabled:opacity-60"
         >
           {busy ? 'Gerando…' : 'Baixar PNG'}
         </button>
@@ -192,39 +192,41 @@ export function InauguracaoPage() {
         </div>
 
         <div className="max-w-xl">
-          <p className="text-[10px] font-medium tracking-[0.28em] text-[#c4b49a] uppercase">
+          <p className="text-[10px] font-semibold tracking-[0.28em] text-[#edd9b0] uppercase">
             Convite · Soft open
           </p>
-          <h1 className="font-heading mt-4 text-4xl tracking-tight sm:text-5xl">
+          <h1 className="font-heading mt-4 text-4xl tracking-tight text-white sm:text-5xl">
             Lançamento da unidade
-            <span className="mt-2 block italic text-white/75">
+            <span className="mt-2 block italic text-white/95">
               Finamob Curitiba
             </span>
           </h1>
-          <p className="mt-5 text-sm leading-relaxed text-white/70 sm:text-base">
+          <p className="mt-5 text-sm leading-relaxed text-white/90 sm:text-base">
             {INAUGURACAO.note}
           </p>
           <dl className="mt-8 grid gap-4 text-sm sm:grid-cols-2">
-            <div className="border-t border-white/15 pt-3">
-              <dt className="text-[10px] tracking-[0.18em] text-[#c4b49a] uppercase">
+            <div className="border-t border-white/30 pt-3">
+              <dt className="text-[10px] font-semibold tracking-[0.18em] text-[#edd9b0] uppercase">
                 Data
               </dt>
-              <dd className="mt-1 text-lg font-medium">
+              <dd className="mt-1 text-lg font-medium text-white">
                 {INAUGURACAO.dateShort}
-                <span className="text-white/50"> · {INAUGURACAO.year}</span>
+                <span className="text-white/80"> · {INAUGURACAO.year}</span>
               </dd>
             </div>
-            <div className="border-t border-white/15 pt-3">
-              <dt className="text-[10px] tracking-[0.18em] text-[#c4b49a] uppercase">
+            <div className="border-t border-white/30 pt-3">
+              <dt className="text-[10px] font-semibold tracking-[0.18em] text-[#edd9b0] uppercase">
                 Horário
               </dt>
-              <dd className="mt-1 text-lg font-medium">{INAUGURACAO.time}</dd>
+              <dd className="mt-1 text-lg font-medium text-white">
+                {INAUGURACAO.time}
+              </dd>
             </div>
-            <div className="border-t border-white/15 pt-3 sm:col-span-2">
-              <dt className="text-[10px] tracking-[0.18em] text-[#c4b49a] uppercase">
+            <div className="border-t border-white/30 pt-3 sm:col-span-2">
+              <dt className="text-[10px] font-semibold tracking-[0.18em] text-[#edd9b0] uppercase">
                 Público
               </dt>
-              <dd className="mt-1 text-white/80">{INAUGURACAO.audience}</dd>
+              <dd className="mt-1 text-white/95">{INAUGURACAO.audience}</dd>
             </div>
           </dl>
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
@@ -240,13 +242,13 @@ export function InauguracaoPage() {
 
       <section id="artes" className="border-t border-white/10 px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <p className="text-[10px] font-medium tracking-[0.22em] text-[#c4b49a] uppercase">
+          <p className="text-[10px] font-semibold tracking-[0.22em] text-[#edd9b0] uppercase">
             Artes do convite
           </p>
-          <h2 className="font-heading mt-3 text-3xl tracking-tight">
+          <h2 className="font-heading mt-3 text-3xl tracking-tight text-white">
             Fundo preto · logo Finamob · soft open
           </h2>
-          <p className="mt-3 max-w-xl text-sm text-white/60">
+          <p className="mt-3 max-w-xl text-sm text-white/85">
             Clique em Baixar PNG — o arquivo sai pronto no celular ou no
             computador. Sem inventar endereço: a mesa confirma o local no
             convite pessoal.

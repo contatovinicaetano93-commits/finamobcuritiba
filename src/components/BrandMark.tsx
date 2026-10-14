@@ -31,7 +31,7 @@ export function BrandMark({ variant = 'light', className }: BrandMarkProps) {
         <span
           className={cn(
             'mt-1 font-mark text-[9px] font-medium tracking-[0.32em]',
-            isLight ? 'text-white/70' : 'text-black/60',
+            isLight ? 'text-white/90' : 'text-black/60',
           )}
         >
           CURITIBA
