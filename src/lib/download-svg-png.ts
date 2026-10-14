@@ -13,7 +13,7 @@ export async function downloadSvgAsPng(
 ): Promise<void> {
   const response = await fetch(svgUrl)
   if (!response.ok) {
-    throw new Error(`N\u00e3o foi poss\u00edvel carregar a arte (${response.status})`)
+    throw new Error(`Não foi possível carregar a arte (${response.status})`)
   }
 
   const svgText = await response.text()
@@ -34,7 +34,7 @@ export async function downloadSvgAsPng(
     canvas.height = height
     const ctx = canvas.getContext('2d')
     if (!ctx) {
-      throw new Error('Canvas indispon\u00edvel neste navegador')
+      throw new Error('Canvas indisponível neste navegador')
     }
     ctx.fillStyle = '#050505'
     ctx.fillRect(0, 0, width, height)

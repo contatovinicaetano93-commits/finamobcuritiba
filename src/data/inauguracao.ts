@@ -1,19 +1,19 @@
 export const INAUGURACAO = {
   kicker: 'Soft open',
-  title: 'Lan\u00e7amento',
+  title: 'Lançamento',
   unit: 'Finamob Curitiba',
-  audience: 'Incorporadores e construtores de Curitiba e regi\u00e3o',
+  audience: 'Incorporadores e construtores de Curitiba e região',
   dateLabel: '20 de outubro',
   dateShort: '20/10',
   time: '19h30',
   year: '2026',
   placeHint: 'Curitiba',
-  note: 'Convite para a abertura da unidade. Casa aberta \u2014 conversa sobre funding com a mesa da pra\u00e7a.',
+  note: 'Convite para a abertura da unidade. Casa aberta — conversa sobre funding com a mesa da praça.',
   arts: [
     {
       id: 'story',
       label: 'Story / WhatsApp',
-      hint: '1080 \u00d7 1920',
+      hint: '1080 × 1920',
       src: '/convite/inauguracao-story.svg',
       svg: '/convite/inauguracao-story.svg',
       downloadName: 'Finamob_Curitiba_Soft_Open_Story.png',
@@ -21,7 +21,7 @@ export const INAUGURACAO = {
     {
       id: 'quadrado',
       label: 'Feed quadrado',
-      hint: '1080 \u00d7 1080',
+      hint: '1080 × 1080',
       src: '/convite/inauguracao-quadrado.svg',
       svg: '/convite/inauguracao-quadrado.svg',
       downloadName: 'Finamob_Curitiba_Soft_Open_Feed.png',
@@ -29,7 +29,7 @@ export const INAUGURACAO = {
     {
       id: 'paisagem',
       label: 'Paisagem',
-      hint: '1600 \u00d7 900',
+      hint: '1600 × 900',
       src: '/convite/inauguracao-paisagem.svg',
       svg: '/convite/inauguracao-paisagem.svg',
       downloadName: 'Finamob_Curitiba_Soft_Open_Paisagem.png',
