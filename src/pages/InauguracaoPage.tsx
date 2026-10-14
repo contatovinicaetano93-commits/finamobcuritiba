@@ -75,7 +75,7 @@ export function InauguracaoFlyer({
             isLandscape ? 'max-w-md' : 'max-w-sm',
           ].join(' ')}
         >
-          Soft open para incorporadores e construtores de Curitiba e regi\u00e3o.
+          Soft open para incorporadores e construtores de Curitiba e região.
         </p>
       </div>
 
@@ -92,7 +92,7 @@ export function InauguracaoFlyer({
             </p>
             <p className="mt-1.5 text-lg font-medium tracking-tight">
               {INAUGURACAO.dateLabel}
-              <span className="text-white/55"> \u00b7 {INAUGURACAO.year}</span>
+              <span className="text-white/55"> · {INAUGURACAO.year}</span>
             </p>
             <p className="mt-0.5 text-sm text-white/70">
               A partir das {INAUGURACAO.time}
@@ -105,23 +105,23 @@ export function InauguracaoFlyer({
             <p className="mt-1.5 text-sm leading-snug text-white/80">
               Incorporadores e construtores
               <span className="block text-white/55">
-                Curitiba e regi\u00e3o
+                Curitiba e região
               </span>
             </p>
           </div>
           {isLandscape ? (
             <div>
               <p className="text-[10px] tracking-[0.2em] text-[#c4b49a] uppercase">
-                O qu\u00ea
+                O quê
               </p>
               <p className="mt-1.5 text-sm leading-snug text-white/80">
-                Soft open \u00b7 lan\u00e7amento da unidade
+                Soft open · lançamento da unidade
               </p>
             </div>
           ) : null}
         </div>
         <p className="mt-8 text-[10px] tracking-[0.22em] text-white/40 uppercase">
-          Finamob Curitiba \u00b7 Soft open
+          Finamob Curitiba · Soft open
         </p>
       </footer>
     </article>
@@ -142,7 +142,7 @@ function ArtDownloadCard({
     try {
       await downloadSvgAsPng(art.svg, art.downloadName)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'N\u00e3o deu para baixar o PNG')
+      setError(err instanceof Error ? err.message : 'Não deu para baixar o PNG')
     } finally {
       setBusy(false)
     }
@@ -158,14 +158,14 @@ function ArtDownloadCard({
       >
         <img
           src={art.src}
-          alt={`${art.label} \u2014 Soft open Finamob Curitiba`}
+          alt={`${art.label} — Soft open Finamob Curitiba`}
           className="w-full bg-black object-cover"
         />
       </button>
       <div className="flex items-baseline justify-between gap-3">
         <div>
           <p className="text-sm font-medium">{art.label}</p>
-          <p className="text-xs text-white/45">{art.hint} \u00b7 PNG</p>
+          <p className="text-xs text-white/45">{art.hint} · PNG</p>
           {error ? <p className="mt-1 text-xs text-red-300">{error}</p> : null}
         </div>
         <button
@@ -174,7 +174,7 @@ function ArtDownloadCard({
           disabled={busy}
           className="text-xs font-semibold tracking-wide text-[#c4b49a] uppercase hover:text-white disabled:opacity-60"
         >
-          {busy ? 'Gerando\u2026' : 'Baixar PNG'}
+          {busy ? 'Gerando…' : 'Baixar PNG'}
         </button>
       </div>
     </li>
@@ -193,10 +193,10 @@ export function InauguracaoPage() {
 
         <div className="max-w-xl">
           <p className="text-[10px] font-medium tracking-[0.28em] text-[#c4b49a] uppercase">
-            Convite \u00b7 Soft open
+            Convite · Soft open
           </p>
           <h1 className="font-heading mt-4 text-4xl tracking-tight sm:text-5xl">
-            Lan\u00e7amento da unidade
+            Lançamento da unidade
             <span className="mt-2 block italic text-white/75">
               Finamob Curitiba
             </span>
@@ -211,18 +211,18 @@ export function InauguracaoPage() {
               </dt>
               <dd className="mt-1 text-lg font-medium">
                 {INAUGURACAO.dateShort}
-                <span className="text-white/50"> \u00b7 {INAUGURACAO.year}</span>
+                <span className="text-white/50"> · {INAUGURACAO.year}</span>
               </dd>
             </div>
             <div className="border-t border-white/15 pt-3">
               <dt className="text-[10px] tracking-[0.18em] text-[#c4b49a] uppercase">
-                Hor\u00e1rio
+                Horário
               </dt>
               <dd className="mt-1 text-lg font-medium">{INAUGURACAO.time}</dd>
             </div>
             <div className="border-t border-white/15 pt-3 sm:col-span-2">
               <dt className="text-[10px] tracking-[0.18em] text-[#c4b49a] uppercase">
-                P\u00fablico
+                Público
               </dt>
               <dd className="mt-1 text-white/80">{INAUGURACAO.audience}</dd>
             </div>
@@ -232,7 +232,7 @@ export function InauguracaoPage() {
               <a href="#artes">Baixar artes</a>
             </Button>
             <Button asChild size="lg" variant="outline" className="btn-on-dark">
-              <Link to="/contato">Confirmar presen\u00e7a</Link>
+              <Link to="/contato">Confirmar presença</Link>
             </Button>
           </div>
         </div>
@@ -244,11 +244,11 @@ export function InauguracaoPage() {
             Artes do convite
           </p>
           <h2 className="font-heading mt-3 text-3xl tracking-tight">
-            Fundo preto \u00b7 logo Finamob \u00b7 soft open
+            Fundo preto · logo Finamob · soft open
           </h2>
           <p className="mt-3 max-w-xl text-sm text-white/60">
-            Clique em Baixar PNG \u2014 o arquivo sai pronto no celular ou no
-            computador. Sem inventar endere\u00e7o: a mesa confirma o local no
+            Clique em Baixar PNG — o arquivo sai pronto no celular ou no
+            computador. Sem inventar endereço: a mesa confirma o local no
             convite pessoal.
           </p>
           <ul className="mt-10 grid gap-6 md:grid-cols-3">
