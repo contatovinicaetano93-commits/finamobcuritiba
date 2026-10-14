@@ -20,7 +20,8 @@ import {
 import {
   buildWhatsAppUrl,
   defaultWhatsAppMessage,
-  normalizePhoneBr,
+  resolveWhatsAppPhoneBr,
+  whatsAppPhoneHint,
 } from '@/lib/whatsapp'
 import { Button } from '@/components/ui/button'
 import { AiInsightsStrip } from '@/pages/admin/AiInsightsStrip'
@@ -379,7 +380,9 @@ function QueueCard({
   onWhatsAppLogged?: () => void
 }) {
   const [waBusy, setWaBusy] = useState(false)
-  const waOk = Boolean(normalizePhoneBr(account.phone))
+  const waPhone = resolveWhatsAppPhoneBr(account.phone)
+  const waOk = Boolean(waPhone.digits)
+  const waHint = whatsAppPhoneHint(account.phone)
 
   async function openWhatsApp() {
     const url = buildWhatsAppUrl(
@@ -391,10 +394,11 @@ function QueueCard({
     }
     setWaBusy(true)
     window.open(url, '_blank', 'noopener,noreferrer')
+    const ninthNote = waPhone.addedNinthDigit ? ' (com 9º dígito)' : ''
     const result = await createMesaActivity({
       by: me,
       accountId: account.id,
-      text: `Abriu WhatsApp com ${account.name}.`,
+      text: `Abriu WhatsApp com ${account.name}${ninthNote}.`,
       kind: 'whatsapp',
     })
     setWaBusy(false)
@@ -459,9 +463,16 @@ function QueueCard({
               </span>
             </span>
           </div>
-          {!waOk ? (
-            <p className="mt-1 text-[11px] font-medium text-[#6b241c]">
-              Sem telefone válido para WhatsApp.
+          {waHint ? (
+            <p
+              className={[
+                'mt-1 text-[11px] font-medium',
+                waPhone.kind === 'landline' || waPhone.kind === 'invalid'
+                  ? 'text-[#6b241c]'
+                  : 'text-[#3f3b34]',
+              ].join(' ')}
+            >
+              {waHint}
             </p>
           ) : null}
 
