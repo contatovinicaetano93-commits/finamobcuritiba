@@ -1,38 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080" fill="none">
-  <rect width="1920" height="1080" fill="#050505"/>
-  <defs>
-    <radialGradient id="glow" cx="50%" cy="0%" r="75%">
-      <stop offset="0%" stop-color="#9c8563" stop-opacity="0.32"/>
-      <stop offset="55%" stop-color="#9c8563" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-  <rect width="1920" height="1080" fill="url(#glow)"/>
-
-  <!-- Brand -->
-  <g transform="translate(120,96)">
-    <rect x="22" y="0" width="6" height="72" rx="3" fill="#fff"/>
-    <circle cx="25" cy="36" r="14" fill="#fff"/>
-    <text x="62" y="28" fill="#fff" font-family="Geist, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="8">FINAMOB</text>
-    <text x="62" y="58" fill="#fffffff2" font-family="Geist, Arial, sans-serif" font-size="18" font-weight="600" letter-spacing="7">CURITIBA</text>
-  </g>
-
-  <text x="120" y="260" fill="#edd9b0" font-family="Geist, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="10">SOFT OPEN · HOJE</text>
-
-  <text x="120" y="420" fill="#fff" font-family="Georgia, 'Times New Roman', serif" font-size="120">Bem-vindos</text>
-  <text x="120" y="520" fill="#fffffff5" font-family="Georgia, 'Times New Roman', serif" font-size="48" font-style="italic">ao lançamento da unidade Finamob Curitiba</text>
-
-  <text x="120" y="620" fill="#ffffffe8" font-family="Geist, Arial, sans-serif" font-size="32" font-weight="500">Incorporadores e construtores · Curitiba e região</text>
-
-  <line x1="120" y1="700" x2="1800" y2="700" stroke="#ffffff66" stroke-width="2"/>
-
-  <text x="120" y="800" fill="#edd9b0" font-family="Geist, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="6">QUANDO</text>
-  <text x="120" y="870" fill="#fff" font-family="Geist, Arial, sans-serif" font-size="44" font-weight="700">20 de outubro · 2026</text>
-  <text x="120" y="930" fill="#fffffff0" font-family="Geist, Arial, sans-serif" font-size="34" font-weight="500">A partir das 19h30</text>
-
-  <text x="900" y="800" fill="#edd9b0" font-family="Geist, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="6">CASA ABERTA</text>
-  <text x="900" y="870" fill="#fff" font-family="Geist, Arial, sans-serif" font-size="36" font-weight="600">Funding com a mesa da praça</text>
-  <text x="900" y="930" fill="#ffffffd9" font-family="Geist, Arial, sans-serif" font-size="30" font-weight="500">Vini · Rafa · Tadeu</text>
-
-  <text x="120" y="1020" fill="#ffffffc4" font-family="Geist, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="6">FINAMOB CURITIBA · SOFT OPEN</text>
+  <rect width="1920" height="1080" fill="#000000"/>
+  <text
+    x="960"
+    y="560"
+    fill="#ffffff"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="96"
+    font-weight="400"
+    text-anchor="middle"
+  >Finamob Curitiba</text>
 </svg>
