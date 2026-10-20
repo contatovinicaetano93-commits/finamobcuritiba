@@ -11,6 +11,14 @@ export const INAUGURACAO = {
   note: 'Convite para a abertura da unidade. Casa aberta — conversa sobre funding com a mesa da praça.',
   arts: [
     {
+      id: 'tv',
+      label: 'TV do escritório',
+      hint: '1920 × 1080 · Full HD',
+      src: '/convite/inauguracao-tv.svg',
+      svg: '/convite/inauguracao-tv.svg',
+      downloadName: 'Finamob_Curitiba_Soft_Open_TV.png',
+    },
+    {
       id: 'story',
       label: 'Story / WhatsApp',
       hint: '1080 × 1920',
